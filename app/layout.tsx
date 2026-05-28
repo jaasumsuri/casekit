@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 const instrumentSerif = Instrument_Serif({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400"],
+  weight: "400",
   style: ["normal", "italic"],
 });
 
@@ -19,20 +19,15 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "CaseKit — Consulting case prep, built for undergrads",
-  description: "Free AI-powered consulting case prep for undergrads",
+  description: "Free AI-powered consulting case prep platform for undergrads. Practice real cases, get instant feedback, and ship structured deliverables.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${instrumentSerif.variable} ${dmSans.variable}`}
-    >
-      <body className="min-h-full flex flex-col antialiased">
+    <html lang="en" className={`${instrumentSerif.variable} ${dmSans.variable}`}>
+      <body className="min-h-full flex flex-col">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
