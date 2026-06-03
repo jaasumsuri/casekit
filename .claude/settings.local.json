@@ -21,7 +21,14 @@
       "Bash(lsof -ti:3000)",
       "Bash(xargs kill -9)",
       "Bash(curl -s http://localhost:3000)",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(cp webfetch-1779978083516-c3hysz.bin design.tar.gz)",
+      "Bash(tar -tzf design.tar.gz)",
+      "Bash(gunzip -c design.tar.gz)",
+      "Bash(tar -xzf /Users/jaasumsuri/.claude/projects/-Users-jaasumsuri-casekit/4dbe8028-a596-4046-9e19-9071410dadb7/tool-results/design.tar.gz -C /tmp/casekit_design)",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

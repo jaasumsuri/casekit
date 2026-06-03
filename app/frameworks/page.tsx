@@ -1,92 +1,134 @@
+"use client";
+
 import Link from "next/link";
 
 const FRAMEWORKS = [
-  { n: "01", title: "Profitability Framework",          desc: "Revenue and cost trees, broken down to the smallest moveable lever — without losing MECE.",                           meta: "Most common · 40% of cases", slug: "profitability" },
-  { n: "02", title: "Market Entry",                     desc: "Size the prize, assess fit, pick a mode of entry — and pressure-test the path to scale.",                             meta: "Strategy classic",           slug: "market-entry" },
-  { n: "03", title: "M&A / Investment",                 desc: "Synergy logic, valuation sanity checks, and the integration risks partners actually grill you on.",                   meta: "PE & corp-dev favorite",     slug: "ma-investment" },
-  { n: "04", title: "Pricing Strategy",                 desc: "Cost-plus, competitor-anchored, value-based — when each applies and the math behind it.",                             meta: "Quant-heavy",                slug: "pricing-strategy" },
-  { n: "05", title: "Operations / Process Improvement", desc: "Bottleneck hunting, throughput math, and a clean way to talk about lean without sounding like a textbook.",           meta: "Industry-specific",          slug: "operations" },
-  { n: "06", title: "Growth Strategy (Ansoff)",         desc: "The 2×2 nobody uses right — market penetration, development, product, diversification, with real triggers.",          meta: "Underrated",                 slug: "growth-strategy" },
+  { n: "01", title: "Profitability Framework",       desc: "Revenue and cost trees, broken down to the smallest moveable lever — without losing MECE.",                                            meta: "Most common · 40% of cases", slug: "profitability"    },
+  { n: "02", title: "Market Entry",                  desc: "Size the prize, assess fit, pick a mode of entry — and pressure-test the path to scale.",                                             meta: "Strategy classic",           slug: "market-entry"     },
+  { n: "03", title: "M&A / Investment",              desc: "Synergy logic, valuation sanity checks, and the integration risks partners actually grill you on.",                                   meta: "PE & corp-dev favorite",     slug: "ma-investment"    },
+  { n: "04", title: "Pricing Strategy",              desc: "Cost-plus, competitor-anchored, value-based — when each applies and the math behind it.",                                             meta: "Quant-heavy",                slug: "pricing-strategy" },
+  { n: "05", title: "Operations & Cost Reduction",   desc: "Decompose the cost base, diagnose by function, and sequence the fix — without resorting to across-the-board cuts.",                  meta: "Cost & turnaround",          slug: "operations"       },
+  { n: "06", title: "Growth Strategy (Ansoff)",      desc: "The 2×2 nobody uses right — market penetration, development, product, diversification, with real triggers.",                          meta: "Underrated",                 slug: "growth-strategy"  },
+  { n: "07", title: "Market Sizing",                 desc: "Estimate any number from first principles — top-down, bottom-up, and the sanity check that saves you.",                               meta: "Warm-up favorite",           slug: "market-sizing"    },
 ];
+
+const ArrowRight = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
+    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+  </svg>
+);
 
 export default function FrameworksPage() {
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 28px 110px" }}>
-      {/* Header */}
-      <span
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 10,
-          color: "var(--gold)", fontSize: "0.78rem", letterSpacing: "0.16em",
-          textTransform: "uppercase", fontWeight: 600, fontFamily: "var(--font-body)",
-        }}
-      >
-        <span style={{ width: 18, height: 1, background: "var(--gold)", display: "inline-block" }} />
-        The frameworks
-      </span>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "end", margin: "0 0 48px" }}>
-        <h1 style={{
-          marginTop: 18,
-          fontSize: "clamp(2rem,4vw,3.25rem)",
-          lineHeight: 1.05,
-          letterSpacing: "-0.015em",
-          fontFamily: "var(--font-display)",
-          color: "var(--ink)",
-        }}>
-          Six frameworks. Memorize once,{" "}
-          <em style={{ fontStyle: "italic", color: "var(--forest)" }}>apply forever.</em>
-        </h1>
-        <p style={{ fontFamily: "var(--font-body)", color: "var(--muted)", fontSize: "1.05rem", lineHeight: 1.55 }}>
-          The structures that show up in 90% of real interviews — taught with worked examples, then drilled inside cases so you actually retain them.
-        </p>
-      </div>
-
-      {/* Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-        {FRAMEWORKS.map(({ n, title, desc, meta, slug }) => (
-          <Link
-            key={n}
-            href={`/frameworks/${slug}`}
-            className="fw-card"
-            style={{
-              background: "var(--card)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--r-card)",
-              padding: "26px 24px 24px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              overflow: "hidden",
-              textDecoration: "none",
-            }}
-          >
-            <span style={{ fontFamily: "var(--font-display)", fontSize: "1.05rem", color: "var(--gold)", lineHeight: 1 }}>
-              {n}
-            </span>
-            <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: "1.1rem", lineHeight: 1.3, color: "var(--ink)", letterSpacing: "-0.01em" }}>
-              {title}
-            </h3>
-            <p style={{ color: "var(--muted)", fontSize: "0.93rem", lineHeight: 1.5, fontFamily: "var(--font-body)" }}>
-              {desc}
-            </p>
-            <div style={{
-              marginTop: 8, paddingTop: 14, borderTop: "1px solid var(--border)",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              fontSize: "0.82rem", color: "var(--muted)", fontFamily: "var(--font-body)",
+    <>
+      {/* ── Page header ── */}
+      <div style={{ padding: "72px 0 64px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px" }}>
+          <div style={{ maxWidth: 880 }}>
+            <span className="section-label">The frameworks</span>
+            <h1 style={{ marginTop: 20 }}>
+              Seven frameworks. Learn them cold.{" "}
+              <em style={{ fontStyle: "italic", color: "var(--forest)" }}>Use them sharp.</em>
+            </h1>
+            <p style={{
+              marginTop: 26,
+              color: "var(--muted)",
+              fontSize: "1.1rem",
+              lineHeight: 1.62,
+              maxWidth: 760,
+              fontFamily: "var(--font-body)",
             }}>
-              <span>{meta}</span>
-              <span className="fw-arrow" style={{
-                width: 22, height: 22, borderRadius: "50%",
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-                </svg>
-              </span>
-            </div>
-          </Link>
-        ))}
+              Every consulting interview runs on frameworks. They&rsquo;re not magic — they&rsquo;re structured ways to think through complex business problems without missing anything important. The goal isn&rsquo;t to memorize a template. The goal is to internalize{" "}
+              <strong style={{ color: "var(--ink)", fontWeight: 600 }}>why each framework works</strong>, so you can adapt it on the fly. This guide covers the seven most tested frameworks in case interviews. For each one you&rsquo;ll get: when to use it, the full structure, a worked example with numbers, the two mistakes beginners always make, and two prompts to practice on.
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* ── Framework grid ── */}
+      <section style={{ paddingBottom: 110 }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px" }}>
+          <div className="fw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+            {FRAMEWORKS.map(({ n, title, desc, meta, slug }) => (
+              <Link key={n} href={`/frameworks/${slug}`} className="fw-card">
+                <span className="fw-num">{n}</span>
+                <h3>{title}</h3>
+                <p>{desc}</p>
+                <div className="fw-foot">
+                  <span>{meta}</span>
+                  <span className="arrow-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{ paddingBottom: 110 }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px" }}>
+          <div style={{
+            position: "relative",
+            background: "var(--forest)",
+            color: "#fff",
+            borderRadius: 20,
+            padding: "64px 64px",
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 40,
+            flexWrap: "wrap",
+          }}>
+            {/* Decorative circle */}
+            <span style={{
+              position: "absolute", top: -120, right: -120,
+              width: 360, height: 360, borderRadius: "50%",
+              background: "radial-gradient(circle at 30% 30%, rgba(196,147,58,0.45), rgba(196,147,58,0.1) 60%, transparent 70%)",
+              pointerEvents: "none",
+            }} />
+            <span style={{
+              position: "absolute", top: -50, right: -50,
+              width: 220, height: 220, borderRadius: "50%",
+              border: "1px solid rgba(196,147,58,0.35)",
+              pointerEvents: "none",
+            }} />
+
+            {/* Text */}
+            <div style={{ position: "relative", zIndex: 2, maxWidth: 480 }}>
+              <h2 style={{ color: "#fff" }}>
+                Ready to put this into{" "}
+                <em style={{ fontStyle: "italic", color: "var(--gold)" }}>practice?</em>
+              </h2>
+              <p style={{ marginTop: 14, color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", maxWidth: 440, lineHeight: 1.55, fontFamily: "var(--font-body)" }}>
+                Reading frameworks gets you halfway. The other half is reps — guided cases with an AI interviewer who pushes back.
+              </p>
+            </div>
+
+            {/* Button */}
+            <Link
+              href="/practice"
+              style={{
+                position: "relative", zIndex: 2, flexShrink: 0,
+                display: "inline-flex", alignItems: "center", gap: 10,
+                background: "var(--gold)", color: "#fff",
+                padding: "14px 24px", borderRadius: "var(--r-pill)",
+                fontSize: "0.97rem", fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                transition: "background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
+              }}
+              onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = "#b1832e"; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "0 16px 30px -16px rgba(196,147,58,0.7)"; }}
+              onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = "var(--gold)"; el.style.transform = ""; el.style.boxShadow = ""; }}
+            >
+              Start practicing <ArrowRight />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

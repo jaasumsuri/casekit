@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -33,9 +35,9 @@ export default function Header() {
           margin: "0 auto",
           padding: "0 28px",
           height: 72,
-          display: "flex",
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
-          justifyContent: "space-between",
         }}
       >
         {/* Logo */}
@@ -52,37 +54,45 @@ export default function Header() {
           Case<em style={{ fontStyle: "normal", color: "var(--gold)" }}>Kit</em>
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — column 2, centered */}
         <nav
           className="hidden md:flex"
-          style={{ gap: 32, alignItems: "center" }}
+          style={{ gap: 32, alignItems: "center", justifyContent: "center" }}
         >
           {[
-            { label: "Learn", href: "/learn" },
-            { label: "Practice", href: "/practice" },
-            { label: "Frameworks", href: "/frameworks" },
-          ].map(({ label, href }) => (
-            <Link
-              key={label}
-              href={href}
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "0.94rem",
-                color: "var(--ink)",
-                opacity: 0.78,
-                transition: "opacity 0.2s ease",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.78")}
-            >
-              {label}
-            </Link>
-          ))}
+            { label: "Cases", href: "/#cases", match: null },
+            { label: "Frameworks", href: "/frameworks", match: "/frameworks" },
+            { label: "Practice Mode", href: "/practice", match: "/practice" },
+            { label: "Interview", href: "/#playbook", match: null },
+          ].map(({ label, href, match }) => {
+            const isActive = match ? pathname.startsWith(match) : false;
+            return (
+              <Link
+                key={label}
+                href={href}
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.94rem",
+                  color: isActive ? "var(--forest)" : "var(--ink)",
+                  opacity: isActive ? 1 : 0.78,
+                  fontWeight: isActive ? 500 : 400,
+                  transition: "opacity 0.2s ease",
+                }}
+                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.opacity = "1"; }}
+                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.opacity = "0.78"; }}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
 
+        {/* Column 3: CTA (desktop) + hamburger (mobile) */}
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
           <Link
             href="#get-access"
+            className="hidden md:inline-flex"
             style={{
-              display: "inline-flex",
               alignItems: "center",
               gap: 8,
               background: "var(--forest)",
@@ -112,21 +122,20 @@ export default function Header() {
               <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
             </svg>
           </Link>
-        </nav>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden flex flex-col gap-[5px] p-2"
-          onClick={() => setMenuOpen((o) => !o)}
-          aria-label="Toggle menu"
-        >
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              style={{ display: "block", width: 20, height: 1.5, borderRadius: 2, background: "var(--ink)" }}
-            />
-          ))}
-        </button>
+          <button
+            className="md:hidden flex flex-col gap-[5px] p-2"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Toggle menu"
+          >
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                style={{ display: "block", width: 20, height: 1.5, borderRadius: 2, background: "var(--ink)" }}
+              />
+            ))}
+          </button>
+        </div>
       </div>
 
       {/* Mobile dropdown */}
@@ -142,9 +151,10 @@ export default function Header() {
           }}
         >
           {[
-            { label: "Learn", href: "/learn" },
-            { label: "Practice", href: "/practice" },
+            { label: "Cases", href: "/#cases" },
             { label: "Frameworks", href: "/frameworks" },
+            { label: "Practice Mode", href: "/practice" },
+            { label: "Interview", href: "/#playbook" },
           ].map(({ label, href }) => (
             <Link
               key={label}
