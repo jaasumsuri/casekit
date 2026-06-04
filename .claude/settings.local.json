@@ -28,7 +28,9 @@
       "Bash(tar -xzf /Users/jaasumsuri/.claude/projects/-Users-jaasumsuri-casekit/4dbe8028-a596-4046-9e19-9071410dadb7/tool-results/design.tar.gz -C /tmp/casekit_design)",
       "Bash(npx tsc *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(cp webfetch-1780555408630-azng6d.bin design.tar.gz)",
+      "Bash(tar -xzf design.tar.gz)"
     ]
   }
 }
