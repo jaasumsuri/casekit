@@ -787,8 +787,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .est-verdict.danger .ev-dot { background: #E07A5F; box-shadow: 0 0 0 4px rgba(224,122,95,0.3); }
 .ev-lines { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
 .est-verdict .ev-lines li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; line-height: 1.45; color: rgba(255,255,255,0.92); }
-.est-verdict.green-ok .ev-lines li { color: #155f3f !important; }
-.est-verdict.green-ok .ev-lines li.ok .glyph { color: #1f8a5b !important; }
+.est-verdict.green-ok .ev-lines li { color: rgba(255,255,255,0.92); }
+.est-verdict.green-ok .ev-lines li.ok .glyph { color: #6FCF97; }
 .est-verdict .ev-lines li::before { content: none; display: none; }
 .est-verdict .ev-lines li .glyph { flex-shrink: 0; font-weight: 700; }
 .est-verdict .ev-lines li.ok .glyph { color: #6FCF97; }

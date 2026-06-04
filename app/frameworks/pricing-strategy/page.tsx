@@ -328,7 +328,6 @@ export default function PricingStrategyPage() {
                     </div>
                     <div
                       className={`est-verdict${allOk ? " green-ok" : !capOk || !marginOk || !premiumOk ? " warn" : ""}`}
-                      style={allOk ? { borderStyle: "solid", borderColor: "rgba(31,138,91,0.4)", background: "#E4F2EA", color: "#155f3f" } : undefined}
                     >
                       <span className="ev-head">
                         <span className="ev-dot" />
