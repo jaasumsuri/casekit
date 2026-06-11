@@ -60,7 +60,7 @@ export default function Header() {
           style={{ gap: 32, alignItems: "center", justifyContent: "center" }}
         >
           {[
-            { label: "Cases", href: "/#cases", match: null },
+            { label: "Cases", href: "/cases", match: "/cases" },
             { label: "Frameworks", href: "/frameworks", match: "/frameworks" },
             { label: "Practice Mode", href: "/practice", match: "/practice" },
             { label: "Interview", href: "/#playbook", match: null },
@@ -151,7 +151,7 @@ export default function Header() {
           }}
         >
           {[
-            { label: "Cases", href: "/#cases" },
+            { label: "Cases", href: "/cases" },
             { label: "Frameworks", href: "/frameworks" },
             { label: "Practice Mode", href: "/practice" },
             { label: "Interview", href: "/#playbook" },

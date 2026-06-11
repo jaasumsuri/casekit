@@ -30,7 +30,9 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(cp webfetch-1780555408630-azng6d.bin design.tar.gz)",
-      "Bash(tar -xzf design.tar.gz)"
+      "Bash(tar -xzf design.tar.gz)",
+      "Bash(xargs cat)",
+      "Bash(npx tailwindcss *)"
     ]
   }
 }
