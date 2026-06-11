@@ -79,11 +79,11 @@ const HOWTO_STEPS = [
 ];
 
 const CASES = [
-  { title: "Regional airline losing $40M/yr",      teaser: "Diagnose the leak across routes, fleet utilization, and ancillary revenue. Build a recovery roadmap.",      industry: "Airlines",   framework: "Profitability", difficulty: "Advanced"     as const, slug: "airline-loss",       timeEst: "45 min" },
-  { title: "Oat milk brand enters India",           teaser: "Size the market, segment by income tier, and decide between premium retail or D2C-first launch.",          industry: "CPG",        framework: "Market Entry",  difficulty: "Intermediate" as const, slug: "oat-milk-india",     timeEst: "35 min" },
-  { title: "Regional clinic acquisition",           teaser: "A $2B hospital chain is eyeing a 40-clinic primary care group. Synergies real or imagined?",               industry: "Healthcare", framework: "M&A",           difficulty: "Advanced"     as const, slug: "clinic-acquisition", timeEst: "50 min" },
-  { title: "SaaS repricing for a fading freemium", teaser: "Conversion is dropping but ARPU is up. Restructure the pricing tiers without killing the funnel.",         industry: "Tech",       framework: "Pricing",       difficulty: "Intermediate" as const, slug: "saas-repricing",     timeEst: "40 min" },
-  { title: "Coffee chain's shrinking margins",      teaser: "Labor up, foot traffic flat, loyalty program leaking. Find the two levers that actually move EBITDA.",     industry: "Retail",     framework: "Operations",    difficulty: "Beginner"     as const, slug: "coffee-margins",     timeEst: "30 min" },
+  { title: "NovaCast: the vanishing margin",  teaser: "A streaming platform is bleeding profit while subscribers hold flat. Diagnose the root cause and pitch a recovery.",                          industry: "Streaming",      framework: "Profitability",    difficulty: "Beginner"     as const, slug: "novacast",   timeEst: "15 min" },
+  { title: "Fieldcast: the new market bet",   teaser: "A profitable enterprise SaaS company eyes a tempting SMB segment. The market looks great — should they go?",                                industry: "B2B SaaS",       framework: "Market Entry",     difficulty: "Intermediate" as const, slug: "fieldcast",  timeEst: "20 min" },
+  { title: "Veriomed: the wrong price",       teaser: "A hospital network wants to acquire a diagnostics lab. The strategic case is real — but the CFO's synergy math is wrong.",                   industry: "Healthcare",     framework: "M&A",              difficulty: "Intermediate" as const, slug: "veriomed",   timeEst: "25 min" },
+  { title: "Harken: the hidden cost",         teaser: "A manufacturer is bleeding margin and thinks they know why. They're wrong. The real root cause is buried in a scheduling decision.",         industry: "Manufacturing",  framework: "Operations",       difficulty: "Intermediate" as const, slug: "harken",     timeEst: "30 min" },
+  { title: "Brova: the growth trap",          teaser: "A premium beverages CEO wants $45M for energy drinks. The math says no — but so does just saying 'no.' Build the better plan.",             industry: "Consumer",       framework: "Growth Strategy",  difficulty: "Advanced"     as const, slug: "brova",      timeEst: "35 min" },
 ];
 
 /* ─────────────────────── SVGs ─────────────────────── */
@@ -458,7 +458,7 @@ export default function HomePage() {
           <span className="section-label" style={{ display: "block", marginBottom: 0 }}>The library</span>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 32, margin: "0 0 40px", flexWrap: "wrap" }}>
             <h2 style={{ marginTop: 18, maxWidth: 640 }}>
-              5 cases. 3 industries.{" "}
+              5 cases. 5 industries.{" "}
               <em style={{ fontStyle: "italic", color: "var(--forest)" }}>Zero fluff.</em>
             </h2>
             <Link
