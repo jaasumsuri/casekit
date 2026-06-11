@@ -41,12 +41,12 @@ const CASES = [
     fw: "Operations", time: "~30 min", format: "All freewrite",
   },
   {
-    num: "05", slug: "clinic-acquisition", cls: "ma",
-    industry: "Healthcare · M&A",
+    num: "05", slug: "brova", cls: "growth",
+    industry: "Consumer · Growth strategy",
     difficulty: "Hard", dots: 3,
-    title: "Regional clinic acquisition",
-    desc: "A $2B hospital chain is eyeing a 40-clinic primary care group. Synergies real or imagined? You're writing the recommendation memo from scratch.",
-    fw: "M&A", time: "~50 min", format: "All freewrite",
+    title: "Brova: the growth trap",
+    desc: "A premium beverages CEO wants $45M for energy drinks. The math says no — but so does just saying 'no.' Build the better plan, then survive two curveballs.",
+    fw: "Growth strategy", time: "~35 min", format: "All freewrite",
   },
 ];
 
@@ -55,7 +55,7 @@ const STRUCTURE = [
   { mcq: 1, free: 1, num: "02", name: "Fieldcast",       format: "Half & half" },
   { mcq: 1, free: 4, num: "03", name: "Veriomed",         format: "Mostly write" },
   { mcq: 0, free: 5, num: "04", name: "Harken",           format: "All freewrite" },
-  { mcq: 0, free: 1, num: "05", name: "Clinic M&A",      format: "All freewrite" },
+  { mcq: 0, free: 5, num: "05", name: "Brova",            format: "All freewrite" },
 ];
 
 function DifficultyDots({ filled }: { filled: number }) {
