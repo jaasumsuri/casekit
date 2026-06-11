@@ -32,7 +32,9 @@
       "Bash(cp webfetch-1780555408630-azng6d.bin design.tar.gz)",
       "Bash(tar -xzf design.tar.gz)",
       "Bash(xargs cat)",
-      "Bash(npx tailwindcss *)"
+      "Bash(npx tailwindcss *)",
+      "Bash(head -1236 /Users/jaasumsuri/casekit/app/globals.css)",
+      "Bash(mv /tmp/globals_trimmed.css /Users/jaasumsuri/casekit/app/globals.css)"
     ]
   }
 }
