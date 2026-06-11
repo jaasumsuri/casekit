@@ -839,6 +839,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .pc.ops::before { background: linear-gradient(180deg, #1F8A5B, var(--gold)); }
 .pc.pricing::before { background: linear-gradient(180deg, var(--gold), #E07A5F); }
 .pc.ma::before { background: linear-gradient(180deg, #8B5CF6, var(--forest)); }
+.pc.growth::before { background: linear-gradient(180deg, #E07A5F, var(--gold)); }
 
 .pc-body { flex: 1; padding: 28px 32px 26px; min-width: 0; }
 .pc-top {
