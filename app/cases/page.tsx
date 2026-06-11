@@ -25,12 +25,12 @@ const CASES = [
     fw: "Market entry", time: "~20 min", format: "Half & half",
   },
   {
-    num: "03", slug: "coffee-margins", cls: "ops",
-    industry: "Retail · Operations",
+    num: "03", slug: "veriomed", cls: "ma",
+    industry: "Healthcare · M&A",
     difficulty: "Medium", dots: 2,
-    title: "Coffee chain's shrinking margins",
-    desc: "Labor up, foot traffic flat, loyalty program leaking. Find the two levers that actually move EBITDA.",
-    fw: "Operations", time: "~30 min", format: "Mostly write",
+    title: "Veriomed: the wrong price",
+    desc: "A hospital network wants to acquire a diagnostics lab. The strategic case is real — but the CFO's synergy math is wrong. Catch the error and deliver a recommendation the board can act on.",
+    fw: "M&A", time: "~25 min", format: "Mostly write",
   },
   {
     num: "04", slug: "saas-repricing", cls: "pricing",
@@ -53,7 +53,7 @@ const CASES = [
 const STRUCTURE = [
   { mcq: 4, free: 1, num: "01", name: "NovaCast",       format: "Mostly MCQ" },
   { mcq: 1, free: 1, num: "02", name: "Fieldcast",       format: "Half & half" },
-  { mcq: 1, free: 3, num: "03", name: "Coffee chain",    format: "Mostly write" },
+  { mcq: 1, free: 4, num: "03", name: "Veriomed",         format: "Mostly write" },
   { mcq: 0, free: 1, num: "04", name: "SaaS repricing",  format: "All freewrite" },
   { mcq: 0, free: 1, num: "05", name: "Clinic M&A",      format: "All freewrite" },
 ];
