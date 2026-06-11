@@ -33,12 +33,12 @@ const CASES = [
     fw: "M&A", time: "~25 min", format: "Mostly write",
   },
   {
-    num: "04", slug: "saas-repricing", cls: "pricing",
-    industry: "Tech · Pricing",
+    num: "04", slug: "harken", cls: "ops",
+    industry: "Manufacturing · Operations",
     difficulty: "Medium", dots: 2,
-    title: "SaaS repricing for a fading freemium",
-    desc: "Conversion is dropping but ARPU is up. Restructure the pricing tiers without killing the funnel.",
-    fw: "Pricing", time: "~40 min", format: "All freewrite",
+    title: "Harken: the hidden cost",
+    desc: "A manufacturer is bleeding margin and thinks they know why. They're wrong. The real root cause is buried in a scheduling decision nobody modeled. Find it, then hold your ground.",
+    fw: "Operations", time: "~30 min", format: "All freewrite",
   },
   {
     num: "05", slug: "clinic-acquisition", cls: "ma",
@@ -54,7 +54,7 @@ const STRUCTURE = [
   { mcq: 4, free: 1, num: "01", name: "NovaCast",       format: "Mostly MCQ" },
   { mcq: 1, free: 1, num: "02", name: "Fieldcast",       format: "Half & half" },
   { mcq: 1, free: 4, num: "03", name: "Veriomed",         format: "Mostly write" },
-  { mcq: 0, free: 1, num: "04", name: "SaaS repricing",  format: "All freewrite" },
+  { mcq: 0, free: 5, num: "04", name: "Harken",           format: "All freewrite" },
   { mcq: 0, free: 1, num: "05", name: "Clinic M&A",      format: "All freewrite" },
 ];
 
