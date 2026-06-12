@@ -63,7 +63,7 @@ export default function Header() {
             { label: "Cases", href: "/cases", match: "/cases" },
             { label: "Frameworks", href: "/frameworks", match: "/frameworks" },
             { label: "Practice Mode", href: "/practice", match: "/practice" },
-            { label: "Interview", href: "/#playbook", match: null },
+            { label: "Interview", href: "/playbook", match: "/playbook" },
           ].map(({ label, href, match }) => {
             const isActive = match ? pathname.startsWith(match) : false;
             return (
@@ -154,7 +154,7 @@ export default function Header() {
             { label: "Cases", href: "/cases" },
             { label: "Frameworks", href: "/frameworks" },
             { label: "Practice Mode", href: "/practice" },
-            { label: "Interview", href: "/#playbook" },
+            { label: "Interview", href: "/playbook" },
           ].map(({ label, href }) => (
             <Link
               key={label}

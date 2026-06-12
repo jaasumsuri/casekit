@@ -1,0 +1,284 @@
+/* ============================================================
+   THINKING OUT LOUD — page-specific styles
+   Imports shared playbook module styles from sibling page,
+   adds hero visual, mode tags, ratio bar, mistakes, practice.
+   ============================================================ */
+
+/* ---- Hero visual: three-mode diagram ---- */
+.tol-hero-visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+.tol-modes-ring { position: relative; width: 220px; height: 220px; }
+.tol-modes-svg { width: 220px; height: 220px; }
+.tol-modes-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+.tol-modes-big {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 2.6rem; line-height: 1; color: #fff;
+  letter-spacing: -1px;
+}
+.tol-modes-sub {
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); margin-top: 4px;
+}
+.tol-mode-labels {
+  display: flex; gap: 6px; margin-top: 20px;
+  flex-wrap: wrap; justify-content: center;
+}
+.tol-mode-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 0.74rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.tol-mode-label .tol-ml-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+  .tol-hero-visual { align-items: flex-start; }
+}
+
+/* ---- Mode sections ---- */
+.pb-mode-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--gold); margin-bottom: 8px;
+}
+.pb-mode-tag .mt-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.pb-use-when {
+  margin-top: 20px;
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 20px;
+  background: var(--forest-light);
+  border: 1px solid rgba(28,61,46,0.12);
+  border-radius: 12px;
+}
+.pb-use-when .uw-label {
+  flex-shrink: 0;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--forest);
+  padding-top: 1px;
+}
+.pb-use-when p {
+  color: var(--forest); font-size: 0.96rem; line-height: 1.55;
+}
+.pb-step-dark .pb-use-when {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+}
+.pb-step-dark .pb-use-when .uw-label { color: var(--gold); }
+.pb-step-dark .pb-use-when p { color: rgba(255,255,255,0.78); }
+
+/* ---- Ratio section ---- */
+.tol-ratio {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tol-ratio h2 em { font-style: italic; color: var(--forest); }
+.tol-ratio-bar-wrap { margin-top: 40px; }
+.tol-ratio-bar {
+  display: flex; height: 72px;
+  border-radius: 16px; overflow: hidden; gap: 3px;
+}
+.tol-rb-seg {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+  border-radius: 4px; overflow: hidden;
+}
+.tol-rb-seg .rb-pct {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.6rem; line-height: 1;
+}
+.tol-rb-seg .rb-name {
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.tol-ratio-labels {
+  display: flex; justify-content: space-between;
+  margin-top: 14px; gap: 16px;
+}
+.tol-rl-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  flex: 1;
+}
+.tol-rl-dot {
+  flex-shrink: 0; width: 10px; height: 10px;
+  border-radius: 50%; margin-top: 5px;
+}
+.tol-rl-item p {
+  color: var(--muted); font-size: 0.94rem; line-height: 1.5;
+}
+.tol-rl-item p strong { color: var(--ink); font-weight: 600; }
+@media (max-width: 560px) {
+  .tol-ratio-labels { flex-direction: column; }
+}
+
+/* ---- Mistakes section ---- */
+.tol-mistakes {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tol-mistakes h2 em { font-style: italic; color: var(--forest); }
+.tol-mistake-cards {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.tol-mistake-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex; gap: 18px;
+  align-items: flex-start;
+  transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+}
+.tol-mistake-card:hover {
+  border-color: rgba(28,61,46,0.2);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-2px);
+}
+.tol-mc-ico {
+  flex-shrink: 0; width: 36px; height: 36px;
+  border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.tol-mc-ico svg { width: 18px; height: 18px; }
+.tol-mc-ico.warn { background: var(--gold-light); color: var(--gold); }
+.tol-mc-body h4 {
+  margin: 4px 0 8px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.05rem;
+  color: var(--ink);
+}
+.tol-mc-body p {
+  color: var(--muted); font-size: 0.96rem; line-height: 1.6;
+}
+.tol-mc-body p em { font-style: italic; color: var(--muted); }
+.tol-mc-body .tol-fix {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--forest);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+/* ---- Practice section — expandable moments ---- */
+.tol-practice-cards {
+  margin-top: 28px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.tol-moment {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.tol-moment.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.tol-moment-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.tol-moment-head:hover { background: rgba(28,61,46,0.02); }
+.tol-moment.open .tol-moment-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.tol-mom-num {
+  flex-shrink: 0; width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--forest-light); color: var(--forest);
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--t), color var(--t);
+}
+.tol-moment.open .tol-mom-num {
+  background: var(--forest); color: #fff;
+}
+.tol-mom-content { flex: 1; min-width: 0; }
+.tol-mom-content h4 {
+  margin: 4px 0 6px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 600; font-size: 1.04rem;
+  color: var(--ink); line-height: 1.35;
+}
+.tol-mom-content p.tol-mom-desc {
+  color: var(--muted); font-size: 0.94rem; line-height: 1.5;
+}
+.tol-mom-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.tol-moment.open .tol-mom-chev { transform: rotate(180deg); color: var(--forest); }
+
+.tol-mom-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.tol-moment.open .tol-mom-reveal { max-height: 800px; }
+.tol-mom-inner {
+  padding: 0 24px 24px;
+}
+.tol-mom-mode-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--gold);
+  margin-bottom: 14px;
+}
+.tol-mom-mode-tag .mm-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+}
+.tol-mom-speech {
+  position: relative;
+  background: linear-gradient(180deg, #EEF3EE 0%, #E7EEE8 100%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+}
+.tol-mom-speech blockquote {
+  margin: 0;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.5;
+  color: #243a2f;
+  text-wrap: pretty;
+}
+.tol-mom-keys {
+  margin-top: 14px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.tol-mom-keys .tmk-label {
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--forest); margin-bottom: 4px;
+}
+.tol-mom-keys ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.tol-mom-keys ul li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.92rem; color: var(--muted); line-height: 1.45;
+  padding-left: 0;
+}
+.tol-mom-keys ul li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 7px;
+}
