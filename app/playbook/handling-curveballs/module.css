@@ -1,0 +1,305 @@
+/* ============================================================
+   HANDLING CURVEBALLS — page-specific styles
+   Imports shared playbook module styles from sibling page,
+   adds curveball type cards, protocol steps, scenario
+   exercises, the one rule callout.
+   ============================================================ */
+
+/* ---- Hero visual: curveball types ---- */
+.hc-hero-visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+.hc-types-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 240px;
+}
+.hc-type-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  text-align: center;
+}
+.hc-type-chip-ico {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+}
+.hc-type-chip span:last-child {
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.3;
+}
+.hc-hero-label {
+  font-size: 0.7rem; letter-spacing: 0.13em; text-transform: uppercase;
+  font-weight: 700; color: rgba(255,255,255,0.35); margin-bottom: 20px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .hc-hero-visual { align-items: flex-start; }
+}
+
+/* ---- Curveball type sections ---- */
+.hc-type-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; margin-bottom: 8px;
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+.hc-type-tag.tag-data { background: rgba(224,122,95,0.15); color: #E07A5F; }
+.hc-type-tag.tag-pushback { background: rgba(196,147,58,0.15); color: var(--gold); }
+.hc-type-tag.tag-whatif { background: rgba(126,168,180,0.15); color: #7EA8B4; }
+.hc-type-tag.tag-silence { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+
+/* Wrong/Right response blocks */
+.hc-response-block {
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 14px;
+  border: 1px solid;
+}
+.hc-response-block.hc-wrong {
+  background: linear-gradient(180deg, #FBE7E3 0%, var(--card) 100%);
+  border-color: rgba(192,57,43,0.15);
+}
+.hc-response-block.hc-right {
+  background: linear-gradient(180deg, #E4F2EA 0%, var(--card) 100%);
+  border-color: rgba(31,138,91,0.2);
+}
+.hc-response-block.hc-wrong-dark {
+  background: rgba(224,122,95,0.08);
+  border-color: rgba(224,122,95,0.2);
+}
+.hc-response-block.hc-right-dark {
+  background: rgba(111,207,151,0.08);
+  border-color: rgba(111,207,151,0.15);
+}
+.hc-resp-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.hc-resp-label svg { width: 16px; height: 16px; }
+.hc-resp-label.wrong { color: #C0392B; }
+.hc-resp-label.right { color: #1F8A5B; }
+.hc-resp-label.wrong-dark { color: #E07A5F; }
+.hc-resp-label.right-dark { color: #6FCF97; }
+.hc-response-block p {
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+.hc-response-block em { font-style: italic; }
+.hc-key-move {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--forest);
+  font-weight: 500;
+}
+.pb-step-dark .hc-key-move {
+  border-color: rgba(255,255,255,0.1);
+  color: var(--gold);
+}
+.pb-step-dark .hc-response-block p { color: rgba(255,255,255,0.82); }
+
+/* ---- Protocol section ---- */
+.hc-protocol {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hc-protocol h2 em { font-style: italic; color: var(--forest); }
+.hc-protocol-steps {
+  margin-top: 36px;
+  display: flex; flex-direction: column; gap: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.hc-proto-step {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 28px 28px;
+  border-bottom: 1px solid var(--border);
+}
+.hc-proto-step:last-child { border-bottom: none; }
+.hc-proto-num {
+  flex-shrink: 0; width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+.hc-proto-num.n1 { background: var(--forest); color: #fff; }
+.hc-proto-num.n2 { background: var(--gold); color: #231a14; }
+.hc-proto-num.n3 { background: var(--forest-light); color: var(--forest); }
+.hc-proto-body h4 {
+  margin: 6px 0 8px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.1rem;
+  color: var(--ink); text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.hc-proto-body p {
+  color: var(--muted); font-size: 0.96rem; line-height: 1.6;
+}
+.hc-proto-body p em { font-style: italic; color: var(--forest); }
+
+/* ---- Scenario exercises ---- */
+.hc-scenarios {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.hc-scenario {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.hc-scenario.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.hc-scenario-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.hc-scenario-head:hover { background: rgba(28,61,46,0.02); }
+.hc-scenario.open .hc-scenario-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.hc-sc-num {
+  flex-shrink: 0; width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--forest-light); color: var(--forest);
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--t), color var(--t);
+}
+.hc-scenario.open .hc-sc-num {
+  background: var(--forest); color: #fff;
+}
+.hc-sc-content { flex: 1; min-width: 0; }
+.hc-sc-content h4 {
+  margin: 4px 0 6px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 600; font-size: 1.04rem;
+  color: var(--ink); line-height: 1.35;
+}
+.hc-sc-content p.hc-sc-desc {
+  color: var(--muted); font-size: 0.94rem; line-height: 1.5;
+}
+.hc-sc-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.hc-scenario.open .hc-sc-chev { transform: rotate(180deg); color: var(--forest); }
+.hc-sc-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.hc-scenario.open .hc-sc-reveal { max-height: 1200px; }
+.hc-sc-inner {
+  padding: 0 24px 24px;
+}
+.hc-sc-type-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; margin-bottom: 14px;
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+.hc-sc-type-tag.st-whatif { background: rgba(126,168,180,0.15); color: #4a8a9a; }
+.hc-sc-type-tag.st-pushback { background: var(--gold-light); color: #8a6320; }
+.hc-sc-type-tag.st-silence { background: var(--forest-light); color: var(--forest); }
+.hc-sc-speech {
+  position: relative;
+  background: linear-gradient(180deg, #EEF3EE 0%, #E7EEE8 100%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 14px;
+}
+.hc-sc-speech blockquote {
+  margin: 0;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.5;
+  color: #243a2f;
+  text-wrap: pretty;
+}
+.hc-sc-keys {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.hc-sc-keys .hc-keys-label {
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--forest); margin-bottom: 4px;
+}
+.hc-sc-keys p {
+  color: var(--muted); font-size: 0.92rem; line-height: 1.55;
+  font-weight: 500;
+}
+
+/* ---- The One Rule callout ---- */
+.hc-one-rule {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hc-one-rule h2 em { font-style: italic; color: var(--forest); }
+.hc-rule-box {
+  margin-top: 32px;
+  background: var(--forest);
+  border-radius: 20px;
+  padding: 40px 44px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hc-rule-box::before {
+  content: "";
+  position: absolute;
+  top: -80px; right: -40px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(224,122,95,0.3), transparent 60%);
+  pointer-events: none;
+}
+.hc-rule-never {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  line-height: 1.2;
+  position: relative; z-index: 1;
+}
+.hc-rule-never em { font-style: italic; color: #E07A5F; }
+.hc-rule-body {
+  margin-top: 20px;
+  color: rgba(255,255,255,0.75);
+  font-size: 1.02rem;
+  line-height: 1.65;
+  max-width: 600px;
+  position: relative; z-index: 1;
+}
+.hc-rule-closer {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.15rem;
+  line-height: 1.45;
+  color: var(--gold);
+  font-style: italic;
+  position: relative; z-index: 1;
+}

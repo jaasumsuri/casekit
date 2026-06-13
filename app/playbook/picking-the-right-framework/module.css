@@ -1,0 +1,392 @@
+/* ============================================================
+   PICKING THE RIGHT FRAMEWORK — page-specific styles
+   Imports shared playbook module styles from sibling page,
+   adds matching table, prompt exercises, mismatch cards,
+   self-test quiz.
+   ============================================================ */
+
+/* ---- Hero visual: framework matcher ---- */
+.prf-hero-visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+.prf-match-diagram {
+  display: flex; flex-direction: column; gap: 8px;
+  width: 240px;
+}
+.prf-match-row {
+  display: flex; align-items: center; gap: 0;
+  height: 36px;
+}
+.prf-match-signal {
+  flex: 0 0 100px;
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  text-align: right;
+  padding-right: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.prf-match-line {
+  flex: 0 0 40px;
+  height: 2px;
+  position: relative;
+}
+.prf-match-line::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--gold);
+  opacity: 0.4;
+}
+.prf-match-line::after {
+  content: "";
+  position: absolute;
+  right: 0; top: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.prf-match-fw {
+  flex: 1;
+  font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--gold);
+  padding-left: 12px;
+  white-space: nowrap;
+}
+.prf-hero-label {
+  font-size: 0.7rem; letter-spacing: 0.13em; text-transform: uppercase;
+  font-weight: 700; color: rgba(255,255,255,0.35); margin-bottom: 20px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .prf-hero-visual { align-items: flex-start; }
+}
+
+/* ---- Matching table ---- */
+.prf-table-wrap {
+  margin-top: 32px;
+  overflow-x: auto;
+}
+.prf-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card);
+}
+.prf-table thead th {
+  background: var(--forest);
+  color: #fff;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  text-align: left;
+}
+.prf-table thead th:first-child { border-radius: 13px 0 0 0; }
+.prf-table thead th:last-child { border-radius: 0 13px 0 0; }
+.prf-table tbody td {
+  padding: 14px 20px;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.prf-table tbody tr:last-child td { border-bottom: none; }
+.prf-table tbody td:first-child {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.92rem;
+}
+.prf-table tbody td:last-child {
+  font-weight: 600;
+  color: var(--forest);
+}
+@media (max-width: 600px) {
+  .prf-table tbody td, .prf-table thead th { padding: 12px 14px; font-size: 0.88rem; }
+}
+
+/* ---- Prompt exercise cards ---- */
+.prf-prompts {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.prf-prompt-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.prf-prompt-card.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.prf-prompt-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.prf-prompt-head:hover { background: rgba(28,61,46,0.02); }
+.prf-prompt-card.open .prf-prompt-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.prf-prompt-tag {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--gold-light);
+  color: var(--gold);
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.prf-prompt-tag .prf-pin {
+  font-size: 0.85rem;
+}
+.prf-prompt-body {
+  flex: 1; min-width: 0;
+}
+.prf-prompt-body blockquote {
+  margin: 0;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.prf-prompt-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.prf-prompt-card.open .prf-prompt-chev { transform: rotate(180deg); color: var(--forest); }
+.prf-prompt-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.prf-prompt-card.open .prf-prompt-reveal { max-height: 1200px; }
+.prf-prompt-inner {
+  padding: 0 24px 24px;
+}
+.prf-fw-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--forest);
+  margin-bottom: 14px;
+  padding: 5px 14px;
+  background: var(--forest-light);
+  border-radius: 999px;
+}
+.prf-prompt-explain {
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.65;
+  max-width: 680px;
+}
+.prf-prompt-explain em { font-style: italic; color: var(--forest); }
+.prf-prompt-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  font-style: italic;
+}
+
+/* ---- Blended case box ---- */
+.prf-blended {
+  margin-top: 40px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+}
+.prf-blended-label {
+  font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  font-weight: 700; color: var(--gold); margin-bottom: 16px;
+}
+.prf-blended blockquote {
+  margin: 0 0 20px;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  line-height: 1.45;
+  color: var(--ink);
+  font-style: italic;
+  text-wrap: pretty;
+}
+.prf-blended-tags {
+  display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.prf-blended-tags span {
+  font-size: 0.74rem; font-weight: 700;
+  padding: 5px 14px; border-radius: 999px;
+}
+.prf-blended-tags .bt-profit { background: var(--forest-light); color: var(--forest); }
+.prf-blended-tags .bt-entry { background: var(--gold-light); color: #8a6320; }
+.prf-blended-steps {
+  display: flex; flex-direction: column; gap: 12px;
+  margin-bottom: 20px;
+}
+.prf-blended-step {
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.prf-bs-num {
+  flex-shrink: 0; width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 0.95rem;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.prf-blended-step p {
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.55;
+  margin-top: 3px;
+}
+
+/* ---- Mismatch mistakes ---- */
+.prf-mismatches {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.prf-mismatch {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.prf-mismatch.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.prf-mismatch-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.prf-mismatch-head:hover { background: rgba(28,61,46,0.02); }
+.prf-mismatch.open .prf-mismatch-head {
+  background: linear-gradient(180deg, #FBE7E3 0%, var(--card) 100%);
+}
+.prf-mm-ico {
+  flex-shrink: 0; width: 36px; height: 36px;
+  border-radius: 10px;
+  background: #FBE7E3;
+  color: #C0392B;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.prf-mm-ico svg { width: 18px; height: 18px; }
+.prf-mm-body { flex: 1; min-width: 0; }
+.prf-mm-body h4 {
+  margin: 4px 0 6px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.05rem;
+  color: var(--ink); line-height: 1.35;
+}
+.prf-mm-body p.prf-mm-preview {
+  color: var(--muted); font-size: 0.92rem; line-height: 1.5;
+}
+.prf-mm-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.prf-mismatch.open .prf-mm-chev { transform: rotate(180deg); color: #C0392B; }
+.prf-mm-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.prf-mismatch.open .prf-mm-reveal { max-height: 600px; }
+.prf-mm-inner {
+  padding: 0 24px 24px;
+  padding-left: 76px;
+}
+.prf-mm-inner p {
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+.prf-mm-inner p em { font-style: italic; }
+
+/* ---- Self-test quiz ---- */
+.prf-quiz {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.prf-quiz-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.prf-quiz-card.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.prf-quiz-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.prf-quiz-head:hover { background: rgba(28,61,46,0.02); }
+.prf-quiz-card.open .prf-quiz-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.prf-quiz-q {
+  flex: 1; min-width: 0;
+}
+.prf-quiz-q blockquote {
+  margin: 0;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.prf-quiz-q blockquote em { font-style: italic; }
+.prf-quiz-q .prf-quiz-prompt { color: var(--forest); font-weight: 600; font-size: 0.92rem; margin-top: 6px; }
+.prf-quiz-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.prf-quiz-card.open .prf-quiz-chev { transform: rotate(180deg); color: var(--forest); }
+.prf-quiz-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.prf-quiz-card.open .prf-quiz-reveal { max-height: 400px; }
+.prf-quiz-inner {
+  padding: 0 24px 24px;
+}
+.prf-quiz-answer {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 700; color: var(--forest);
+  margin-bottom: 10px;
+  padding: 5px 14px;
+  background: var(--forest-light);
+  border-radius: 999px;
+}
+.prf-quiz-inner p {
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}

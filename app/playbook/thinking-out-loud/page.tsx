@@ -584,9 +584,9 @@ export default function ThinkingOutLoudPage() {
           <span className="dn-dir">← Previous</span>
           <span className="dn-title">How to Open a Case</span>
         </Link>
-        <Link className="dn-link next" href="/playbook">
+        <Link className="dn-link next" href="/playbook/picking-the-right-framework">
           <span className="dn-dir">Next up →</span>
-          <span className="dn-title">The Playbook</span>
+          <span className="dn-title">Picking the Right Framework</span>
         </Link>
       </nav>
 
