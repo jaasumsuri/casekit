@@ -1,0 +1,407 @@
+/* ============================================================
+   KNOWING WHEN TO MOVE ON — page-specific styles
+   Time management, checkpoint anchors, depth trap,
+   recovery steps, case-type time splits, pacing practice.
+   ============================================================ */
+
+/* ---- Hero visual: time allocation ring ---- */
+.kwm-hero-visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+.kwm-time-ring { position: relative; width: 220px; height: 220px; }
+.kwm-time-svg { width: 220px; height: 220px; }
+.kwm-time-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+.kwm-time-big {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 2.6rem; line-height: 1; color: #fff;
+  letter-spacing: -1px;
+}
+.kwm-time-sub {
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); margin-top: 4px;
+}
+.kwm-phase-labels {
+  display: flex; gap: 6px; margin-top: 20px;
+  flex-wrap: wrap; justify-content: center;
+}
+.kwm-phase-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: 8px;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.kwm-phase-label .kwm-pl-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+  .kwm-hero-visual { align-items: flex-start; }
+}
+
+/* ---- Time allocation table ---- */
+.kwm-table-wrap {
+  margin-top: 32px;
+  overflow-x: auto;
+}
+.kwm-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card);
+}
+.kwm-table thead th {
+  background: var(--forest);
+  color: #fff;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  text-align: left;
+}
+.kwm-table tbody td {
+  padding: 14px 20px;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.kwm-table tbody tr:last-child td { border-bottom: none; }
+.kwm-table tbody tr:last-child td {
+  font-weight: 700;
+  color: var(--forest);
+}
+.kwm-table tbody td:last-child {
+  font-weight: 600;
+  color: var(--forest);
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .kwm-table tbody td, .kwm-table thead th { padding: 12px 14px; font-size: 0.88rem; }
+}
+
+/* ---- Checkpoint cards ---- */
+.kwm-checkpoints {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.kwm-checkpoint {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  transition: transform var(--t), box-shadow var(--t), border-color var(--t);
+}
+.kwm-checkpoint:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(28,61,46,0.2);
+}
+.kwm-cp-time {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.kwm-cp-time .kwm-cp-min {
+  color: var(--gold);
+}
+.kwm-cp-time .kwm-cp-label {
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.kwm-cp-question {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  color: var(--ink);
+  font-style: italic;
+  margin-bottom: 16px;
+}
+.kwm-cp-outcomes { display: flex; flex-direction: column; gap: 10px; }
+.kwm-cp-outcome {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.kwm-cp-outcome .kwm-cp-icon {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.kwm-cp-outcome .kwm-cp-icon svg { width: 12px; height: 12px; }
+.kwm-cp-outcome .kwm-cp-icon.yes { background: rgba(31,138,91,0.12); color: #1F8A5B; }
+.kwm-cp-outcome .kwm-cp-icon.no { background: rgba(224,122,95,0.12); color: #E07A5F; }
+.kwm-cp-outcome strong { font-weight: 600; color: var(--ink); }
+.kwm-cp-outcome span { color: var(--muted); }
+@media (max-width: 640px) {
+  .kwm-checkpoints { grid-template-columns: 1fr; }
+}
+
+/* ---- Depth trap section ---- */
+.kwm-depth-example {
+  margin-top: 28px;
+  background: linear-gradient(180deg, #FBE7E3 0%, var(--card) 100%);
+  border: 1px solid rgba(192,57,43,0.15);
+  border-radius: 16px;
+  padding: 28px;
+}
+.kwm-de-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  font-weight: 700; color: #C0392B; margin-bottom: 14px;
+}
+.kwm-de-label svg { width: 16px; height: 16px; }
+.kwm-depth-example p {
+  color: var(--ink); font-size: 0.96rem; line-height: 1.6;
+}
+.kwm-depth-example p em { font-style: italic; color: var(--muted); }
+
+/* 2-before-1 rule card */
+.kwm-rule-card {
+  margin-top: 24px;
+  display: flex; gap: 18px; align-items: flex-start;
+  background: var(--forest);
+  border-radius: 14px;
+  padding: 24px 28px;
+  color: #fff;
+}
+.kwm-rule-card-ico {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--gold);
+  color: #231a14;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+.kwm-rule-card h4 {
+  margin: 2px 0 8px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.05rem;
+}
+.kwm-rule-card p {
+  color: rgba(255,255,255,0.75); font-size: 0.94rem; line-height: 1.55;
+}
+
+/* ---- Recovery steps ---- */
+.kwm-recovery-steps {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.kwm-rec-step {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.kwm-rec-step:last-child { border-bottom: none; }
+.kwm-rec-num {
+  flex-shrink: 0; width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.3rem;
+}
+.kwm-rec-num.r1 { background: #E07A5F; color: #fff; }
+.kwm-rec-num.r2 { background: var(--gold); color: #231a14; }
+.kwm-rec-num.r3 { background: var(--forest); color: #fff; }
+.kwm-rec-body h4 {
+  margin: 6px 0 8px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.1rem;
+  color: var(--ink);
+}
+.kwm-rec-body p {
+  color: var(--muted); font-size: 0.96rem; line-height: 1.6;
+}
+.kwm-rec-body p em { font-style: italic; color: var(--forest); }
+
+/* ---- Case type time splits ---- */
+.kwm-case-types {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.kwm-case-type {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.kwm-case-type.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.kwm-ct-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.kwm-ct-head:hover { background: rgba(28,61,46,0.02); }
+.kwm-case-type.open .kwm-ct-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.kwm-ct-ico {
+  flex-shrink: 0; width: 36px; height: 36px;
+  border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+}
+.kwm-ct-ico.ct-profit { background: var(--forest); color: #fff; }
+.kwm-ct-ico.ct-entry { background: var(--gold); color: #fff; }
+.kwm-ct-ico.ct-growth { background: var(--forest-light); color: var(--forest); }
+.kwm-ct-body { flex: 1; min-width: 0; }
+.kwm-ct-body h4 {
+  margin: 4px 0 6px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.05rem;
+  color: var(--ink); line-height: 1.35;
+}
+.kwm-ct-body p.kwm-ct-preview {
+  color: var(--muted); font-size: 0.92rem; line-height: 1.5;
+}
+.kwm-ct-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.kwm-case-type.open .kwm-ct-chev { transform: rotate(180deg); color: var(--forest); }
+.kwm-ct-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.kwm-case-type.open .kwm-ct-reveal { max-height: 800px; }
+.kwm-ct-inner {
+  padding: 0 24px 24px;
+  padding-left: 76px;
+}
+.kwm-ct-splits {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 14px;
+}
+.kwm-ct-split {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.92rem;
+}
+.kwm-ct-split-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--forest);
+  min-width: 20px;
+}
+.kwm-ct-split-label { color: var(--ink); font-weight: 500; flex: 1; min-width: 0; }
+.kwm-ct-split-time {
+  font-weight: 700; color: var(--forest);
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+.kwm-ct-sink {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #C0392B;
+  font-weight: 500;
+}
+
+/* ---- Pacing practice checkpoints ---- */
+.kwm-pacing-cards {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.kwm-pacing-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.kwm-pacing-card.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.kwm-pc-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.kwm-pc-head:hover { background: rgba(28,61,46,0.02); }
+.kwm-pacing-card.open .kwm-pc-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.kwm-pc-time {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: var(--forest);
+  color: #fff;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+.kwm-pc-time svg { width: 15px; height: 15px; color: var(--gold); }
+.kwm-pc-content { flex: 1; min-width: 0; }
+.kwm-pc-content h4 {
+  margin: 4px 0 6px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 600; font-size: 1.04rem;
+  color: var(--ink); line-height: 1.35;
+}
+.kwm-pc-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.kwm-pacing-card.open .kwm-pc-chev { transform: rotate(180deg); color: var(--forest); }
+.kwm-pc-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.kwm-pacing-card.open .kwm-pc-reveal { max-height: 600px; }
+.kwm-pc-inner {
+  padding: 0 24px 24px;
+}
+.kwm-pc-inner p {
+  color: var(--muted); font-size: 0.94rem; line-height: 1.6;
+}
+.kwm-pc-inner p em { font-style: italic; color: var(--forest); }
+.kwm-pc-warning {
+  margin-top: 10px;
+  padding: 12px 16px;
+  background: rgba(224,122,95,0.08);
+  border: 1px solid rgba(224,122,95,0.15);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #C0392B;
+  font-weight: 500;
+  line-height: 1.5;
+}

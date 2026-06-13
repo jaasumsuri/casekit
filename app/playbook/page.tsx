@@ -58,7 +58,7 @@ const MODULES = [
     topics: ["Interviewer signals", "Diminishing returns", "Clean transitions", "Time management"],
     time: "7 min",
     exercise: "Signal-reading exercise",
-    href: "#",
+    href: "/playbook/knowing-when-to-move-on",
     variant: "v-5",
     visual: "mod5",
   },
@@ -70,7 +70,7 @@ const MODULES = [
     topics: ["Recommendation structure", "Risk framing", "Next steps", "Confidence calibration"],
     time: "9 min",
     exercise: "Synthesis builder",
-    href: "#",
+    href: "/playbook/delivering-the-synthesis",
     variant: "v-6",
     visual: "mod6",
   },
@@ -82,7 +82,7 @@ const MODULES = [
     topics: ["Rounding strategy", "Narrating calculations", "Sanity checks", "Common traps"],
     time: "9 min",
     exercise: "Speed drills",
-    href: "#",
+    href: "/playbook/doing-the-math",
     variant: "v-7",
     visual: "mod7",
   },
@@ -91,11 +91,11 @@ const MODULES = [
 const ARC_NODES = [
   { label: "Opening the case", sub: "The first 90 seconds", href: "/playbook/how-to-open-a-case" },
   { label: "Thinking out loud", sub: "Three narration modes", href: "/playbook/thinking-out-loud" },
-  { label: "Picking the right framework", sub: "Matching structure to problem", href: "#" },
-  { label: "Handling curveballs", sub: "Staying composed under pressure", href: "#" },
-  { label: "Knowing when to move on", sub: "Reading the signals", href: "#" },
-  { label: "Delivering the synthesis", sub: "Closing with conviction", href: "#" },
-  { label: "Doing the math", sub: "Speed without panic", href: "#" },
+  { label: "Picking the right framework", sub: "Matching structure to problem", href: "/playbook/picking-the-right-framework" },
+  { label: "Handling curveballs", sub: "Staying composed under pressure", href: "/playbook/handling-curveballs" },
+  { label: "Knowing when to move on", sub: "Reading the signals", href: "/playbook/knowing-when-to-move-on" },
+  { label: "Delivering the synthesis", sub: "Closing with conviction", href: "/playbook/delivering-the-synthesis" },
+  { label: "Doing the math", sub: "Speed without panic", href: "/playbook/doing-the-math" },
 ];
 
 function ClockIcon() {

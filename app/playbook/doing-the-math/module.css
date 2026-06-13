@@ -1,0 +1,388 @@
+/* ============================================================
+   DOING THE MATH WITHOUT FREEZING — page-specific styles
+   Techniques, freeze situations, do/don't, practice exercises,
+   percentage-fraction table, core principle callout.
+   ============================================================ */
+
+/* ---- Hero visual: math symbols ---- */
+.dm-hero-visual { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+.dm-hero-label {
+  font-size: 0.7rem; letter-spacing: 0.13em; text-transform: uppercase;
+  font-weight: 700; color: rgba(255,255,255,0.35); margin-bottom: 16px;
+  text-align: center;
+}
+.dm-math-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 220px;
+}
+.dm-math-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  text-align: center;
+}
+.dm-math-chip-val {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.dm-math-chip span:last-child {
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.3;
+}
+
+@media (max-width: 860px) {
+  .dm-hero-visual { align-items: flex-start; }
+}
+
+/* ---- Core principle callout ---- */
+.dm-principle {
+  margin-top: 28px;
+  background: var(--forest);
+  border-radius: 20px;
+  padding: 36px 40px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.dm-principle::before {
+  content: "";
+  position: absolute;
+  top: -60px; right: -30px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,147,58,0.3), transparent 60%);
+  pointer-events: none;
+}
+.dm-principle p {
+  position: relative; z-index: 1;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+  line-height: 1.3;
+}
+.dm-principle p em { font-style: italic; color: var(--gold); }
+.dm-principle .dm-pr-sub {
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.7);
+  margin-top: 16px;
+  max-width: 600px;
+}
+
+/* ---- Technique cards ---- */
+.dm-techniques {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.dm-technique {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.dm-technique.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.dm-tech-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.dm-tech-head:hover { background: rgba(28,61,46,0.02); }
+.dm-technique.open .dm-tech-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.dm-tech-num {
+  flex-shrink: 0; width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--forest); color: #fff;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--t), color var(--t);
+}
+.dm-technique.open .dm-tech-num {
+  background: var(--gold); color: #231a14;
+}
+.dm-tech-content { flex: 1; min-width: 0; }
+.dm-tech-content h4 {
+  margin: 4px 0 6px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.05rem;
+  color: var(--ink); line-height: 1.35;
+}
+.dm-tech-content p.dm-tech-preview {
+  color: var(--muted); font-size: 0.92rem; line-height: 1.5;
+}
+.dm-tech-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.dm-technique.open .dm-tech-chev { transform: rotate(180deg); color: var(--forest); }
+.dm-tech-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.dm-technique.open .dm-tech-reveal { max-height: 1200px; }
+.dm-tech-inner {
+  padding: 0 24px 24px;
+}
+.dm-tech-inner p {
+  color: var(--muted); font-size: 0.96rem; line-height: 1.65;
+}
+.dm-tech-inner p em { font-style: italic; color: var(--forest); }
+.dm-tech-inner p strong { color: var(--ink); }
+
+/* Math example blocks */
+.dm-math-ex {
+  margin: 14px 0;
+  padding: 16px 20px;
+  background: var(--forest-light);
+  border: 1px solid rgba(28,61,46,0.12);
+  border-radius: 12px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--forest);
+}
+.dm-math-ex .dm-arr { color: var(--gold); font-weight: 700; }
+.dm-math-ex .dm-result { color: var(--forest); font-weight: 700; }
+
+/* Percentage fraction table */
+.dm-frac-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--card);
+  margin: 14px 0;
+}
+.dm-frac-table thead th {
+  background: var(--forest);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  text-align: left;
+}
+.dm-frac-table tbody td {
+  padding: 10px 16px;
+  font-size: 0.92rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+.dm-frac-table tbody tr:last-child td { border-bottom: none; }
+.dm-frac-table tbody td:first-child { font-weight: 700; color: var(--forest); }
+.dm-frac-table tbody td:nth-child(2) { font-weight: 600; color: var(--gold); }
+
+/* ---- Freeze situations ---- */
+.dm-freezes {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.dm-freeze {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.dm-freeze.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.dm-frz-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.dm-frz-head:hover { background: rgba(28,61,46,0.02); }
+.dm-freeze.open .dm-frz-head {
+  background: linear-gradient(180deg, #FBE7E3 0%, var(--card) 100%);
+}
+.dm-frz-ico {
+  flex-shrink: 0; width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(224,122,95,0.12);
+  color: #E07A5F;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.dm-frz-body { flex: 1; min-width: 0; }
+.dm-frz-body h4 {
+  margin: 4px 0 6px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 700; font-size: 1.05rem;
+  color: var(--ink); line-height: 1.35;
+}
+.dm-frz-body p.dm-frz-preview {
+  color: var(--muted); font-size: 0.92rem; line-height: 1.5;
+}
+.dm-frz-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.dm-freeze.open .dm-frz-chev { transform: rotate(180deg); color: #E07A5F; }
+.dm-frz-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.dm-freeze.open .dm-frz-reveal { max-height: 1000px; }
+.dm-frz-inner {
+  padding: 0 24px 24px;
+}
+.dm-frz-inner p {
+  color: var(--muted); font-size: 0.96rem; line-height: 1.65;
+}
+.dm-frz-inner p em { font-style: italic; color: var(--forest); }
+.dm-frz-wrong {
+  margin-top: 10px;
+  padding: 12px 16px;
+  background: rgba(224,122,95,0.08);
+  border: 1px solid rgba(224,122,95,0.15);
+  border-radius: 10px;
+  font-size: 0.88rem; color: #C0392B;
+  font-weight: 500; line-height: 1.5;
+}
+.dm-frz-right {
+  margin-top: 10px;
+  padding: 12px 16px;
+  background: rgba(31,138,91,0.06);
+  border: 1px solid rgba(31,138,91,0.15);
+  border-radius: 10px;
+  font-size: 0.88rem; color: #1a6b43;
+  font-weight: 500; line-height: 1.5;
+}
+
+/* ---- Do / Don't table ---- */
+.dm-dodont {
+  margin-top: 32px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card);
+}
+.dm-dodont thead th {
+  font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 14px 20px; text-align: left;
+}
+.dm-dodont thead th:first-child { background: #1F8A5B; color: #fff; }
+.dm-dodont thead th:last-child { background: #C0392B; color: #fff; }
+.dm-dodont tbody td {
+  padding: 12px 20px;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  width: 50%;
+}
+.dm-dodont tbody tr:last-child td { border-bottom: none; }
+.dm-dodont tbody td:first-child { color: #1a6b43; }
+.dm-dodont tbody td:last-child { color: #8d2c20; }
+
+/* ---- Practice exercises ---- */
+.dm-exercises {
+  margin-top: 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.dm-exercise {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.dm-exercise.open {
+  border-color: rgba(28,61,46,0.22);
+  box-shadow: var(--shadow-soft);
+}
+.dm-ex-head {
+  padding: 22px 24px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.dm-ex-head:hover { background: rgba(28,61,46,0.02); }
+.dm-exercise.open .dm-ex-head {
+  background: linear-gradient(180deg, var(--forest-light) 0%, var(--card) 100%);
+}
+.dm-ex-num {
+  flex-shrink: 0; width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--gold-light); color: var(--gold);
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem; font-weight: 400;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--t), color var(--t);
+}
+.dm-exercise.open .dm-ex-num {
+  background: var(--gold); color: #231a14;
+}
+.dm-ex-content { flex: 1; min-width: 0; }
+.dm-ex-content h4 {
+  margin: 4px 0 0;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-weight: 600; font-size: 1.04rem;
+  color: var(--ink); line-height: 1.35;
+}
+.dm-ex-chev {
+  flex-shrink: 0; margin-top: 6px;
+  width: 20px; height: 20px; color: var(--muted);
+  transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), color var(--t);
+}
+.dm-exercise.open .dm-ex-chev { transform: rotate(180deg); color: var(--gold); }
+.dm-ex-reveal {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.2,0.7,0.2,1);
+}
+.dm-exercise.open .dm-ex-reveal { max-height: 1000px; }
+.dm-ex-inner {
+  padding: 0 24px 24px;
+}
+.dm-ex-inner p {
+  color: var(--muted); font-size: 0.94rem; line-height: 1.6;
+}
+.dm-ex-inner p strong { color: var(--ink); }
+.dm-ex-inner p em { font-style: italic; color: var(--forest); }
+
+/* ---- Bottom callout ---- */
+.dm-real-test {
+  margin-top: 32px;
+  padding: 28px 32px;
+  background: var(--gold-light);
+  border: 1px dashed rgba(196,147,58,0.35);
+  border-radius: 16px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.dm-rt-ico {
+  flex-shrink: 0;
+  font-size: 1.4rem;
+  margin-top: 2px;
+}
+.dm-real-test p {
+  color: #6f5320; font-size: 0.98rem; line-height: 1.6;
+}
+.dm-real-test p strong { color: var(--ink); }
+.dm-real-test p em { font-style: italic; }

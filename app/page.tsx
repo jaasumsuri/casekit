@@ -66,8 +66,9 @@ const PLAYBOOK = [
   { n: "02", title: "Thinking Out Loud",            desc: "Narrate your process so the interviewer can follow.",     tag: "Communication",       slug: "thinking-out-loud"           },
   { n: "03", title: "Picking the Right Framework",  desc: "Read the prompt, match the tool.",                       tag: "Framework selection", slug: "picking-the-right-framework" },
   { n: "04", title: "Handling Curveballs",          desc: "Stay structured when the interviewer pushes back.",      tag: "Adaptability",        slug: "handling-curveballs"         },
-  { n: "05", title: "Time Management",              desc: "Pace a 25-minute case without running out of road.",     tag: "Pacing",              slug: "time-management"             },
+  { n: "05", title: "Knowing When to Move On",       desc: "Pace a 25-minute case without running out of road.",     tag: "Pacing",              slug: "knowing-when-to-move-on"     },
   { n: "06", title: "Delivering the Synthesis",     desc: "Close with a recommendation that actually lands.",       tag: "Closing strong",      slug: "delivering-the-synthesis"    },
+  { n: "07", title: "Doing the Math",               desc: "Round smart, narrate your logic, never freeze.",         tag: "Quantitative",        slug: "doing-the-math"              },
 ];
 
 const HOWTO_STEPS = [
@@ -425,7 +426,7 @@ export default function HomePage() {
               <em style={{ fontStyle: "italic", color: "var(--forest)" }}>The Playbook</em> teaches you how to perform.
             </h2>
             <p style={{ color: "var(--muted)", fontSize: "1.05rem", lineHeight: 1.55, maxWidth: 460, fontFamily: "var(--font-body)" }}>
-              Six performance modules that separate candidates who know the material from candidates who get the offer. Structure, delivery, timing, curveballs — all of it.
+              Seven performance modules that separate candidates who know the material from candidates who get the offer. Structure, delivery, timing, curveballs — all of it.
             </p>
           </div>
 

@@ -519,9 +519,9 @@ export default function HandlingCurveballsPage() {
           <span className="dn-dir">&larr; Previous</span>
           <span className="dn-title">Picking the Right Framework</span>
         </Link>
-        <Link className="dn-link next" href="/playbook">
+        <Link className="dn-link next" href="/playbook/knowing-when-to-move-on">
           <span className="dn-dir">Next up &rarr;</span>
-          <span className="dn-title">The Playbook</span>
+          <span className="dn-title">Knowing When to Move On</span>
         </Link>
       </nav>
 
