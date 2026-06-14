@@ -503,7 +503,7 @@ export default function HomePage() {
             <div style={{ position: "relative", zIndex: 2 }}>
               <button
                 type="button"
-                onClick={() => signIn("google")}
+                onClick={() => signIn("google", { callbackUrl: "/" })}
                 className="cta-form-btn"
                 style={{ background: "var(--gold)", color: "#fff", padding: "14px 28px", borderRadius: 999, fontWeight: 500, fontSize: "0.95rem", fontFamily: "var(--font-body)", display: "inline-flex", alignItems: "center", gap: 10, transition: "background var(--t), transform var(--t)", cursor: "pointer", border: "none" }}
                 onMouseEnter={e => { const el = e.currentTarget; el.style.background = "#b1832e"; el.style.transform = "translateY(-1px)"; }}
