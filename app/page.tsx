@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import CaseCard from "@/components/CaseCard";
 
 /* ─────────────────────── data ─────────────────────── */
@@ -101,7 +102,6 @@ const CheckIcon = () => (
 
 /* ─────────────────────── component ─────────────────────── */
 export default function HomePage() {
-  const [submitted, setSubmitted] = useState(false);
   const spotlightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -495,37 +495,29 @@ export default function HomePage() {
                 <em style={{ fontStyle: "italic", color: "var(--gold)" }}>practice</em>, not just read frameworks?
               </h2>
               <p style={{ marginTop: 16, color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", maxWidth: 420, lineHeight: 1.55, fontFamily: "var(--font-body)" }}>
-                Drop your email. We'll send you an early access invite the second cases unlock — and zero spam in the meantime.
+                Sign in to start practicing with AI-powered cases — it only takes a second.
               </p>
             </div>
 
-            {/* Form */}
-            <form
-              style={{ position: "relative", zIndex: 2 }}
-              onSubmit={e => { e.preventDefault(); setSubmitted(true); }}
-            >
-              <div
-                className="cta-form-col"
-                style={{ display: "flex", gap: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", padding: 8, borderRadius: 999, backdropFilter: "blur(8px)" }}
+            {/* Sign in */}
+            <div style={{ position: "relative", zIndex: 2 }}>
+              <button
+                type="button"
+                onClick={() => signIn("google")}
+                className="cta-form-btn"
+                style={{ background: "var(--gold)", color: "#fff", padding: "14px 28px", borderRadius: 999, fontWeight: 500, fontSize: "0.95rem", fontFamily: "var(--font-body)", display: "inline-flex", alignItems: "center", gap: 10, transition: "background var(--t), transform var(--t)", cursor: "pointer", border: "none" }}
+                onMouseEnter={e => { const el = e.currentTarget; el.style.background = "#b1832e"; el.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { const el = e.currentTarget; el.style.background = "var(--gold)"; el.style.transform = ""; }}
               >
-                <input
-                  type="email"
-                  placeholder="you@university.edu"
-                  required
-                  className="cta-input"
-                  style={{ flex: 1, background: "transparent", border: "none", color: "#fff", fontFamily: "var(--font-body)", fontSize: "0.98rem", padding: "10px 16px" }}
-                />
-                <button
-                  type="submit"
-                  className="cta-form-btn"
-                  style={{ background: "var(--gold)", color: "#fff", padding: "12px 22px", borderRadius: 999, fontWeight: 500, fontSize: "0.95rem", fontFamily: "var(--font-body)", display: "inline-flex", alignItems: "center", gap: 8, transition: "background var(--t), transform var(--t)", cursor: "pointer", border: "none" }}
-                  onMouseEnter={e => { const el = e.currentTarget; el.style.background = "#b1832e"; el.style.transform = "translateY(-1px)"; }}
-                  onMouseLeave={e => { const el = e.currentTarget; el.style.background = "var(--gold)"; el.style.transform = ""; }}
-                >
-                  {submitted ? "✓  You're in" : <><span>Get access</span><ArrowRight /></>}
-                </button>
-              </div>
-            </form>
+                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                <span>Sign in with Google →</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
