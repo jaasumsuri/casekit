@@ -762,19 +762,19 @@ export default function BasicsPage() {
                 fontSize: "clamp(1.9rem, 3.5vw, 2.6rem)", fontWeight: 400,
                 color: "#fff", lineHeight: 1.15, letterSpacing: "-0.015em", margin: 0,
               }}>
-                Now stop reading and <em style={{ fontStyle: "italic", color: "var(--gold)" }}>do one.</em>
+                Now learn how to <em style={{ fontStyle: "italic", color: "var(--gold)" }}>structure.</em>
               </h2>
               <p style={{ marginTop: 14, color: "rgba(255,255,255,0.72)", fontSize: "1.02rem", lineHeight: 1.6 }}>
-                You understand the format — the only way to get good is reps. Start a guided case with an AI interviewer who walks you through every phase.
+                You know what a case interview is — next, learn the frameworks that give your answers structure. Profitability, market entry, M&A, and more.
               </p>
             </div>
-            <Link href="/#practice" style={{
+            <Link href="/frameworks" style={{
               position: "relative", zIndex: 1, display: "inline-flex", alignItems: "center",
               gap: 10, background: "var(--gold)", color: "#fff", fontWeight: 600,
               fontSize: "1rem", padding: "14px 28px", borderRadius: 999,
               whiteSpace: "nowrap", transition: "opacity 0.2s", flexShrink: 0,
             }}>
-              Try your first case
+              Explore frameworks
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
               </svg>

@@ -145,14 +145,21 @@ export default function HomePage() {
             </p>
 
             <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <Link
-                href="#get-access"
-                style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "var(--forest)", color: "#fff", fontFamily: "var(--font-body)", transition: "transform var(--t), box-shadow var(--t), background var(--t)" }}
-                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "var(--shadow-hover)"; el.style.background = "#244c39"; }}
-                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform = ""; el.style.boxShadow = ""; el.style.background = "var(--forest)"; }}
+              <button
+                type="button"
+                onClick={() => signIn("google", { callbackUrl: "/" })}
+                style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "var(--forest)", color: "#fff", fontFamily: "var(--font-body)", transition: "transform var(--t), box-shadow var(--t), background var(--t)", cursor: "pointer", border: "none" }}
+                onMouseEnter={e => { const el = e.currentTarget; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "var(--shadow-hover)"; el.style.background = "#244c39"; }}
+                onMouseLeave={e => { const el = e.currentTarget; el.style.transform = ""; el.style.boxShadow = ""; el.style.background = "var(--forest)"; }}
               >
-                Get early access <ArrowRight />
-              </Link>
+                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Sign up with Google
+              </button>
               <Link
                 href="#cases"
                 style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "transparent", color: "var(--forest)", border: "1px solid var(--border)", fontFamily: "var(--font-body)", transition: "border-color var(--t), background var(--t)" }}
@@ -179,7 +186,7 @@ export default function HomePage() {
                 ))}
               </div>
               <span style={{ fontSize: "0.92rem", color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-                <b style={{ color: "var(--ink)", fontWeight: 600 }}>500+ students</b> on the waitlist
+                <b style={{ color: "var(--ink)", fontWeight: 600 }}>Built for undergrads.</b> No coach required.
               </span>
             </div>
           </div>
@@ -463,7 +470,7 @@ export default function HomePage() {
               <em style={{ fontStyle: "italic", color: "var(--forest)" }}>Zero fluff.</em>
             </h2>
             <Link
-              href="/learn"
+              href="/cases"
               className="browse-link"
               style={{ color: "var(--forest)", fontWeight: 500, fontSize: "0.95rem", display: "inline-flex", alignItems: "center", gap: 6, paddingBottom: 6, borderBottom: "1px solid var(--border)", fontFamily: "var(--font-body)" }}
             >

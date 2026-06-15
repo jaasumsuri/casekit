@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -76,10 +77,29 @@ export default function Header() {
                   color: isActive ? "var(--forest)" : "var(--ink)",
                   opacity: isActive ? 1 : 0.78,
                   fontWeight: isActive ? 500 : 400,
-                  transition: "opacity 0.2s ease",
+                  padding: "7px 14px",
+                  borderRadius: "var(--r-pill)",
+                  background: isActive ? "var(--forest-light)" : "transparent",
+                  transition: "opacity 0.2s ease, background 0.2s ease, transform 0.2s ease",
                 }}
-                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.opacity = "1"; }}
-                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.opacity = "0.78"; }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget;
+                  if (!isActive) {
+                    el.style.opacity = "1";
+                    el.style.background = "rgba(28,61,46,0.07)";
+                  }
+                  el.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget;
+                  if (!isActive) {
+                    el.style.opacity = "0.78";
+                    el.style.background = "transparent";
+                  } else {
+                    el.style.background = "var(--forest-light)";
+                  }
+                  el.style.transform = "";
+                }}
               >
                 {label}
               </Link>
@@ -89,8 +109,9 @@ export default function Header() {
 
         {/* Column 3: CTA (desktop) + hamburger (mobile) */}
         <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-          <Link
-            href="#get-access"
+          <button
+            type="button"
+            onClick={() => signIn("google", { callbackUrl: "/" })}
             className="hidden md:inline-flex"
             style={{
               alignItems: "center",
@@ -102,26 +123,28 @@ export default function Header() {
               fontSize: "0.92rem",
               fontWeight: 500,
               fontFamily: "var(--font-body)",
+              cursor: "pointer",
+              border: "none",
               transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLElement;
+              const el = e.currentTarget;
               el.style.transform = "translateY(-1px)";
               el.style.boxShadow = "var(--shadow-soft)";
               el.style.background = "#244c39";
             }}
             onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLElement;
+              const el = e.currentTarget;
               el.style.transform = "";
               el.style.boxShadow = "";
               el.style.background = "var(--forest)";
             }}
           >
-            Get access
+            Sign up
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
             </svg>
-          </Link>
+          </button>
 
           <button
             className="md:hidden flex flex-col gap-[5px] p-2"
@@ -165,19 +188,19 @@ export default function Header() {
               {label}
             </Link>
           ))}
-          <Link
-            href="#get-access"
+          <button
+            type="button"
+            onClick={() => { setMenuOpen(false); signIn("google", { callbackUrl: "/" }); }}
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               background: "var(--forest)", color: "#fff",
               padding: "10px 18px", borderRadius: "var(--r-pill)",
               fontSize: "0.92rem", fontWeight: 500, fontFamily: "var(--font-body)",
-              width: "fit-content",
+              width: "fit-content", cursor: "pointer", border: "none",
             }}
-            onClick={() => setMenuOpen(false)}
           >
-            Get access
-          </Link>
+            Sign up
+          </button>
         </div>
       )}
     </header>
