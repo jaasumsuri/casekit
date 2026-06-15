@@ -418,7 +418,7 @@ export default function DoingTheMathPage() {
         <div className="container">
           <div className="pb-mod-cta">
             <h2>Test your math skills <em>in a real case.</em></h2>
-            <p>The best way to get comfortable with case math is to do it live &mdash; with time pressure, new data, and an AI interviewer watching your process.</p>
+            <p>The best way to get comfortable with case math is to do it live &mdash; with time pressure, new data, and structured feedback on your process.</p>
             <Link className="btn-gold" href="/cases">Try a case <ArrowIcon /></Link>
           </div>
         </div>

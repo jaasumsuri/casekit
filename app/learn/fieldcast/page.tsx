@@ -293,7 +293,7 @@ export default function FieldcastPage() {
                 That&apos;s two cases down. <em style={{ fontStyle: "italic", color: "var(--gold)" }}>Three to go.</em>
               </h2>
               <p style={{ marginTop: 22, color: "rgba(255,255,255,0.66)", fontSize: "1.05rem", lineHeight: 1.55, maxWidth: 520, fontFamily: "var(--font-body)" }}>
-                Fieldcast tested whether you can hold a recommendation under pushback. The remaining cases ramp the difficulty &mdash; messier data, sharper trade-offs, and a live AI interviewer pressing on every answer.
+                Fieldcast tested whether you can hold a recommendation under pushback. The remaining cases ramp the difficulty &mdash; messier data, sharper trade-offs, and tougher questions pressing on every answer.
               </p>
             </div>
             <Link href="/cases" style={{

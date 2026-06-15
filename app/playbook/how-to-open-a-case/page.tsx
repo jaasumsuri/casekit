@@ -648,7 +648,7 @@ export default function HowToOpenACasePage() {
         <div className="container">
           <div className="pb-mod-cta">
             <h2>Ready to open a case <em>for real?</em></h2>
-            <p>Now that you know the sequence, try it with an AI interviewer who plays the full case — prompt, pushback, and all.</p>
+            <p>Now that you know the sequence, try it in a full guided case — prompt, pushback, and all.</p>
             <Link className="btn-gold" href="/cases">
               Try your first case
               <ArrowIcon />

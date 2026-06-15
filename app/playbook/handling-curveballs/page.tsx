@@ -530,7 +530,7 @@ export default function HandlingCurveballsPage() {
         <div className="container">
           <div className="pb-mod-cta">
             <h2>Test your resilience <em>under pressure.</em></h2>
-            <p>The best way to build curveball skills is to face them live. Try a full case &mdash; the AI interviewer will push back, introduce new data, and test your composure.</p>
+            <p>The best way to build curveball skills is to face them live. Try a full case &mdash; each one will push back, introduce new data, and test your composure.</p>
             <Link className="btn-gold" href="/cases">
               Try a case
               <ArrowIcon />

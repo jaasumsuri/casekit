@@ -581,11 +581,11 @@ export default function MAInvestmentPage() {
                 <em style={{ fontStyle: "italic", color: "var(--gold)" }}>practice?</em>
               </h2>
               <p style={{ marginTop: 14, color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", maxWidth: 440, lineHeight: 1.55, fontFamily: "var(--font-body)" }}>
-                Reading the framework gets you halfway. The other half is reps — guided cases with an AI interviewer who pushes back.
+                Reading the framework gets you halfway. The other half is reps — practice cases that build the muscle memory interviews demand.
               </p>
             </div>
             <Link
-              href="/practice"
+              href="/cases"
               style={{
                 position: "relative", zIndex: 2, flexShrink: 0,
                 display: "inline-flex", alignItems: "center", gap: 10,

@@ -157,6 +157,19 @@ export default function CasesPage() {
               </div>
             </div>
 
+            <div style={{ marginTop: 24, padding: "22px 26px", background: "var(--card)", border: "1px solid var(--border)", borderRadius: 16 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                <span className="sc-why-icon forest" style={{ flexShrink: 0 }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+                </span>
+                <div className="sc-why-text">
+                  <div className="why-label">How freewrite works</div>
+                  <p>Freewrite sections are <strong>just for you to structure your thoughts</strong> — there&apos;s no grading, no right or wrong. Write out your thinking the way you would in a real interview: break the problem down, lay out your logic, and commit to a direction.</p>
+                  <p style={{ marginTop: 10 }}>Once you submit, you&apos;ll see <strong>your answer side by side with the recommended answer</strong> so you can compare your structure, reasoning, and depth against what a strong response looks like. Follow the recommended flow each case gives you — it mirrors how top candidates actually walk through these problems.</p>
+                </div>
+              </div>
+            </div>
+
             <div className="vocab-tip">
               <span className="vt-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
