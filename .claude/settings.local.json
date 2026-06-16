@@ -40,7 +40,9 @@
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "Bash(kill 90390)",
       "Bash(node -e \"console.log\\(require\\('next-auth/package.json'\\).version\\)\")",
-      "Bash(xxd /Users/jaasumsuri/casekit/lib/auth.ts)"
+      "Bash(xxd /Users/jaasumsuri/casekit/lib/auth.ts)",
+      "Bash(cp /Users/jaasumsuri/Downloads/practice-cases.json /Users/jaasumsuri/casekit/data/practice-cases.json)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); slugs=[c['slug'] for c in d['cases']]; print\\(f'Count: {len\\(slugs\\)}'\\); [print\\(s\\) for s in slugs]\")"
     ]
   }
 }

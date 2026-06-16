@@ -61,11 +61,11 @@ export default function Header() {
           style={{ gap: 32, alignItems: "center", justifyContent: "center" }}
         >
           {[
-            { label: "Cases", href: "/cases", match: "/cases" },
             { label: "Frameworks", href: "/frameworks", match: "/frameworks" },
-            { label: "Practice Mode", href: "/practice", match: "/practice" },
+            { label: "Guided Cases", href: "/cases", match: "/cases" },
+            { label: "Practice Mode", href: "/practice", match: "/practice", fancy: true },
             { label: "Interview", href: "/playbook", match: "/playbook" },
-          ].map(({ label, href, match }) => {
+          ].map(({ label, href, match, fancy }) => {
             const isActive = match ? pathname.startsWith(match) : false;
             return (
               <Link
@@ -74,17 +74,26 @@ export default function Header() {
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "0.94rem",
-                  color: isActive ? "var(--forest)" : "var(--ink)",
-                  opacity: isActive ? 1 : 0.78,
-                  fontWeight: isActive ? 500 : 400,
+                  color: fancy
+                    ? (isActive ? "var(--gold)" : "var(--gold)")
+                    : (isActive ? "var(--forest)" : "var(--ink)"),
+                  opacity: isActive ? 1 : fancy ? 0.9 : 0.78,
+                  fontWeight: fancy ? 500 : (isActive ? 500 : 400),
                   padding: "7px 14px",
                   borderRadius: "var(--r-pill)",
-                  background: isActive ? "var(--forest-light)" : "transparent",
-                  transition: "opacity 0.2s ease, background 0.2s ease, transform 0.2s ease",
+                  background: fancy
+                    ? (isActive ? "var(--gold-light)" : "transparent")
+                    : (isActive ? "var(--forest-light)" : "transparent"),
+                  border: fancy ? "1px solid rgba(196,147,58,0.3)" : "1px solid transparent",
+                  transition: "opacity 0.2s ease, background 0.2s ease, transform 0.2s ease, border-color 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget;
-                  if (!isActive) {
+                  if (fancy) {
+                    el.style.opacity = "1";
+                    el.style.background = "var(--gold-light)";
+                    el.style.borderColor = "rgba(196,147,58,0.5)";
+                  } else if (!isActive) {
                     el.style.opacity = "1";
                     el.style.background = "rgba(28,61,46,0.07)";
                   }
@@ -92,7 +101,11 @@ export default function Header() {
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget;
-                  if (!isActive) {
+                  if (fancy) {
+                    el.style.opacity = isActive ? "1" : "0.9";
+                    el.style.background = isActive ? "var(--gold-light)" : "transparent";
+                    el.style.borderColor = "rgba(196,147,58,0.3)";
+                  } else if (!isActive) {
                     el.style.opacity = "0.78";
                     el.style.background = "transparent";
                   } else {
@@ -101,7 +114,15 @@ export default function Header() {
                   el.style.transform = "";
                 }}
               >
-                {label}
+                {fancy && (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--gold)" }}>
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    {label}
+                  </span>
+                )}
+                {!fancy && label}
               </Link>
             );
           })}
@@ -174,8 +195,8 @@ export default function Header() {
           }}
         >
           {[
-            { label: "Cases", href: "/cases" },
             { label: "Frameworks", href: "/frameworks" },
+            { label: "Guided Cases", href: "/cases" },
             { label: "Practice Mode", href: "/practice" },
             { label: "Interview", href: "/playbook" },
           ].map(({ label, href }) => (
