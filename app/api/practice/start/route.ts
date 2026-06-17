@@ -1,8 +1,16 @@
 import { NextRequest } from "next/server";
-import { supabaseServer } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 import cases from "@/data/practice-cases.json";
 
 const SESSION_CAP = 5;
+
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { global: { fetch: (url, init) => fetch(url, { ...init, cache: "no-store" }) } }
+  );
+}
 
 export async function POST(request: NextRequest) {
   const { caseSlug, userId } = (await request.json()) as {
@@ -14,13 +22,14 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "missing_fields" }, { status: 400 });
   }
 
+  const supabase = getSupabase();
+
   try {
-    const { count, error: countError } = await supabaseServer
+    const { count, error: countError } = await supabase
       .from("practice_sessions")
       .select("*", { count: "exact", head: true })
       .eq("user_id", userId);
 
-    console.log("practice/start countError:", countError);
     if (countError) {
       return Response.json(
         { error: "Failed to check session count" },
@@ -50,7 +59,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { data, error: insertError } = await supabaseServer
+    const { data, error: insertError } = await supabase
       .from("practice_sessions")
       .insert({
         user_id: userId,
@@ -61,6 +70,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
+      console.log("insertError full:", JSON.stringify(insertError, null, 2));
       return Response.json(
         { error: "Failed to create session" },
         { status: 500 }
