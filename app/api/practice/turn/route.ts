@@ -3,7 +3,6 @@ import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import cases from "@/data/practice-cases.json";
 
-export const runtime = "edge";
 
 function getSupabase() {
   return createClient(
