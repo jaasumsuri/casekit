@@ -4,7 +4,6 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createTextStreamResponse } from "ai";
 import cases from "@/data/practice-cases.json";
 
-export const runtime = "edge";
 
 function getSupabase() {
   return createClient(
