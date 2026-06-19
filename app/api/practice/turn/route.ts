@@ -86,11 +86,13 @@ export async function POST(request: NextRequest) {
   const currentStep = steps[stepIndex];
 
   let turnNumber: number;
+  let priorTurns: { turn_number: number; step_id: string; candidate_response: string; ai_critique: string | null; passed: boolean | null }[] = [];
   try {
-    const { count, error } = await supabase
+    const { data: turnData, count, error } = await supabase
       .from("practice_turns")
-      .select("*", { count: "exact", head: true })
-      .eq("session_id", sessionId);
+      .select("turn_number, step_id, candidate_response, ai_critique, passed", { count: "exact" })
+      .eq("session_id", sessionId)
+      .order("turn_number", { ascending: true });
 
     if (error) {
       return Response.json(
@@ -99,6 +101,7 @@ export async function POST(request: NextRequest) {
       );
     }
     turnNumber = (count ?? 0) + 1;
+    priorTurns = turnData ?? [];
   } catch {
     return Response.json(
       { error: "Failed to determine turn number" },
@@ -106,7 +109,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const systemPrompt = buildSystemPrompt(practiceCase, currentStep, responseType);
+  const systemPrompt = buildSystemPrompt(practiceCase, currentStep, stepIndex, steps, responseType, priorTurns);
 
   let aiResult: AITurnResult;
   try {
@@ -211,32 +214,78 @@ export async function POST(request: NextRequest) {
 function buildSystemPrompt(
   practiceCase: (typeof cases.cases)[number],
   step: { trigger: string; reveal: string },
-  responseType: string
+  stepIndex: number,
+  allSteps: { trigger: string; reveal: string }[],
+  responseType: string,
+  priorTurns: { turn_number: number; step_id: string; candidate_response: string; ai_critique: string | null; passed: boolean | null }[]
 ): string {
+  const totalSteps = allSteps.length;
+  const isLastStep = stepIndex === totalSteps - 1;
+
+  const companyStyle = practiceCase.company_style;
+  let styleDirective: string;
+  if (companyStyle === "MBB") {
+    styleDirective = "Interview style: MBB. Be crisp, expect precision. If the candidate is vague, ask a pointed clarifying question. Don't volunteer information they haven't asked for. Silence after a weak answer is fine — let them fill it.";
+  } else if (companyStyle === "Big4") {
+    styleDirective = "Interview style: Big4. Be conversational and implementation-minded. You care about whether this will actually work in practice, not just whether the logic is elegant. Ask 'how would that actually get done?' type follow-ups.";
+  } else {
+    styleDirective = "Interview style: Boutique. You're an industry insider who knows this space cold. React with specific industry knowledge. If the candidate says something generic, counter with a specific detail from your experience in this sector.";
+  }
+
+  const revealedData: string[] = priorTurns
+    .filter((t) => t.passed)
+    .reduce<string[]>((acc, t) => {
+      const idx = parseInt(t.step_id, 10);
+      const s = allSteps[idx];
+      if (s) acc.push(`Step ${idx}: ${s.reveal}`);
+      return acc;
+    }, []);
+
+  const conversationHistory = priorTurns.map((t) => {
+    return `Turn ${t.turn_number} (step ${t.step_id}, ${t.passed ? "passed" : "not passed"}): Candidate said: "${t.candidate_response}"`;
+  }).join("\n");
+
   const base = [
-    "You are the CEO / client executive in this case. You are NOT a coach, teacher, or interviewer who evaluates technique — you are a business person having a conversation with a consultant you hired. You have opinions, data, and mild skepticism. You react to the content of what the consultant says, never to their process or methodology.",
+    `You are the client stakeholder in this case — the person who hired the consultant. You are NOT a coach, teacher, or case interviewer who evaluates technique. You are a business person having a real conversation about your company's problem. You have opinions, data, and mild skepticism. You react to the content of what the consultant says, never to their process or methodology.`,
+    "",
+    styleDirective,
     "",
     "### Voice rules (strict)",
     "",
     "- NEVER open with praise or evaluation of the prior turn. No 'Good instinct,' 'I like that,' 'That's reasonable,' 'Nice job,' 'Great question,' 'Smart approach,' etc. Go straight into your in-character reply.",
-    "- NEVER reference the consultant's process, methodology, or interview technique. You do not know what 'structuring,' 'frameworks,' 'hypotheses,' or 'MECE' are. You are a CEO, not a case coach. Words you must never use: diagnose, structure, hypothesis, systematically, framework, MECE, bucket, due diligence (in the interview-technique sense).",
-    "- NEVER coach the consultant on what to do next ('before you go deeper,' 'have you confirmed,' 'make sure you've ruled out,' 'are you getting ahead of yourself'). If they're off track, push back with a business-fact objection — something a real CEO would actually say.",
+    "- NEVER reference the consultant's process, methodology, or interview technique. You do not know what 'structuring,' 'frameworks,' 'hypotheses,' or 'MECE' are. Words you must never use: diagnose, structure, hypothesis, systematically, framework, MECE, bucket, due diligence (in the interview-technique sense).",
+    "- NEVER coach the consultant on what to do next ('before you go deeper,' 'have you confirmed,' 'make sure you've ruled out,' 'are you getting ahead of yourself'). If they're off track, push back with a business-fact objection — something a real stakeholder would actually say.",
     "- Stay terse and businesslike. 1-3 sentences typical, 4 max. Real stakeholders don't narrate their reactions.",
-    "",
-    "### Pushback examples",
-    "",
-    "BAD (coaching technique): 'Have you confirmed where in the P&L the problem lives before jumping to solutions?'",
-    "GOOD (business-fact objection): 'Hang on — my CFO looked at this already and says our COGS haven't moved. So where else would you look?'",
-    "",
-    "BAD (praising process): 'Good instinct to split revenue and cost. Let's pull on the revenue thread.'",
-    "GOOD (responding to content): 'Revenue's been flat — I can pull the last three years if that helps. What specifically do you want to see?'",
     "",
     `### Case context`,
     "",
     `Case: ${practiceCase.title} (${practiceCase.industry}, ${practiceCase.difficulty})`,
     `Brief: ${practiceCase.brief}`,
+    `You are step ${stepIndex + 1} of ${totalSteps} in this case.`,
     "",
+  ];
+
+  if (conversationHistory) {
+    base.push(
+      "### Conversation so far",
+      "",
+      conversationHistory,
+      ""
+    );
+  }
+
+  if (revealedData.length > 0) {
+    base.push(
+      "### Data already shared with the candidate (do NOT repeat these — refer back to them naturally if relevant)",
+      "",
+      ...revealedData,
+      ""
+    );
+  }
+
+  base.push(
     "### Examiner's notes (hidden from candidate)",
+    "",
     `Expected trigger for this step: ${step.trigger}`,
     `Data to reveal if the candidate asks the right question: ${step.reveal}`,
     "",
@@ -244,17 +293,36 @@ function buildSystemPrompt(
     practiceCase.rubric.framework_notes
       ? `Framework notes: ${practiceCase.rubric.framework_notes}`
       : "",
-    `Trap to watch for: ${practiceCase.rubric.trap}`,
+    "",
+    `### Trap behavior`,
+    "",
+    `Case trap: ${practiceCase.rubric.trap}`,
+    "",
+    "If the candidate is falling for the trap, do NOT warn them or point it out. Instead, reinforce the misleading framing naturally — a real stakeholder would. For example, if the trap is that the client dismisses something as irrelevant, double down on that dismissal in character ('Yeah, I really don't think the loyalty program is the issue here'). Let the candidate either see through it or not. This is how real interviews work — the interviewer doesn't rescue you from traps.",
     "",
     `Must-surface insights: ${practiceCase.rubric.must_surface.join("; ")}`,
     "",
+  );
+
+  if (isLastStep || stepIndex >= totalSteps - 2) {
+    base.push(
+      "### Final recommendation awareness",
+      "",
+      `What a strong recommendation looks like for this case: ${practiceCase.rubric.good_recommendation_shape}`,
+      "",
+      "If the candidate is nearing their final recommendation or delivering one, react to its content as a stakeholder would — ask follow-up questions about specifics, express skepticism about parts that are vague, or ask 'what would that actually cost us' / 'how long would that take.' Do NOT grade or evaluate the recommendation quality out loud.",
+      ""
+    );
+  }
+
+  base.push(
     "### How to respond",
     "",
-    "If the consultant's response triggers the data release for this step (they asked the right question or made the right connection), share the data naturally — as a CEO would pull up a number or recall a fact. Mark passed: true.",
+    "If the consultant's response triggers the data release for this step (they asked the right question or made the right connection), share the data naturally — as a stakeholder would pull up a number or recall a fact from your team. Mark passed: true.",
     "",
     "If the consultant's response does NOT trigger the data release (wrong question, too vague, or off track), respond as a skeptical stakeholder: offer a business-fact counterpoint, mention something contradictory your team found, or ask a pointed follow-up rooted in the case — never a process critique. Mark passed: false.",
     "",
-  ];
+  );
 
   if (responseType === "mcq") {
     base.push(

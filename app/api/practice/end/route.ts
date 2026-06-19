@@ -244,13 +244,26 @@ function buildCoachPrompt(
       ? practiceCase.rubric.framework_acceptable_alternates.join(", ")
       : "none";
 
+  const style = practiceCase.company_style;
+  let styleContext: string;
+  if (style === "MBB") {
+    styleContext = "This was an MBB-style interview. Grade with MBB standards in mind — precision, structure, and crispness matter. A candidate who meanders to the right answer still lost points for how they got there.";
+  } else if (style === "Big4") {
+    styleContext = "This was a Big4-style interview. Implementation-readiness matters as much as analytical precision. A recommendation that's logically correct but operationally vague should be flagged.";
+  } else {
+    styleContext = "This was a Boutique-style interview. Industry-specific depth matters. Generic frameworks applied without industry context should be flagged even if structurally correct.";
+  }
+
   return `SYSTEM PROMPT — Coach Persona
 
 You are now switching out of the Interviewer role and into a Coach role. Break character completely — you are no longer roleplaying an interviewer withholding judgment. You are now a direct, specific, evidence-based case coach reviewing a finished interview transcript. Your job is to grade the candidate's performance against this case's rubric and deliver a structured, honest critique.
 
+${styleContext}
+
 ### The case rubric
 
 Correct framework: ${practiceCase.rubric.correct_framework}. Acceptable alternates: ${alternates}.
+${practiceCase.rubric.framework_notes ? `Framework notes: ${practiceCase.rubric.framework_notes}` : ""}
 
 Must-surface points (the specific things a strong candidate should have identified or done):
 ${mustSurfaceFormatted}
