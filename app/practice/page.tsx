@@ -6,73 +6,73 @@ import "./practice.css";
 
 const CASES = [
   {
-    id: 1, title: "Brightline Outfitters",
+    id: 1, slug: "brightline-outfitters-profitability-easy", title: "Brightline Outfitters",
     desc: "An outdoor apparel brand's gross margin dropped 8 points in two quarters. Costs look flat — so where's the leak?",
     fw: "Profitability", diff: "easy", time: "20 min",
     industry: "Consumer Retail", industryKey: "retail",
   },
   {
-    id: 2, title: "Carewell Medical Group",
-    desc: "A regional urgent care chain is profitable on paper but burning cash. The P&L says one thing — the bank account says another.",
+    id: 2, slug: "meridian-diagnostics-profitability-medium", title: "Meridian Diagnostics",
+    desc: "A regional imaging chain's margin is compressing even as patient volume grows. The new payer contract was supposed to help — is it?",
     fw: "Profitability", diff: "medium", time: "25 min",
-    industry: "Healthcare", industryKey: "healthcare",
+    industry: "Healthcare / Services", industryKey: "healthcare",
   },
   {
-    id: 3, title: "Sparq Audio",
-    desc: "A headphone brand with a cult following wants to launch a smart speaker. The market's crowded — is there room for one more?",
+    id: 3, slug: "pulsefit-market-entry-easy", title: "PulseFit Canada",
+    desc: "A fitness app with 4M US users is eyeing Canada as its first international market. The founders think it's 'basically like the US.'",
     fw: "Market Entry", diff: "easy", time: "20 min",
     industry: "Consumer Tech", industryKey: "tech",
   },
   {
-    id: 4, title: "Titan Industrial Supply",
-    desc: "A U.S. industrial distributor weighs expansion into Mexico. The CEO is convinced; the CFO has doubts about competitive dynamics.",
+    id: 4, slug: "torvalt-ev-market-entry-medium", title: "Torvalt Components EV Entry",
+    desc: "A $400M industrial manufacturer considers entering the EV drivetrain market. Deep expertise, but zero automotive experience.",
     fw: "Market Entry", diff: "medium", time: "25 min",
     industry: "Industrial / B2B", industryKey: "industrial",
   },
   {
-    id: 5, title: "Atlas Wealth Partners",
-    desc: "A mid-market wealth manager wants to launch a robo-advisory platform. Regulators, incumbents, and conflicting data all pull different ways.",
+    id: 5, slug: "northbridge-eu-entry-hard", title: "Northbridge Capital EU Entry",
+    desc: "A US mid-market PE firm wants to open a European office. The deal pipeline looks promising — but the operating model doesn't translate cleanly.",
     fw: "Market Entry", diff: "hard", time: "35 min",
     industry: "Financial Services", industryKey: "finance",
   },
   {
-    id: 6, title: "SunBright Home Goods",
-    desc: "How large is the U.S. market for premium scented candles? Build the estimate from first principles — top-down and bottom-up.",
+    id: 6, slug: "dryer-alternative-market-sizing-easy", title: "Reusable Dryer Device",
+    desc: "How large is the U.S. market for a reusable alternative to single-use dryer sheets? Build the estimate from first principles.",
     fw: "Market Sizing", diff: "easy", time: "15 min",
     industry: "Consumer Goods", industryKey: "consumer-goods",
   },
   {
-    id: 7, title: "StreamWave Media",
-    desc: "How large is the addressable market for ad-supported streaming in Southeast Asia? Two approaches, two very different numbers.",
+    id: 7, slug: "streaming-cooking-classes-market-sizing-medium", title: "Streaming Cooking Classes",
+    desc: "How large is the addressable market for live-streamed cooking classes in the US? Two approaches, two very different numbers.",
     fw: "Market Sizing", diff: "medium", time: "25 min",
     industry: "Tech / Media", industryKey: "tech",
   },
   {
-    id: 8, title: "QuickCart Grocery",
-    desc: "An online grocery startup has saturated its launch city. Three growth paths are on the table — which one actually pencils out?",
+    id: 8, slug: "luma-home-growth-medium", title: "Luma Home Growth Strategy",
+    desc: "A premium smart-home brand has saturated its core market. Three growth paths are on the table — which one actually pencils out?",
     fw: "Growth Strategy", diff: "medium", time: "25 min",
-    industry: "Retail / E-commerce", industryKey: "retail",
+    industry: "Consumer Tech", industryKey: "tech",
   },
   {
-    id: 9, title: "Meridian Health Systems",
-    desc: "A hospital network's board wants 2× revenue in five years. Organic growth, M&A, and new service lines are all competing for capital.",
+    id: 9, slug: "carewell-pt-growth-hard", title: "Carewell Physical Therapy",
+    desc: "A PT network's board wants 2× revenue in five years. Organic growth, M&A, and telehealth are all competing for capital.",
     fw: "Growth Strategy", diff: "hard", time: "35 min",
     industry: "Healthcare", industryKey: "healthcare",
   },
   {
-    id: 10, title: "Lumina Labs",
+    id: 10, slug: "nimbus-ai-pricing-medium", title: "Nimbus AI Pricing",
     desc: "Freemium conversion is falling but ARPU is rising. Restructure the pricing tiers without killing top-of-funnel growth.",
     fw: "Pricing Strategy", diff: "medium", time: "25 min",
     industry: "Consumer Tech", industryKey: "tech",
   },
   {
-    id: 11, title: "Apex Manufacturing",
+    id: 11, slug: "kestrel-manufacturing-operations-medium", title: "Kestrel Manufacturing",
     desc: "A regional auto parts maker's unit cost is 22% above benchmark. Find the bottleneck and redesign the process.",
     fw: "Operations", diff: "medium", time: "25 min",
     industry: "Manufacturing", industryKey: "industrial",
   },
   {
-    id: 12, title: "Northbridge Capital",
+    id: 12, slug: "vantage-praxis-ma-hard", title: "Vantage / Praxis Acquisition",
     desc: "A PE fund evaluates a 40-clinic primary care acquisition. The synergy model looks great — due diligence tells a different story.",
     fw: "M&A", diff: "hard", time: "35 min",
     industry: "Healthcare / Industrial", industryKey: "healthcare",
@@ -351,7 +351,7 @@ export default function PracticeModePage() {
             filtered.map((c) => (
               <Link
                 key={c.id}
-                href={`/practice/${c.id}`}
+                href={`/practice/${c.slug}`}
                 className="pm-card"
               >
                 <div className="pm-card-body">

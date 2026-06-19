@@ -1,0 +1,529 @@
+/* ============================================================
+   PRACTICE INTERVIEW — CaseKit
+   ============================================================ */
+
+/* ─── FULLSCREEN SHELL ───────────────────────────────────── */
+.iv-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-family: var(--font-body), "DM Sans", system-ui, sans-serif;
+}
+
+/* ─── LOADING ────────────────────────────────────────────── */
+.iv-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.iv-loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--forest);
+  border-radius: 50%;
+  animation: ivSpin 0.8s linear infinite;
+}
+@keyframes ivSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── LIMIT CARD ─────────────────────────────────────────── */
+.iv-limit-card {
+  max-width: 420px;
+  margin: auto;
+  text-align: center;
+  padding: 48px 32px;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+}
+.iv-limit-card h2 {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+.iv-limit-card p {
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+/* ─── HEADER ─────────────────────────────────────────────── */
+.iv-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--forest);
+  color: #fff;
+  flex-shrink: 0;
+}
+.iv-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.iv-back {
+  color: rgba(255, 255, 255, 0.65);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+.iv-back:hover {
+  color: #fff;
+}
+.iv-title {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.iv-subtitle {
+  font-size: 0.82rem;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+}
+.iv-diff-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 1px;
+}
+.iv-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.iv-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.7);
+}
+.iv-end-btn {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: transparent;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.iv-end-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Progress bar */
+.iv-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--gold);
+  transition: width 0.5s ease;
+}
+
+/* ─── BODY (sidebar + chat) ──────────────────────────────── */
+.iv-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────── */
+.iv-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border-right: 0.5px solid var(--border);
+  padding: 24px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.iv-sidebar-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.iv-sidebar-text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.iv-sidebar-value {
+  font-size: 0.94rem;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.iv-sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.45;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.iv-sidebar-footer svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.5;
+}
+
+/* ─── CHAT COLUMN ────────────────────────────────────────── */
+.iv-chat-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #fff;
+}
+.iv-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Messages */
+.iv-msg {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 85%;
+}
+.iv-msg-ai {
+  align-self: flex-start;
+}
+.iv-msg-user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+.iv-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--gold);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.iv-bubble {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.iv-msg-ai .iv-bubble {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 4px 16px 16px 16px;
+  color: var(--ink);
+}
+.iv-msg-user .iv-bubble {
+  background: var(--forest);
+  border-radius: 16px 4px 16px 16px;
+  color: #F5F2ED;
+}
+
+/* Typing indicator */
+.iv-typing {
+  display: inline-flex !important;
+  gap: 5px;
+  align-items: center;
+  padding: 14px 18px !important;
+}
+.iv-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.4;
+  animation: ivBounce 1.4s ease-in-out infinite;
+}
+.iv-typing span:nth-child(2) { animation-delay: 0.15s; }
+.iv-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes ivBounce {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+/* ─── INPUT BAR ──────────────────────────────────────────── */
+.iv-input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--border);
+  background: #fff;
+}
+.iv-textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-family: var(--font-body), "DM Sans", system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+  max-height: 120px;
+}
+.iv-textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+.iv-textarea:focus {
+  border-color: rgba(28, 61, 46, 0.35);
+}
+.iv-send-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #F5F2ED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.iv-send-btn:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+.iv-send-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ─── CONFIRM OVERLAY ────────────────────────────────────── */
+.iv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(28, 61, 46, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.iv-confirm-card {
+  max-width: 420px;
+  width: 90%;
+  background: var(--bg);
+  border-radius: 18px;
+  padding: 36px 32px 28px;
+  text-align: center;
+}
+.iv-confirm-card h2 {
+  font-size: 1.45rem;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+.iv-confirm-card p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+.iv-confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────── */
+.iv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-body), "DM Sans", system-ui, sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+  text-decoration: none;
+}
+.iv-btn:hover {
+  transform: translateY(-1px);
+}
+.iv-btn-solid {
+  background: var(--forest);
+  color: #fff;
+  border: none;
+}
+.iv-btn-solid:hover {
+  box-shadow: var(--shadow-soft);
+}
+.iv-btn-outline {
+  background: transparent;
+  color: var(--forest);
+  border: 1px solid var(--border);
+}
+.iv-btn-outline:hover {
+  border-color: rgba(28, 61, 46, 0.3);
+  background: rgba(28, 61, 46, 0.04);
+}
+.iv-btn-back {
+  margin-top: 36px;
+}
+
+/* ─── CRITIQUE VIEW ──────────────────────────────────────── */
+.iv-critique-body {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+.iv-critique-content {
+  max-width: 720px;
+  width: 100%;
+  padding: 40px 32px 80px;
+}
+.iv-coach-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.iv-coach-badge svg {
+  opacity: 0.8;
+}
+.iv-critique-streaming {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.iv-critique-text {
+  color: var(--ink);
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+.iv-critique-h2 {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 32px 0 12px;
+  color: var(--ink);
+}
+.iv-critique-h3 {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin: 24px 0 8px;
+  color: var(--ink);
+}
+.iv-critique-h4 {
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 20px 0 6px;
+  color: var(--ink);
+}
+.iv-critique-p {
+  margin-bottom: 10px;
+}
+.iv-critique-li {
+  margin-left: 18px;
+  margin-bottom: 6px;
+  list-style-type: disc;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .iv-body {
+    flex-direction: column;
+  }
+  .iv-sidebar {
+    width: 100%;
+    max-height: 180px;
+    border-right: none;
+    border-bottom: 0.5px solid var(--border);
+    padding: 16px 20px;
+    gap: 12px;
+  }
+  .iv-sidebar-footer {
+    display: none;
+  }
+  .iv-chat-messages {
+    padding: 20px 16px;
+  }
+  .iv-input-bar {
+    padding: 12px 16px 14px;
+  }
+  .iv-title {
+    font-size: 1.2rem;
+  }
+  .iv-subtitle {
+    font-size: 0.72rem;
+  }
+  .iv-header {
+    padding: 10px 16px;
+  }
+  .iv-critique-content {
+    padding: 28px 20px 60px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iv-loading-spinner { animation: none; }
+  .iv-typing span { animation: none; opacity: 0.5; }
+}
