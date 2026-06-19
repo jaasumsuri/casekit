@@ -41,14 +41,14 @@ function formatTime(seconds: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-function getUserId(): string {
-  if (typeof window === "undefined") return "";
-  let id = localStorage.getItem("ck_user_id");
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem("ck_user_id", id);
+async function fetchUserId(): Promise<string | null> {
+  try {
+    const res = await fetch("/api/auth/session");
+    const session = await res.json();
+    return session?.user?.id ?? session?.user?.email ?? null;
+  } catch {
+    return null;
   }
-  return id;
 }
 
 export default function InterviewClient({
@@ -92,7 +92,12 @@ export default function InterviewClient({
   // Init session
   useEffect(() => {
     async function init() {
-      const userId = getUserId();
+      const userId = await fetchUserId();
+
+      if (!userId) {
+        window.location.href = "/auth/signin";
+        return;
+      }
 
       const countRes = await fetch(
         `/api/practice/session-count?userId=${userId}`

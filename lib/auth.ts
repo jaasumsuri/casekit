@@ -13,5 +13,13 @@ export const authOptions: NextAuthOptions = {
     url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
   }),
+  callbacks: {
+    async session({ session, user }) {
+      if (session.user) {
+        (session.user as { id?: string }).id = user.id;
+      }
+      return session;
+    },
+  },
   secret: process.env.NEXTAUTH_SECRET,
 };
