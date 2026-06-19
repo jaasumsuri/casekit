@@ -166,7 +166,7 @@ export default function InterviewClient({
 
       setMessages((prev) => [
         ...prev,
-        { role: "interviewer", text: data.critique },
+        { role: "interviewer", text: data.interviewerMessage },
       ]);
 
       if (data.passed) {

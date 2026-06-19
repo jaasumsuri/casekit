@@ -19,10 +19,13 @@ interface TurnRequest {
   candidateResponse: string;
 }
 
-interface AICritique {
-  critique: string;
-  passed: boolean;
-  hint?: string;
+interface AITurnResult {
+  interviewerMessage: string;
+  internalGrade: {
+    critique: string;
+    passed: boolean;
+    hint?: string;
+  };
 }
 
 export async function POST(request: NextRequest) {
@@ -105,7 +108,7 @@ export async function POST(request: NextRequest) {
 
   const systemPrompt = buildSystemPrompt(practiceCase, currentStep, responseType);
 
-  let aiResult: AICritique;
+  let aiResult: AITurnResult;
   try {
     const anthropic = new Anthropic();
     const message = await anthropic.messages.create({
@@ -126,17 +129,21 @@ export async function POST(request: NextRequest) {
     aiResult = JSON.parse(raw);
 
     if (
-      typeof aiResult.critique !== "string" ||
-      typeof aiResult.passed !== "boolean"
+      typeof aiResult.interviewerMessage !== "string" ||
+      typeof aiResult.internalGrade?.critique !== "string" ||
+      typeof aiResult.internalGrade?.passed !== "boolean"
     ) {
       throw new Error("malformed AI response");
     }
   } catch {
     aiResult = {
-      critique:
-        "Unable to evaluate your response right now. Please try again.",
-      passed: false,
-      hint: "Try resubmitting your answer.",
+      interviewerMessage:
+        "Let me rephrase — could you walk me through that again?",
+      internalGrade: {
+        critique: "Unable to evaluate response.",
+        passed: false,
+        hint: "Try resubmitting your answer.",
+      },
     };
   }
 
@@ -149,8 +156,8 @@ export async function POST(request: NextRequest) {
         step_id: stepId,
         candidate_response: candidateResponse,
         response_type: responseType,
-        ai_critique: aiResult.critique,
-        passed: aiResult.passed,
+        ai_critique: aiResult.internalGrade.critique,
+        passed: aiResult.internalGrade.passed,
       });
 
     if (insertError) {
@@ -168,7 +175,7 @@ export async function POST(request: NextRequest) {
 
   let nextStepId: string | null = stepId;
 
-  if (aiResult.passed) {
+  if (aiResult.internalGrade.passed) {
     const nextIndex = stepIndex + 1;
     if (nextIndex < steps.length) {
       nextStepId = String(nextIndex);
@@ -195,9 +202,8 @@ export async function POST(request: NextRequest) {
   }
 
   return Response.json({
-    critique: aiResult.critique,
-    passed: aiResult.passed,
-    hint: aiResult.hint ?? null,
+    interviewerMessage: aiResult.interviewerMessage,
+    passed: aiResult.internalGrade.passed,
     nextStepId,
   });
 }
@@ -208,15 +214,16 @@ function buildSystemPrompt(
   responseType: string
 ): string {
   const base = [
-    "You are a consulting case interviewer evaluating a candidate's response.",
-    "Voice standard: diagnose before prescribing, quantify every claim, name specific levers not generic categories, end with clear recommendation.",
+    "You are playing the role of a case interviewer in a live, in-person consulting interview. You never break character to evaluate, grade, or comment on the candidate's performance — that happens in a separate process the candidate does not see. Your only job is to respond as the interviewer would: ask follow-up questions, release data when the candidate asks the right question, push back on weak or vague reasoning, or redirect once if the candidate goes off track — always in natural spoken interview dialogue, never in analytical or third-person language like 'the candidate.'",
+    "",
+    "Address the candidate directly using 'you' — exactly as a real interviewer would across the table.",
     "",
     `Case: ${practiceCase.title} (${practiceCase.industry}, ${practiceCase.difficulty})`,
     `Brief: ${practiceCase.brief}`,
     "",
-    "Examiner's notes for this step:",
-    `- Expected trigger: ${step.trigger}`,
-    `- Data to reveal if candidate asks the right question: ${step.reveal}`,
+    "### Examiner's notes (hidden from candidate)",
+    `Expected trigger for this step: ${step.trigger}`,
+    `Data to reveal if the candidate asks the right question: ${step.reveal}`,
     "",
     `Correct framework: ${practiceCase.rubric.correct_framework}`,
     practiceCase.rubric.framework_notes
@@ -226,25 +233,37 @@ function buildSystemPrompt(
     "",
     `Must-surface insights: ${practiceCase.rubric.must_surface.join("; ")}`,
     "",
+    "### How to respond",
+    "",
+    "If the candidate's response triggers the data release for this step (they asked the right question or made the right connection), reveal the data naturally in dialogue — as a real interviewer would share an exhibit or answer a clarifying question — and mark passed: true.",
+    "",
+    "If the candidate's response does NOT trigger the data release (wrong question, too vague, or off track), stay in character: push back, ask them to be more specific, or give a single gentle redirect toward the right line of questioning. Mark passed: false.",
+    "",
   ];
 
   if (responseType === "mcq") {
     base.push(
-      "This is a multiple-choice step. Grade the candidate's selection against the correct option.",
-      "If they chose incorrectly, explain why their choice is wrong and hint toward the right reasoning without giving the answer."
+      "This is a multiple-choice step. If they chose incorrectly, redirect them in character without revealing the answer."
     );
   } else {
     base.push(
-      "This is a free-write step. Evaluate the quality of the candidate's reasoning.",
-      "Check whether they fell into the planted wrong hypothesis for this case.",
-      "Assess whether their analysis is structured, quantified, and specific."
+      "This is a free-write step. Assess whether they are on the right track and respond accordingly in character."
     );
   }
 
   base.push(
     "",
+    "### Response format",
+    "",
     "Respond ONLY with JSON, no preamble or markdown. Use this exact schema:",
-    '{ "critique": "your feedback text", "passed": true/false, "hint": "optional hint if failed, omit key if passed" }'
+    '{',
+    '  "interviewerMessage": "Your in-character reply to the candidate. This is the ONLY text the candidate will see. Natural dialogue, first person, addressed to them.",',
+    '  "internalGrade": {',
+    '    "critique": "Internal-only grading note for the rubric log. The candidate never sees this. Be specific about what they got right or wrong relative to the step trigger.",',
+    '    "passed": true or false,',
+    '    "hint": "Optional internal note if failed, omit key if passed"',
+    '  }',
+    '}'
   );
 
   return base.filter((line) => line !== undefined).join("\n");
