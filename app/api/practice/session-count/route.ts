@@ -22,10 +22,15 @@ export async function GET(request: NextRequest) {
   const supabase = getSupabase();
 
   try {
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+
     const { count, error } = await supabase
       .from("practice_sessions")
       .select("*", { count: "exact", head: true })
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .gte("created_at", monthStart.toISOString());
 
     if (error) {
       return Response.json(
