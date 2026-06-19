@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-export const runtime = "edge";
 
 const SESSION_CAP = 5;
 
