@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { status } = useSession();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -130,42 +131,88 @@ export default function Header() {
 
         {/* Column 3: CTA (desktop) + hamburger (mobile) */}
         <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-          <button
-            type="button"
-            onClick={() => signIn("google", { callbackUrl: "/" })}
-            className="hidden md:inline-flex"
-            style={{
-              alignItems: "center",
-              gap: 8,
-              background: "var(--forest)",
-              color: "#fff",
-              padding: "10px 18px",
-              borderRadius: "var(--r-pill)",
-              fontSize: "0.92rem",
-              fontWeight: 500,
-              fontFamily: "var(--font-body)",
-              cursor: "pointer",
-              border: "none",
-              transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget;
-              el.style.transform = "translateY(-1px)";
-              el.style.boxShadow = "var(--shadow-soft)";
-              el.style.background = "#244c39";
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget;
-              el.style.transform = "";
-              el.style.boxShadow = "";
-              el.style.background = "var(--forest)";
-            }}
-          >
-            Sign up
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-            </svg>
-          </button>
+          {status === "loading" && (
+            <span
+              className="hidden md:inline-block"
+              style={{
+                width: 110, height: 40, borderRadius: "var(--r-pill)",
+                background: "var(--forest-light)", opacity: 0.5,
+              }}
+            />
+          )}
+          {status === "unauthenticated" && (
+            <button
+              type="button"
+              onClick={() => { sessionStorage.setItem("justLoggedIn", "true"); signIn("google", { callbackUrl: "/practice" }); }}
+              className="hidden md:inline-flex"
+              style={{
+                alignItems: "center",
+                gap: 8,
+                background: "var(--forest)",
+                color: "#fff",
+                padding: "10px 18px",
+                borderRadius: "var(--r-pill)",
+                fontSize: "0.92rem",
+                fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                cursor: "pointer",
+                border: "none",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget;
+                el.style.transform = "translateY(-1px)";
+                el.style.boxShadow = "var(--shadow-soft)";
+                el.style.background = "#244c39";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget;
+                el.style.transform = "";
+                el.style.boxShadow = "";
+                el.style.background = "var(--forest)";
+              }}
+            >
+              Sign up
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+              </svg>
+            </button>
+          )}
+          {status === "authenticated" && (
+            <Link
+              href="/practice"
+              className="hidden md:inline-flex"
+              style={{
+                alignItems: "center",
+                gap: 8,
+                background: "var(--forest)",
+                color: "#fff",
+                padding: "10px 18px",
+                borderRadius: "var(--r-pill)",
+                fontSize: "0.92rem",
+                fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget;
+                el.style.transform = "translateY(-1px)";
+                el.style.boxShadow = "var(--shadow-soft)";
+                el.style.background = "#244c39";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget;
+                el.style.transform = "";
+                el.style.boxShadow = "";
+                el.style.background = "var(--forest)";
+              }}
+            >
+              Start Practicing
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+              </svg>
+            </Link>
+          )}
 
           <button
             className="md:hidden flex flex-col gap-[5px] p-2"
@@ -209,19 +256,36 @@ export default function Header() {
               {label}
             </Link>
           ))}
-          <button
-            type="button"
-            onClick={() => { setMenuOpen(false); signIn("google", { callbackUrl: "/" }); }}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              background: "var(--forest)", color: "#fff",
-              padding: "10px 18px", borderRadius: "var(--r-pill)",
-              fontSize: "0.92rem", fontWeight: 500, fontFamily: "var(--font-body)",
-              width: "fit-content", cursor: "pointer", border: "none",
-            }}
-          >
-            Sign up
-          </button>
+          {status === "unauthenticated" && (
+            <button
+              type="button"
+              onClick={() => { setMenuOpen(false); sessionStorage.setItem("justLoggedIn", "true"); signIn("google", { callbackUrl: "/practice" }); }}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: "var(--forest)", color: "#fff",
+                padding: "10px 18px", borderRadius: "var(--r-pill)",
+                fontSize: "0.92rem", fontWeight: 500, fontFamily: "var(--font-body)",
+                width: "fit-content", cursor: "pointer", border: "none",
+              }}
+            >
+              Sign up
+            </button>
+          )}
+          {status === "authenticated" && (
+            <Link
+              href="/practice"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: "var(--forest)", color: "#fff",
+                padding: "10px 18px", borderRadius: "var(--r-pill)",
+                fontSize: "0.92rem", fontWeight: 500, fontFamily: "var(--font-body)",
+                width: "fit-content",
+              }}
+            >
+              Start Practicing
+            </Link>
+          )}
         </div>
       )}
     </header>

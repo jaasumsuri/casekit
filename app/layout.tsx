@@ -3,6 +3,7 @@ import { Instrument_Serif, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Providers from "@/components/Providers";
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-display",
@@ -18,7 +19,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CaseKit — Consulting case prep, built for undergrads",
+  title: "CaseKit | Consulting case prep, built for undergrads",
   description: "Free AI-powered consulting case prep platform for undergrads. Practice real cases, get instant feedback, and ship structured deliverables.",
 };
 
@@ -28,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${instrumentSerif.variable} ${dmSans.variable}`}>
       <body className="min-h-full flex flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
