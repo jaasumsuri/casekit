@@ -113,7 +113,7 @@ const QUIZ = [
       { label: "How much business trivia you've memorized" },
       { label: "How quickly you can do arithmetic" },
     ],
-    answer: `Answer: B. The case is a simulation of the job. Interviewers watch your thought process — structure, reasoning, and communication — far more than your final number. The "right answer" is rarely the point.`,
+    answer: `Answer: B. The case is a simulation of the job. Interviewers watch your thought process (structure, reasoning, and communication) far more than your final number. The "right answer" is rarely the point.`,
   },
   {
     q: "You're handed the airline prompt and you're not sure what's causing the losses. What's the best first move?",
@@ -470,7 +470,7 @@ export default function BasicsPage() {
 
           {/* INTRO */}
           <p className="block-body" style={{ fontSize: "1.14rem", lineHeight: 1.7, color: "var(--ink)", marginBottom: 0 }}>
-            If you&rsquo;re applying to consulting, you&rsquo;ll spend most of your interview not answering questions about yourself — but solving a business problem out loud, live, with the interviewer. That exercise is the{" "}
+            If you&rsquo;re applying to consulting, you&rsquo;ll spend most of your interview not answering questions about yourself, but solving a business problem out loud, live, with the interviewer. That exercise is the{" "}
             <em style={{ fontStyle: "italic", color: "var(--forest)" }}>case interview</em>, and it&rsquo;s where offers are won and lost. The good news: it&rsquo;s a learnable skill, not a talent.
           </p>
 
@@ -486,14 +486,14 @@ export default function BasicsPage() {
             <div className="block-body">
               <div className="definition">
                 <span className="def-mark" aria-hidden="true">&ldquo;</span>
-                <p>A case interview is a <em>roleplay.</em> The interviewer hands you a real-ish business problem, and you work it out together — structuring your thinking, doing some math, and landing on a recommendation.</p>
-                <p className="def-foot">It usually lasts 20–40 minutes. There&rsquo;s no spec to memorize and rarely one &ldquo;correct&rdquo; answer. What&rsquo;s being watched is <strong>how you think</strong> — not whether you happen to know the answer.</p>
+                <p>A case interview is a <em>roleplay.</em> The interviewer hands you a real-ish business problem, and you work it out together: structuring your thinking, doing some math, and landing on a recommendation.</p>
+                <p className="def-foot">It usually lasts 20–40 minutes. There&rsquo;s no spec to memorize and rarely one &ldquo;correct&rdquo; answer. What&rsquo;s being watched is <strong>how you think</strong>, not whether you happen to know the answer.</p>
               </div>
               <div className="twoup">
                 <div className="panel">
                   <span className="tu-tag">It is</span>
                   <h4>A simulation of the job</h4>
-                  <p>Consultants get dropped into unfamiliar problems and have to make sense of them fast. The case re-creates that — on purpose.</p>
+                  <p>Consultants get dropped into unfamiliar problems and have to make sense of them fast. The case re-creates that, on purpose.</p>
                 </div>
                 <div className="panel">
                   <span className="tu-tag">It is not</span>
@@ -514,13 +514,13 @@ export default function BasicsPage() {
               </div>
             </div>
             <div className="block-body">
-              <p>A résumé tells a firm where you&rsquo;ve been. A case shows them how you&rsquo;ll behave on day one — when a client is in the room, the data is messy, and someone has to bring order to it. <em>That&rsquo;s</em> what they&rsquo;re buying.</p>
+              <p>A résumé tells a firm where you&rsquo;ve been. A case shows them how you&rsquo;ll behave on day one: when a client is in the room, the data is messy, and someone has to bring order to it. <em>That&rsquo;s</em> what they&rsquo;re buying.</p>
               <p>So the case is deliberately open-ended. The interviewer is less interested in your final number than in the path you took to get there: did you break the problem into clean pieces, ask for the right information, do the math without panicking, and say what you&rsquo;d actually do about it? Get comfortable with that and the format stops being scary.</p>
               <p className="sub-h">A useful reframe</p>
               <ul>
-                <li>You&rsquo;re not a student being graded — you&rsquo;re a <em>colleague thinking through a problem</em> with the interviewer.</li>
+                <li>You&rsquo;re not a student being graded. You&rsquo;re a <em>colleague thinking through a problem</em> with the interviewer.</li>
                 <li>Silence is fine; thinking out loud is better. They can only grade what they hear.</li>
-                <li>Being wrong and adjusting is normal — rigid and wrong is the trap.</li>
+                <li>Being wrong and adjusting is normal. Rigid and wrong is the trap.</li>
               </ul>
             </div>
           </section>
@@ -535,7 +535,7 @@ export default function BasicsPage() {
               </div>
             </div>
             <div className="block-body">
-              <p className="lede" style={{ marginBottom: 20 }}>Almost every case moves through the same four phases. Learn this rhythm and any case — airline, retailer, hospital — feels familiar.</p>
+              <p className="lede" style={{ marginBottom: 20 }}>Almost every case moves through the same four phases. Learn this rhythm and any case (airline, retailer, hospital) feels familiar.</p>
               <span className="phase-meta">
                 <ClockIcon />
                 Typically 20–40 minutes, start to finish
@@ -552,7 +552,7 @@ export default function BasicsPage() {
                   <span className="ph-ico"><GridIcon /></span>
                   <span className="ph-n">Phase 02</span>
                   <h4>Structure</h4>
-                  <p>Lay out a framework — the buckets you&rsquo;ll work through. This is your roadmap, and the interviewer&rsquo;s first real read on you.</p>
+                  <p>Lay out a framework: the buckets you&rsquo;ll work through. This is your roadmap, and the interviewer&rsquo;s first real read on you.</p>
                   <span className="ph-arrow"><ArrowRight /></span>
                 </div>
                 <div className="phase">
@@ -571,8 +571,8 @@ export default function BasicsPage() {
               </div>
               <div className="sample">
                 <span className="s-tag"><span className="s-dot" /> A real prompt sounds like this</span>
-                <blockquote>&ldquo;Our client is a regional airline. They&rsquo;ve been losing about $40M a year for two years straight. The CEO wants to know why — and what to do about it. Where would you start?&rdquo;</blockquote>
-                <p className="s-meta">That&rsquo;s the whole prompt. No data, no instructions — your job is to turn that one sentence into a structured investigation.</p>
+                <blockquote>&ldquo;Our client is a regional airline. They&rsquo;ve been losing about $40M a year for two years straight. The CEO wants to know why, and what to do about it. Where would you start?&rdquo;</blockquote>
+                <p className="s-meta">That&rsquo;s the whole prompt. No data, no instructions. Your job is to turn that one sentence into a structured investigation.</p>
               </div>
             </div>
           </section>
@@ -590,8 +590,8 @@ export default function BasicsPage() {
               <p className="lede" style={{ marginBottom: 22 }}>Interviewers score five things. None of them is &ldquo;did you get the right number.&rdquo; Internalize these and you&rsquo;ll always know what to optimize for.</p>
               <div className="crit-grid">
                 {[
-                  { Icon: PersonIcon, title: "Structure", desc: "Can you break a messy problem into clean, non-overlapping pieces — and explain your roadmap before diving in?" },
-                  { Icon: CalcIcon, title: "Quantitative skill", desc: "Comfort with mental math and estimation. Not speed — accuracy, and the ability to narrate what you're calculating and why." },
+                  { Icon: PersonIcon, title: "Structure", desc: "Can you break a messy problem into clean, non-overlapping pieces and explain your roadmap before diving in?" },
+                  { Icon: CalcIcon, title: "Quantitative skill", desc: "Comfort with mental math and estimation. Not speed, but accuracy, and the ability to narrate what you're calculating and why." },
                   { Icon: ChatIcon, title: "Communication", desc: "Clear, concise, top-down. Can you say the headline first and walk someone through your logic without rambling?" },
                   { Icon: JudgeIcon, title: "Business judgment", desc: "Do your instincts make sense in the real world? Does your recommendation sound like something a company would actually do?" },
                   { Icon: ShieldIcon, title: "Poise under pressure", desc: "Staying composed when you're stuck or challenged. Adjusting gracefully when the interviewer pushes back on your thinking." },
@@ -619,13 +619,13 @@ export default function BasicsPage() {
               </div>
             </div>
             <div className="block-body">
-              <p className="lede" style={{ marginBottom: 22 }}>Most cases fall into a handful of recurring shapes. You don&rsquo;t memorize a script for each — you learn a flexible framework, then adapt. Here&rsquo;s the map; each links to a full guide.</p>
+              <p className="lede" style={{ marginBottom: 22 }}>Most cases fall into a handful of recurring shapes. You don&rsquo;t memorize a script for each. You learn a flexible framework, then adapt. Here&rsquo;s the map; each links to a full guide.</p>
               <div className="fw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
                 {[
-                  { n: "01", title: "Profitability", desc: '"Profits are falling — why?" The most common case of all. Decompose revenue and cost to find the leak.', tag: "Most common", href: "/frameworks/profitability" },
+                  { n: "01", title: "Profitability", desc: '"Profits are falling. Why?" The most common case of all. Decompose revenue and cost to find the leak.', tag: "Most common", href: "/frameworks/profitability" },
                   { n: "02", title: "Market entry", desc: '"Should our client enter this market?" Weigh attractiveness, fit, and the economics of making the move.', tag: "Strategy", href: "/frameworks/market-entry" },
                   { n: "03", title: "Market sizing", desc: '"How many ___ are sold in the US each year?" Estimation from first principles, no Google allowed.', tag: "Estimation", href: "/frameworks/market-sizing" },
-                  { n: "04", title: "Growth strategy", desc: '"How do we grow revenue 20%?" Find and prioritize the levers — new products, segments, or geographies.', tag: "Strategy", href: "/frameworks/growth-strategy" },
+                  { n: "04", title: "Growth strategy", desc: '"How do we grow revenue 20%?" Find and prioritize the levers: new products, segments, or geographies.', tag: "Strategy", href: "/frameworks/growth-strategy" },
                   { n: "05", title: "M&A", desc: '"Should our client acquire this company?" Test the strategic logic, the synergies, and the price.', tag: "Advanced", href: "/frameworks/ma-investment" },
                   { n: "→", title: "See all frameworks", desc: "Browse every framework with worked examples, interactive builders, practice prompts, and quizzes.", tag: "Full library", href: "/frameworks" },
                 ].map(({ n, title, desc, tag, href }) => (
@@ -655,16 +655,16 @@ export default function BasicsPage() {
             <div className="block-body">
               {[
                 {
-                  title: `Myth — "There's one right answer and I have to find it."`,
+                  title: `Myth: "There's one right answer and I have to find it."`,
                   body: "Almost never. Two strong candidates can reach different recommendations and both pass, because the reasoning is what's graded. Defend your logic; don't hunt for a hidden \"correct\" number.",
                 },
                 {
-                  title: `Myth — "I need to memorize a framework for every case type."`,
-                  body: "Memorized frameworks are easy to spot and easy to break. Interviewers reward a structure you build for this problem. Learn the patterns, then adapt them live — that's the whole skill.",
+                  title: `Myth: "I need to memorize a framework for every case type."`,
+                  body: "Memorized frameworks are easy to spot and easy to break. Interviewers reward a structure you build for this problem. Learn the patterns, then adapt them live. That's the whole skill.",
                 },
                 {
-                  title: `Myth — "You either have it or you don't."`,
-                  body: "Case performance is almost entirely trainable. Structure, mental math, and crisp communication all improve with reps — which is exactly what the rest of CaseKit is for.",
+                  title: `Myth: "You either have it or you don't."`,
+                  body: "Case performance is almost entirely trainable. Structure, mental math, and crisp communication all improve with reps, which is exactly what the rest of CaseKit is for.",
                 },
               ].map(({ title, body }) => (
                 <div className="mistake" key={title}>
@@ -688,15 +688,15 @@ export default function BasicsPage() {
               </div>
             </div>
             <div className="block-body">
-              <p className="lede" style={{ marginBottom: 8 }}>A few terms you&rsquo;ll hear constantly. You don&rsquo;t need to use the jargon — but you should recognize it.</p>
+              <p className="lede" style={{ marginBottom: 8 }}>A few terms you&rsquo;ll hear constantly. You don&rsquo;t need to use the jargon, but you should recognize it.</p>
               <div className="gloss">
                 {[
                   { term: "MECE", say: '"me-see"', def: "Mutually Exclusive, Collectively Exhaustive. A good structure has no overlapping buckets and no missing ones." },
-                  { term: "Issue tree", say: null, def: "A branching breakdown of a problem into smaller and smaller parts — the visual form of a structure." },
+                  { term: "Issue tree", say: null, def: "A branching breakdown of a problem into smaller and smaller parts. It is the visual form of a structure." },
                   { term: "Driver", say: null, def: 'A factor that moves the outcome. "What\'s driving the cost increase?" means "which input is responsible?"' },
                   { term: "Hypothesis", say: null, def: "An early best guess at the answer that you then test with analysis, rather than exploring blindly." },
-                  { term: "Sanity check", say: null, def: 'A quick gut test of whether a number is plausible. "$2 trillion for the US coffee market? Too big — recheck."' },
-                  { term: "So what?", say: null, def: "The implication of a finding. Interviewers ask it constantly — always tie an insight to what it means for the client." },
+                  { term: "Sanity check", say: null, def: 'A quick gut test of whether a number is plausible. "$2 trillion for the US coffee market? Too big. Recheck."' },
+                  { term: "So what?", say: null, def: "The implication of a finding. Interviewers ask it constantly, so always tie an insight to what it means for the client." },
                 ].map(({ term, say, def }) => (
                   <div className="gloss-item" key={term}>
                     <div className="gloss-term">

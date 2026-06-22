@@ -78,7 +78,7 @@ const SELF_CHECKS = [
   },
   {
     title: "I asked clarifying questions that actually changed my structure",
-    feedback: <>Your questions were analytical, not generic. Ask yourself — did my question reveal information that changed <em>how</em> I&apos;d approach the case?</>,
+    feedback: <>Your questions were analytical, not generic. Ask yourself: did my question reveal information that changed <em>how</em> I&apos;d approach the case?</>,
   },
   {
     title: "I took at least 45 seconds of silence before speaking",
@@ -235,7 +235,7 @@ export default function HowToOpenACasePage() {
               </div>
               <h1>How to open <em>a case</em></h1>
               <p className="pb-hero-lead">
-                The first 90 seconds set the tone for everything that follows. Most candidates waste them. This is the fix — a <em>learnable, repeatable</em> 4-step sequence.
+                The first 90 seconds set the tone for everything that follows. Most candidates waste them. This is the fix: a <em>learnable, repeatable</em> 4-step sequence.
               </p>
               <div className="pb-hero-stats">
                 <span className="pb-stat"><ClockIcon /> 8 min read</span>
@@ -297,7 +297,7 @@ export default function HowToOpenACasePage() {
       <section className="pb-intro">
         <div className="container-narrow">
           <p className="pb-body-lede">
-            Opening a case well is a learnable skill. It&apos;s not about having the perfect words — it&apos;s about following a reliable sequence that signals to the interviewer: <em>this person is structured, calm, and knows what they&apos;re doing.</em>
+            Opening a case well is a learnable skill. It&apos;s not about having the perfect words. It&apos;s about following a reliable sequence that signals to the interviewer: <em>this person is structured, calm, and knows what they&apos;re doing.</em>
           </p>
           <p className="pb-body-sub">Do it right and you walk into the analysis with confidence. Do it wrong and you&apos;re playing catch-up for the rest of the case.</p>
         </div>
@@ -347,18 +347,18 @@ export default function HowToOpenACasePage() {
               <div className="pb-qa-col pb-qa-good">
                 <div className="pb-qa-header"><CheckIcon /> Good questions</div>
                 <ul>
-                  <li><strong>Scope</strong> — &ldquo;Are we focused on a specific geography or the whole company?&rdquo;</li>
-                  <li><strong>Definition</strong> — &ldquo;When you say profits, are we looking at gross margin, operating margin, or net income?&rdquo;</li>
-                  <li><strong>Timeframe</strong> — &ldquo;How long has this been happening — recent shift or multi-year?&rdquo;</li>
-                  <li><strong>Constraint</strong> — &ldquo;Are there any constraints — for example, is the client open to acquisitions?&rdquo;</li>
+                  <li><strong>Scope:</strong> &ldquo;Are we focused on a specific geography or the whole company?&rdquo;</li>
+                  <li><strong>Definition:</strong> &ldquo;When you say profits, are we looking at gross margin, operating margin, or net income?&rdquo;</li>
+                  <li><strong>Timeframe:</strong> &ldquo;How long has this been happening? Recent shift or multi-year?&rdquo;</li>
+                  <li><strong>Constraint:</strong> &ldquo;Are there any constraints? For example, is the client open to acquisitions?&rdquo;</li>
                 </ul>
               </div>
               <div className="pb-qa-col pb-qa-bad">
                 <div className="pb-qa-header"><XIcon /> Don&apos;t ask these</div>
                 <ul>
-                  <li>Questions you&apos;ll answer yourself: <em>&ldquo;Is the problem on the revenue side or cost side?&rdquo;</em> — that&apos;s your job</li>
-                  <li>Generic background that doesn&apos;t affect structure: <em>&ldquo;What industry is this?&rdquo;</em> — you already know</li>
-                  <li>More than 2–3 questions in a row — it looks like stalling</li>
+                  <li>Questions you&apos;ll answer yourself: <em>&ldquo;Is the problem on the revenue side or cost side?&rdquo;</em> (that&apos;s your job)</li>
+                  <li>Generic background that doesn&apos;t affect structure: <em>&ldquo;What industry is this?&rdquo;</em> (you already know)</li>
+                  <li>More than 2-3 questions in a row, which looks like stalling</li>
                 </ul>
               </div>
             </div>
@@ -469,7 +469,7 @@ export default function HowToOpenACasePage() {
             <p>Now speak. Walk the interviewer through your framework clearly and confidently. State your hypothesis. Tell them where you want to start.</p>
             <div className="pb-speech">
               <span className="pb-speech-tag">What it sounds like</span>
-              <blockquote>&ldquo;Here&apos;s how I&apos;d approach this. Profit equals revenue minus costs, so I want to first understand whether this is a revenue problem, a cost problem, or both. Based on what you&apos;ve told me — that revenue is growing but profits are declining — my initial hypothesis is that costs are growing faster than revenue. I&apos;d like to start by understanding the cost structure: the split between fixed and variable, and which categories have changed most over the past two years. Does that approach make sense?&rdquo;</blockquote>
+              <blockquote>&ldquo;Here&apos;s how I&apos;d approach this. Profit equals revenue minus costs, so I want to first understand whether this is a revenue problem, a cost problem, or both. Based on what you&apos;ve told me (that revenue is growing but profits are declining), my initial hypothesis is that costs are growing faster than revenue. I&apos;d like to start by understanding the cost structure: the split between fixed and variable, and which categories have changed most over the past two years. Does that approach make sense?&rdquo;</blockquote>
             </div>
             <div className="pb-rule-card pb-rule-gold">
               <span className="pb-rule-ico">

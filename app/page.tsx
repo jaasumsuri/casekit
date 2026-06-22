@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import CaseCard from "@/components/CaseCard";
 
 /* ─────────────────────── data ─────────────────────── */
@@ -28,7 +28,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Guided cases, not blank pages",
-    desc: "Five end-to-end cases broken into clarify → structure → analyze → recommend. The AI plays interviewer; you stay in flow.",
+    desc: "Five end-to-end cases broken into clarify → structure → analyze → recommend. Each step walks you through the thinking so you learn by doing.",
   },
   {
     n: "02", variant: "cream" as const,
@@ -38,7 +38,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Feedback in seconds, not weeks",
-    desc: "Claude-grade analysis on every answer — what you nailed, what you skipped, and the exact phrasing a partner would expect.",
+    desc: "Practice mode gives you AI-powered feedback on your responses: what you nailed, what you missed, and how to sharpen your thinking.",
   },
   {
     n: "03", variant: "ghost" as const,
@@ -47,19 +47,19 @@ const FEATURES = [
         <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
       </svg>
     ),
-    title: "Deliverables you can actually show",
-    desc: "Every case ends with a real output — issue trees, exhibit slides, recommendation memos — exported clean and ready for your portfolio.",
+    title: "Real consulting deliverables",
+    desc: "Every case includes a full report and presentation deck, the same outputs a real consulting team would deliver. Study them to understand what good looks like.",
   },
 ];
 
 const FRAMEWORKS = [
-  { n: "01", title: "Profitability Framework",          desc: "Revenue and cost trees, broken down to the smallest moveable lever — without losing MECE.",                         meta: "Most common · 40% of cases", slug: "profitability"    },
-  { n: "02", title: "Market Entry",                     desc: "Size the prize, assess fit, pick a mode of entry — and pressure-test the path to scale.",                           meta: "Strategy classic",           slug: "market-entry"     },
+  { n: "01", title: "Profitability Framework",          desc: "Revenue and cost trees, broken down to the smallest moveable lever without losing MECE.",                            meta: "Most common · 40% of cases", slug: "profitability"    },
+  { n: "02", title: "Market Entry",                     desc: "Size the prize, assess fit, pick a mode of entry, and pressure-test the path to scale.",                             meta: "Strategy classic",           slug: "market-entry"     },
   { n: "03", title: "M&A / Investment",                 desc: "Synergy logic, valuation sanity checks, and the integration risks partners actually grill you on.",                 meta: "PE & corp-dev favorite",     slug: "ma-investment"    },
-  { n: "04", title: "Pricing Strategy",                 desc: "Cost-plus, competitor-anchored, value-based — when each applies and the math behind it.",                           meta: "Quant-heavy",                slug: "pricing-strategy" },
+  { n: "04", title: "Pricing Strategy",                 desc: "Cost-plus, competitor-anchored, value-based: when each applies and the math behind it.",                             meta: "Quant-heavy",                slug: "pricing-strategy" },
   { n: "05", title: "Operations / Process Improvement", desc: "Bottleneck hunting, throughput math, and a clean way to talk about lean without sounding like a textbook.",         meta: "Industry-specific",          slug: "operations"       },
-  { n: "06", title: "Growth Strategy (Ansoff)",         desc: "The 2×2 nobody uses right — market penetration, development, product, diversification, with real triggers.",        meta: "Underrated",                 slug: "growth-strategy"  },
-  { n: "07", title: "Market Sizing",                    desc: "Estimate any number from first principles — top-down, bottom-up, and the sanity check that saves you.",             meta: "Warm-up favorite",           slug: "market-sizing"    },
+  { n: "06", title: "Growth Strategy (Ansoff)",         desc: "The 2×2 nobody uses right. Market penetration, development, product, diversification, with real triggers.",          meta: "Underrated",                 slug: "growth-strategy"  },
+  { n: "07", title: "Market Sizing",                    desc: "Estimate any number from first principles: top-down, bottom-up, and the sanity check that saves you.",               meta: "Warm-up favorite",           slug: "market-sizing"    },
 ];
 
 const PLAYBOOK = [
@@ -74,18 +74,18 @@ const PLAYBOOK = [
 
 const HOWTO_STEPS = [
   { n: "1", kicker: "Start here", title: "Start with the basics", desc: "Learn what a case interview actually is, what interviewers are looking for, and how CaseKit is structured. No prior knowledge needed.", cta: { label: "What is a case interview?", href: "/learn/basics", type: "btn" as const }, final: false },
-  { n: "2", kicker: "Learn",      title: "Learn the frameworks",  desc: "Six core consulting frameworks with worked examples and real numbers. Understand when and why to use each one before you touch a case.", cta: { label: "See the frameworks →", href: "#frameworks", type: "link" as const }, final: false },
-  { n: "3", kicker: "Study",      title: "Study solved cases",    desc: "Walk through fully solved cases step by step. Every case ends with a complete report and slide deck — exactly how a Big 4 firm would present it. This is what good looks like.", cta: { label: "Browse the library →", href: "#cases", type: "link" as const }, final: false },
-  { n: "4", kicker: "Practice",   title: "Practice with AI",      desc: "Pick a case from the library, work through it yourself, and get instant AI feedback on your thinking. The AI generates your own report and slides from your actual responses.", cta: { label: "How practice works →", href: "#learn", type: "btn" as const }, final: true },
-  { n: "5", kicker: "Perform",    title: "Prep for the interview", desc: "Learn how to communicate your thinking verbally, handle behavioral questions, and walk into the room confident.", cta: { label: "Open the playbook →", href: "#playbook", type: "link" as const }, final: false },
+  { n: "2", kicker: "Learn",      title: "Learn the frameworks",  desc: "Seven core consulting frameworks with worked examples and real numbers. Understand when and why to use each one before you touch a case.", cta: { label: "See the frameworks →", href: "/frameworks", type: "link" as const }, final: false },
+  { n: "3", kicker: "Study",      title: "Study solved cases",    desc: "Walk through fully solved cases step by step. Every case ends with a complete report and slide deck, exactly how a Big 4 firm would present it. This is what good looks like.", cta: { label: "Browse the library →", href: "/cases", type: "link" as const }, final: false },
+  { n: "4", kicker: "Practice",   title: "Practice with AI",      desc: "Pick a case from the library, work through it yourself, and get instant AI feedback on your thinking. The AI generates a report and slides from your actual responses.", cta: { label: "How practice works →", href: "/practice", type: "btn" as const }, final: true },
+  { n: "5", kicker: "Perform",    title: "Prep for the interview", desc: "Learn how to communicate your thinking verbally, handle behavioral questions, and walk into the room confident.", cta: { label: "Open the playbook →", href: "/playbook", type: "link" as const }, final: false },
 ];
 
 const CASES = [
   { title: "NovaCast: the vanishing margin",  teaser: "A streaming platform is bleeding profit while subscribers hold flat. Diagnose the root cause and pitch a recovery.",                          industry: "Streaming",      framework: "Profitability",    difficulty: "Beginner"     as const, slug: "novacast",   timeEst: "15 min" },
-  { title: "Fieldcast: the new market bet",   teaser: "A profitable enterprise SaaS company eyes a tempting SMB segment. The market looks great — should they go?",                                industry: "B2B SaaS",       framework: "Market Entry",     difficulty: "Intermediate" as const, slug: "fieldcast",  timeEst: "20 min" },
-  { title: "Veriomed: the wrong price",       teaser: "A hospital network wants to acquire a diagnostics lab. The strategic case is real — but the CFO's synergy math is wrong.",                   industry: "Healthcare",     framework: "M&A",              difficulty: "Intermediate" as const, slug: "veriomed",   timeEst: "25 min" },
+  { title: "Fieldcast: the new market bet",   teaser: "A profitable enterprise SaaS company eyes a tempting SMB segment. The market looks great, but should they go?",                              industry: "B2B SaaS",       framework: "Market Entry",     difficulty: "Intermediate" as const, slug: "fieldcast",  timeEst: "20 min" },
+  { title: "Veriomed: the wrong price",       teaser: "A hospital network wants to acquire a diagnostics lab. The strategic case is real, but the CFO's synergy math is wrong.",                    industry: "Healthcare",     framework: "M&A",              difficulty: "Intermediate" as const, slug: "veriomed",   timeEst: "25 min" },
   { title: "Harken: the hidden cost",         teaser: "A manufacturer is bleeding margin and thinks they know why. They're wrong. The real root cause is buried in a scheduling decision.",         industry: "Manufacturing",  framework: "Operations",       difficulty: "Intermediate" as const, slug: "harken",     timeEst: "30 min" },
-  { title: "Brova: the growth trap",          teaser: "A premium beverages CEO wants $45M for energy drinks. The math says no — but so does just saying 'no.' Build the better plan.",             industry: "Consumer",       framework: "Growth Strategy",  difficulty: "Advanced"     as const, slug: "brova",      timeEst: "35 min" },
+  { title: "Brova: the growth trap",          teaser: "A premium beverages CEO wants $45M for energy drinks. The math says no, but so does just saying 'no.' Build the better plan.",              industry: "Consumer",       framework: "Growth Strategy",  difficulty: "Advanced"     as const, slug: "brova",      timeEst: "35 min" },
 ];
 
 /* ─────────────────────── SVGs ─────────────────────── */
@@ -103,6 +103,17 @@ const CheckIcon = () => (
 /* ─────────────────────── component ─────────────────────── */
 export default function HomePage() {
   const spotlightRef = useRef<HTMLDivElement>(null);
+  const { status } = useSession();
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated" && sessionStorage.getItem("justLoggedIn")) {
+      sessionStorage.removeItem("justLoggedIn");
+      setShowToast(true);
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
 
   useEffect(() => {
     const el = spotlightRef.current;
@@ -117,6 +128,19 @@ export default function HomePage() {
 
   return (
     <>
+      {showToast && (
+        <div style={{
+          position: "fixed", top: 24, right: 24, zIndex: 9999,
+          background: "var(--cream, #FAF7F2)", color: "var(--forest, #2d5a44)",
+          border: "none", borderLeft: "4px solid var(--gold, #C4933A)", borderRadius: 8,
+          padding: "14px 22px", fontSize: "0.95rem", fontWeight: 500,
+          fontFamily: "var(--font-body)", boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+          animation: "fadeIn 0.3s ease-out",
+        }}>
+          Welcome to CaseKit! Explore below to get started.
+        </div>
+      )}
+
       {/* ══════════════ HERO ══════════════ */}
       <section style={{ padding: "80px 0 100px" }}>
         <div
@@ -141,25 +165,43 @@ export default function HomePage() {
             </h1>
 
             <p style={{ marginTop: 22, color: "var(--muted)", fontSize: "1.125rem", lineHeight: 1.55, maxWidth: 520, fontFamily: "var(--font-body)" }}>
-              CaseKit is the free, AI-powered case prep platform built for undergrads. Practice real cases, get instant feedback, and ship structured deliverables — no $400 coach required.
+              CaseKit is the free, AI-powered case prep platform built for undergrads. Practice real cases, get instant feedback, and ship structured deliverables. No $400 coach required.
             </p>
 
             <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <button
-                type="button"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
-                style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "var(--forest)", color: "#fff", fontFamily: "var(--font-body)", transition: "transform var(--t), box-shadow var(--t), background var(--t)", cursor: "pointer", border: "none" }}
-                onMouseEnter={e => { const el = e.currentTarget; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "var(--shadow-hover)"; el.style.background = "#244c39"; }}
-                onMouseLeave={e => { const el = e.currentTarget; el.style.transform = ""; el.style.boxShadow = ""; el.style.background = "var(--forest)"; }}
-              >
-                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                  <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                </svg>
-                Sign up with Google
-              </button>
+              {status === "loading" && (
+                <span style={{ display: "inline-block", width: 200, height: 48, borderRadius: "var(--r-pill)", background: "var(--forest-light)", opacity: 0.5 }} />
+              )}
+              {status === "unauthenticated" && (
+                <button
+                  type="button"
+                  onClick={() => { sessionStorage.setItem("justLoggedIn", "true"); signIn("google", { callbackUrl: "/practice" }); }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "var(--forest)", color: "#fff", fontFamily: "var(--font-body)", transition: "transform var(--t), box-shadow var(--t), background var(--t)", cursor: "pointer", border: "none" }}
+                  onMouseEnter={e => { const el = e.currentTarget; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "var(--shadow-hover)"; el.style.background = "#244c39"; }}
+                  onMouseLeave={e => { const el = e.currentTarget; el.style.transform = ""; el.style.boxShadow = ""; el.style.background = "var(--forest)"; }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                  </svg>
+                  Sign up with Google
+                </button>
+              )}
+              {status === "authenticated" && (
+                <Link
+                  href="/practice"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "var(--forest)", color: "#fff", fontFamily: "var(--font-body)", transition: "transform var(--t), box-shadow var(--t), background var(--t)" }}
+                  onMouseEnter={e => { const el = e.currentTarget; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "var(--shadow-hover)"; el.style.background = "#244c39"; }}
+                  onMouseLeave={e => { const el = e.currentTarget; el.style.transform = ""; el.style.boxShadow = ""; el.style.background = "var(--forest)"; }}
+                >
+                  Start Practicing
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </Link>
+              )}
               <Link
                 href="#cases"
                 style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "transparent", color: "var(--forest)", border: "1px solid var(--border)", fontFamily: "var(--font-body)", transition: "border-color var(--t), background var(--t)" }}
@@ -208,7 +250,7 @@ export default function HomePage() {
               </div>
 
               <h3 style={{ marginTop: 14, color: "var(--ink)", fontSize: "1.95rem", lineHeight: 1.15 }}>
-                Regional airline losing $40M/yr — find the leak.
+                Regional airline losing $40M/yr. Find the leak.
               </h3>
               <p style={{ marginTop: 8, color: "var(--muted)", fontSize: "1rem", fontFamily: "var(--font-body)" }}>
                 Interviewer: Senior Partner · Difficulty: Hard
@@ -251,7 +293,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: "0 auto" }} className="differentiator-inner">
           <span className="differentiator-mark" aria-hidden="true">→</span>
           <p className="differentiator-text">
-            The only case prep platform that shows you what consulting outputs actually look like — <em>reports, slides, and all.</em>
+            The only case prep platform that shows you what consulting outputs actually look like: <em>reports, slides, and all.</em>
           </p>
         </div>
       </aside>
@@ -293,9 +335,9 @@ export default function HomePage() {
             <span className="spotlight-glow two" aria-hidden="true" />
 
             <div className="spotlight-head sp-reveal">
-              <span className="section-label">What you get</span>
+              <Link href="/cases" className="section-label">What you get</Link>
               <h2>Everything you need to walk into a case <em>cold</em> and walk out structured.</h2>
-              <p>We rebuilt the consulting interview prep stack from scratch — guided practice, AI feedback, and real deliverables you can actually put in a portfolio.</p>
+              <p>We rebuilt the consulting interview prep stack from scratch: guided practice, AI feedback, and real deliverables so you understand what good looks like.</p>
             </div>
 
             <div className="spotlight-grid">
@@ -392,14 +434,14 @@ export default function HomePage() {
       {/* ══════════════ FRAMEWORKS ══════════════ */}
       <section id="frameworks" style={{ paddingBottom: 110 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px" }}>
-          <span className="section-label">The frameworks</span>
+          <Link href="/frameworks" className="section-label">The frameworks</Link>
           <div className="section-head-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "end", margin: "0 0 48px" }}>
             <h2 style={{ marginTop: 18 }}>
               Seven frameworks. Memorize once,{" "}
               <em style={{ fontStyle: "italic", color: "var(--forest)" }}>apply forever.</em>
             </h2>
             <p style={{ color: "var(--muted)", fontSize: "1.05rem", lineHeight: 1.55, maxWidth: 460, fontFamily: "var(--font-body)" }}>
-              The structures that show up in 90% of real interviews — taught with worked examples, then drilled inside cases so you actually retain them.
+              The structures that show up in 90% of real interviews, taught with worked examples and drilled inside cases so you actually retain them.
             </p>
           </div>
 
@@ -426,14 +468,14 @@ export default function HomePage() {
       {/* ══════════════ PLAYBOOK ══════════════ */}
       <section id="playbook" style={{ paddingBottom: 110 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px" }}>
-          <span className="section-label">The playbook</span>
+          <Link href="/playbook" className="section-label">The playbook</Link>
           <div className="section-head-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "end", margin: "0 0 48px" }}>
             <h2 style={{ marginTop: 18 }}>
               Frameworks teach you what to think.{" "}
               <em style={{ fontStyle: "italic", color: "var(--forest)" }}>The Playbook</em> teaches you how to perform.
             </h2>
             <p style={{ color: "var(--muted)", fontSize: "1.05rem", lineHeight: 1.55, maxWidth: 460, fontFamily: "var(--font-body)" }}>
-              Seven performance modules that separate candidates who know the material from candidates who get the offer. Structure, delivery, timing, curveballs — all of it.
+              Seven performance modules that separate candidates who know the material from candidates who get the offer. Structure, delivery, timing, and curveballs. All of it.
             </p>
           </div>
 
@@ -463,7 +505,7 @@ export default function HomePage() {
       {/* ══════════════ CASE LIBRARY ══════════════ */}
       <section id="cases" style={{ paddingBottom: 110 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px" }}>
-          <span className="section-label" style={{ display: "block", marginBottom: 0 }}>The library</span>
+          <Link href="/cases" className="section-label" style={{ display: "block", marginBottom: 0 }}>The library</Link>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 32, margin: "0 0 40px", flexWrap: "wrap" }}>
             <h2 style={{ marginTop: 18, maxWidth: 640 }}>
               5 cases. 5 industries.{" "}
@@ -502,28 +544,46 @@ export default function HomePage() {
                 <em style={{ fontStyle: "italic", color: "var(--gold)" }}>practice</em>, not just read frameworks?
               </h2>
               <p style={{ marginTop: 16, color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", maxWidth: 420, lineHeight: 1.55, fontFamily: "var(--font-body)" }}>
-                Sign in to start practicing with AI-powered cases — it only takes a second.
+                {status === "authenticated"
+                  ? "Jump back in and keep practicing. Your cases are waiting."
+                  : "Sign in to start practicing with AI-powered cases. It only takes a second."}
               </p>
             </div>
 
-            {/* Sign in */}
+            {/* CTA */}
             <div style={{ position: "relative", zIndex: 2 }}>
-              <button
-                type="button"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
-                className="cta-form-btn"
-                style={{ background: "var(--gold)", color: "#fff", padding: "14px 28px", borderRadius: 999, fontWeight: 500, fontSize: "0.95rem", fontFamily: "var(--font-body)", display: "inline-flex", alignItems: "center", gap: 10, transition: "background var(--t), transform var(--t)", cursor: "pointer", border: "none" }}
-                onMouseEnter={e => { const el = e.currentTarget; el.style.background = "#b1832e"; el.style.transform = "translateY(-1px)"; }}
-                onMouseLeave={e => { const el = e.currentTarget; el.style.background = "var(--gold)"; el.style.transform = ""; }}
-              >
-                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                  <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                </svg>
-                <span>Sign in with Google →</span>
-              </button>
+              {status === "loading" && (
+                <span style={{ display: "inline-block", width: 200, height: 48, borderRadius: 999, background: "rgba(255,255,255,0.15)" }} />
+              )}
+              {status === "unauthenticated" && (
+                <button
+                  type="button"
+                  onClick={() => { sessionStorage.setItem("justLoggedIn", "true"); signIn("google", { callbackUrl: "/practice" }); }}
+                  className="cta-form-btn"
+                  style={{ background: "var(--gold)", color: "#fff", padding: "14px 28px", borderRadius: 999, fontWeight: 500, fontSize: "0.95rem", fontFamily: "var(--font-body)", display: "inline-flex", alignItems: "center", gap: 10, transition: "background var(--t), transform var(--t)", cursor: "pointer", border: "none" }}
+                  onMouseEnter={e => { const el = e.currentTarget; el.style.background = "#b1832e"; el.style.transform = "translateY(-1px)"; }}
+                  onMouseLeave={e => { const el = e.currentTarget; el.style.background = "var(--gold)"; el.style.transform = ""; }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                  </svg>
+                  <span>Sign in with Google →</span>
+                </button>
+              )}
+              {status === "authenticated" && (
+                <Link
+                  href="/practice"
+                  className="cta-form-btn"
+                  style={{ background: "var(--gold)", color: "#fff", padding: "14px 28px", borderRadius: 999, fontWeight: 500, fontSize: "0.95rem", fontFamily: "var(--font-body)", display: "inline-flex", alignItems: "center", gap: 10, transition: "background var(--t), transform var(--t)" }}
+                  onMouseEnter={e => { const el = e.currentTarget; el.style.background = "#b1832e"; el.style.transform = "translateY(-1px)"; }}
+                  onMouseLeave={e => { const el = e.currentTarget; el.style.background = "var(--gold)"; el.style.transform = ""; }}
+                >
+                  <span>Start Practicing →</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>

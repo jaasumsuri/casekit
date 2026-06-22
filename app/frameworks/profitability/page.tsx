@@ -38,17 +38,17 @@ const FLASHCARDS = [
   {
     num: "01",
     front: "Diagnose before you prescribe",
-    back: <>Don&rsquo;t say the word <em>&ldquo;recommend&rdquo;</em> until you&rsquo;ve identified the specific dollar amount and root cause. First instinct isn&rsquo;t analysis — it&rsquo;s guessing.</>,
+    back: <>Don&rsquo;t say the word <em>&ldquo;recommend&rdquo;</em> until you&rsquo;ve identified the specific dollar amount and root cause. First instinct isn&rsquo;t analysis; it&rsquo;s guessing.</>,
   },
   {
     num: "02",
     front: "Revenue = Price × Volume",
-    back: <>They can move in opposite directions and still net to flat revenue. <em>Always decompose</em> — price vs. volume, customer count vs. frequency, and watch for mix shift.</>,
+    back: <>They can move in opposite directions and still net to flat revenue. <em>Always decompose</em>: price vs. volume, customer count vs. frequency, and watch for mix shift.</>,
   },
   {
     num: "03",
     front: "Isolate the bucket first",
-    back: <>Revenue-side, cost-side, or both? <em>Name the culprit bucket</em> before drilling down — it stops you from boiling the ocean on a branch that isn&rsquo;t the problem.</>,
+    back: <>Revenue-side, cost-side, or both? <em>Name the culprit bucket</em> before drilling down. It stops you from boiling the ocean on a branch that isn&rsquo;t the problem.</>,
   },
   {
     num: "04",
@@ -66,7 +66,7 @@ const QUIZ = [
       { letter: "C", text: "Benchmark the company against its competitors", correct: false },
       { letter: "D", text: "Analyze whether the market is contracting", correct: false },
     ],
-    answer: <><b>Answer: B.</b> Revenue grew — so the problem is cost-side. The right first move is decomposing the cost structure to find what&rsquo;s growing faster than revenue. You don&rsquo;t prescribe (A) before you diagnose. Competitive benchmarking (C) and market analysis (D) are useful later, but not first.</>,
+    answer: <><b>Answer: B.</b> Revenue grew, so the problem is cost-side. The right first move is decomposing the cost structure to find what&rsquo;s growing faster than revenue. You don&rsquo;t prescribe (A) before you diagnose. Competitive benchmarking (C) and market analysis (D) are useful later, but not first.</>,
   },
   {
     q: "A retailer's total revenue is flat year-over-year. The head of sales says \"nothing has changed.\" But gross margin fell from 45% to 39%. What's the most likely explanation worth investigating first?",
@@ -76,17 +76,17 @@ const QUIZ = [
       { letter: "C", text: "Fixed costs increased significantly", correct: false },
       { letter: "D", text: "The company cut prices across the board", correct: false },
     ],
-    answer: <><b>Answer: B.</b> Gross margin is Revenue minus COGS — it&rsquo;s not affected by fixed costs (C). Flat revenue means Price &times; Volume is unchanged, making an across-the-board price cut (D) unlikely to go unnoticed. Mix shift and input cost increases are the classic causes of margin compression with flat revenue. One of the most important patterns to recognize.</>,
+    answer: <><b>Answer: B.</b> Gross margin is Revenue minus COGS, so it&rsquo;s not affected by fixed costs (C). Flat revenue means Price &times; Volume is unchanged, making an across-the-board price cut (D) unlikely to go unnoticed. Mix shift and input cost increases are the classic causes of margin compression with flat revenue. One of the most important patterns to recognize.</>,
   },
   {
     q: "You identify that 80% of a company's profit decline is explained by a spike in variable costs. The remaining 20% is from increased fixed costs. Which should you address first in your recommendations?",
     opts: [
-      { letter: "A", text: "Fixed costs — they're easier to cut", correct: false },
-      { letter: "B", text: "Variable costs — they represent the bigger driver and may be recoverable", correct: true },
+      { letter: "A", text: "Fixed costs, because they're easier to cut", correct: false },
+      { letter: "B", text: "Variable costs, because they represent the bigger driver and may be recoverable", correct: true },
       { letter: "C", text: "Both equally", correct: false },
-      { letter: "D", text: "Neither — focus on growing revenue instead", correct: false },
+      { letter: "D", text: "Neither; focus on growing revenue instead", correct: false },
     ],
-    answer: <><b>Answer: B.</b> Prioritize where the problem is biggest. Variable costs are the dominant driver here, so that&rsquo;s where your recommendation should lead. Fixed costs may also need attention, but sequencing recommendations by impact size shows consultants&rsquo; discipline. D is a deflection — you should address both the cost problem and explore growth, but don&rsquo;t use growth as an excuse to avoid diagnosing costs.</>,
+    answer: <><b>Answer: B.</b> Prioritize where the problem is biggest. Variable costs are the dominant driver here, so that&rsquo;s where your recommendation should lead. Fixed costs may also need attention, but sequencing recommendations by impact size shows consultants&rsquo; discipline. D is a deflection: you should address both the cost problem and explore growth, but don&rsquo;t use growth as an excuse to avoid diagnosing costs.</>,
   },
 ];
 
@@ -110,7 +110,7 @@ export default function ProfitabilityPage() {
   const margin = (profit / rev * 100);
 
   const verdictLines = [
-    { ok: cogs <= 56, text: `COGS at <b>${cogs}%</b> of revenue${cogs <= 56 ? " — near the healthy ~55%" : " — compressing the margin"}` },
+    { ok: cogs <= 56, text: `COGS at <b>${cogs}%</b> of revenue${cogs <= 56 ? ", near the healthy ~55%" : ", compressing the margin"}` },
     { ok: margin >= 9, text: `Net margin of <b>${margin.toFixed(1)}%</b> (vs. ~10% two years ago)` },
     { ok: profit >= 72, text: `Operating profit of <b>${fmt(profit)}</b> (vs. $80M baseline)` },
   ];
@@ -166,7 +166,7 @@ export default function ProfitabilityPage() {
               <li><em>&ldquo;Our client is less profitable than its closest competitor. Help us understand why.&rdquo;</em></li>
               <li><em>&ldquo;Net income fell 20% last year. Where should we look first?&rdquo;</em></li>
             </ul>
-            <p style={{ marginTop: 20 }}><strong>One important nuance:</strong> Profitability thinking is embedded inside other framework types too. Market entry cases ask &ldquo;will this be profitable?&rdquo; Growth cases ask &ldquo;which lever improves margins?&rdquo; M&amp;A cases require synergy math. Learn this framework cold — it&rsquo;s the foundation everything else builds on.</p>
+            <p style={{ marginTop: 20 }}><strong>One important nuance:</strong> Profitability thinking is embedded inside other framework types too. Market entry cases ask &ldquo;will this be profitable?&rdquo; Growth cases ask &ldquo;which lever improves margins?&rdquo; M&amp;A cases require synergy math. Learn this framework cold. It&rsquo;s the foundation everything else builds on.</p>
           </div>
         </section>
 
@@ -198,7 +198,7 @@ export default function ProfitabilityPage() {
               {"│   └── "}<span className="c-mut">{"(Mix shift: more low-margin SKUs = lower blended price)\n"}</span>
               {"└── Are competitors forcing price down?\n\n"}
               <span className="c-gold">{"Volume\n"}</span>
-              {"├── Total units sold — up, down, or flat?\n"}
+              {"├── Total units sold: up, down, or flat?\n"}
               {"├── Customer count: acquiring fewer customers?\n"}
               {"├── Purchase frequency: buying less often?\n"}
               {"└── Average order size: smaller baskets?"}
@@ -215,7 +215,7 @@ export default function ProfitabilityPage() {
               {"└── R&D, corporate overhead\n\n"}
               <span className="c-gold">{"Variable Costs"}</span>
               {" "}<span className="c-mut">{"(scale with each unit sold)\n"}</span>
-              {"├── Cost of Goods Sold — raw materials, manufacturing\n"}
+              {"├── Cost of Goods Sold (raw materials, manufacturing)\n"}
               {"├── Packaging and logistics\n"}
               {"├── Sales commissions\n"}
               {"├── Payment processing fees\n"}
@@ -224,7 +224,7 @@ export default function ProfitabilityPage() {
 
             <div className="sanity-note">
               <span className="sn-ico"><CheckIcon /></span>
-              <p><b>Diagnose before you prescribe.</b> Whichever branch you explore, quantify the gap first — never say the word &ldquo;recommend&rdquo; until you&rsquo;ve named the dollar amount and the root cause.</p>
+              <p><b>Diagnose before you prescribe.</b> Whichever branch you explore, quantify the gap first. Never say the word &ldquo;recommend&rdquo; until you&rsquo;ve named the dollar amount and the root cause.</p>
             </div>
 
             <p className="sub-h">How to run the framework in an interview</p>
@@ -233,11 +233,11 @@ export default function ProfitabilityPage() {
               <li>Isolate the culprit bucket first before drilling down.</li>
               <li>Within revenue: decompose Price vs. Volume separately.</li>
               <li>Within costs: separate Fixed vs. Variable, then go category by category.</li>
-              <li>Quantify the gap — how much of the decline does each driver explain?</li>
+              <li>Quantify the gap: how much of the decline does each driver explain?</li>
               <li>Then (and only then) recommend solutions.</li>
             </ol>
 
-            <p className="sub-h">Diagnostic discipline — tap a card to flip</p>
+            <p className="sub-h">Diagnostic discipline: tap a card to flip</p>
             <div className="flashcards">
               {FLASHCARDS.map((card, i) => (
                 <div
@@ -269,17 +269,17 @@ export default function ProfitabilityPage() {
           <div className="block-label"><span className="section-label">Worked example</span></div>
           <div className="block-body">
             <div className="scenario">
-              <p>RetailCo is a mid-size specialty apparel retailer with 200 stores across the US. Two years ago they earned $80M in net profit on $800M in revenue. This year, profit is $48M on $820M in revenue. The CFO is alarmed — revenue is up slightly but profits dropped $32M. You&rsquo;ve been called in. What&rsquo;s going on?</p>
+              <p>RetailCo is a mid-size specialty apparel retailer with 200 stores across the US. Two years ago they earned $80M in net profit on $800M in revenue. This year, profit is $48M on $820M in revenue. The CFO is alarmed: revenue is up slightly but profits dropped $32M. You&rsquo;ve been called in. What&rsquo;s going on?</p>
             </div>
 
             <div className="wx-step">
               <h4><span className="sn">Step 1</span> Revenue or costs?</h4>
-              <p>Revenue went from $800M to $820M — up $20M (2.5%). That&rsquo;s not the problem. So the $32M profit decline is entirely cost-driven. We can set revenue aside (for now) and focus on the cost structure.</p>
+              <p>Revenue went from $800M to $820M, up $20M (2.5%). That&rsquo;s not the problem. So the $32M profit decline is entirely cost-driven. We can set revenue aside (for now) and focus on the cost structure.</p>
             </div>
 
             <div className="wx-step">
               <h4><span className="sn">Step 2</span> Fixed vs. variable?</h4>
-              <p>Decompose it yourself. The builder starts at this year&rsquo;s troubled numbers — drag the drivers and watch profit, margin, and the diagnosis react. Notice which lever actually moves the needle.</p>
+              <p>Decompose it yourself. The builder starts at this year&rsquo;s troubled numbers. Drag the drivers and watch profit, margin, and the diagnosis react. Notice which lever actually moves the needle.</p>
               <div className="estimator">
                 <div className="est-grid">
                   <div className="est-controls">
@@ -345,12 +345,12 @@ export default function ProfitabilityPage() {
 
             <div className="wx-step">
               <h4><span className="sn">Step 3</span> COGS is the smoking gun</h4>
-              <p>COGS jumped from 55% to 60% of revenue — a 500 basis point margin compression. On $820M revenue, that&rsquo;s an extra $41M in cost of goods. This single line item explains most of the problem.</p>
+              <p>COGS jumped from 55% to 60% of revenue, a 500 basis point margin compression. On $820M revenue, that&rsquo;s an extra $41M in cost of goods. This single line item explains most of the problem.</p>
               <p>You ask the interviewer: <em>&ldquo;What&rsquo;s driving the COGS increase?&rdquo;</em> They tell you:</p>
               <ul>
                 <li>Raw cotton and polyester prices spiked 18% due to supply chain disruptions after flooding in key manufacturing regions.</li>
                 <li>RetailCo&rsquo;s supplier contracts are spot-priced (no fixed-rate agreements), so 100% of the increase was passed through.</li>
-                <li>RetailCo also shifted product mix toward lower-margin basics this year to compete on price with fast-fashion entrants — reducing average gross margin per unit even before the input cost increase.</li>
+                <li>RetailCo also shifted product mix toward lower-margin basics this year to compete on price with fast-fashion entrants, reducing average gross margin per unit even before the input cost increase.</li>
               </ul>
             </div>
 
@@ -359,7 +359,7 @@ export default function ProfitabilityPage() {
               <ul>
                 <li>Input cost spike: ~$28M of the COGS increase</li>
                 <li>Product mix shift toward lower-margin items: ~$13M of the COGS increase</li>
-                <li>Rent increase: $6M (lease renewals at higher market rates — unavoidable short-term)</li>
+                <li>Rent increase: $6M (lease renewals at higher market rates, unavoidable short-term)</li>
                 <li>Total explained: ~$47M in cost increases, offset by $20M revenue growth = ~$27M net. With the marketing reduction ($2M) and other small items, total impact lands at ~$32M. Checks out.</li>
               </ul>
             </div>
@@ -370,7 +370,7 @@ export default function ProfitabilityPage() {
                 <p className="sub-h">Short-term (0–6 months)</p>
                 <ul>
                   <li>Renegotiate supplier contracts to lock in fixed pricing for 12–18 months. Even at elevated rates, certainty reduces planning risk.</li>
-                  <li>Pause the push into basics. Price competition with fast fashion is margin-dilutive — RetailCo&rsquo;s strength is premium product, not price.</li>
+                  <li>Pause the push into basics. Price competition with fast fashion is margin-dilutive, and RetailCo&rsquo;s strength is premium product, not price.</li>
                 </ul>
               </div>
               <div className="rec-group">
@@ -380,7 +380,7 @@ export default function ProfitabilityPage() {
                   <li>Explore partial vertical integration for key materials (cotton blends) to improve cost control.</li>
                 </ul>
               </div>
-              <div className="callout-warn"><b>What not to recommend:</b> cutting marketing further — it&rsquo;s already down, and reducing brand investment in a competitive environment will hurt volume next.</div>
+              <div className="callout-warn"><b>What not to recommend:</b> cutting marketing further. It&rsquo;s already down, and reducing brand investment in a competitive environment will hurt volume next.</div>
             </div>
           </div>
         </section>
@@ -392,16 +392,16 @@ export default function ProfitabilityPage() {
             <div className="mistake">
               <span className="mk"><WarnIcon /></span>
               <div>
-                <h4>Mistake 1 — Jumping to recommendations before diagnosing</h4>
-                <p>This is the most common error in profitability cases. The candidate hears &ldquo;profits are down&rdquo; and immediately says &ldquo;they should cut costs&rdquo; or &ldquo;raise prices.&rdquo; That&rsquo;s not analysis — that&rsquo;s guessing. The interviewer wants to watch you think, not hear your first instinct. Diagnose the specific driver before you suggest anything.</p>
+                <h4>Mistake 1: Jumping to recommendations before diagnosing</h4>
+                <p>This is the most common error in profitability cases. The candidate hears &ldquo;profits are down&rdquo; and immediately says &ldquo;they should cut costs&rdquo; or &ldquo;raise prices.&rdquo; That&rsquo;s not analysis; it&rsquo;s guessing. The interviewer wants to watch you think, not hear your first instinct. Diagnose the specific driver before you suggest anything.</p>
                 <p style={{ marginTop: 10 }}>A good rule: don&rsquo;t say the word &ldquo;recommend&rdquo; until you&rsquo;ve identified the specific dollar amount and root cause of the problem.</p>
               </div>
             </div>
             <div className="mistake">
               <span className="mk"><WarnIcon /></span>
               <div>
-                <h4>Mistake 2 — Treating Revenue as a single number</h4>
-                <p>Revenue = Price &times; Volume. These can move in opposite directions and still produce flat total revenue — if prices rose 8% but volume fell 7%, revenue looks almost flat but the underlying dynamic is very different from a healthy business. Always decompose. Ask about price trends and volume trends separately. Ask about customer count and purchase frequency separately. Mix shifts (selling more of a lower-margin product) are also invisible unless you decompose.</p>
+                <h4>Mistake 2: Treating Revenue as a single number</h4>
+                <p>Revenue = Price &times; Volume. These can move in opposite directions and still produce flat total revenue. If prices rose 8% but volume fell 7%, revenue looks almost flat, but the underlying dynamic is very different from a healthy business. Always decompose. Ask about price trends and volume trends separately. Ask about customer count and purchase frequency separately. Mix shifts (selling more of a lower-margin product) are also invisible unless you decompose.</p>
               </div>
             </div>
           </div>
@@ -431,16 +431,16 @@ export default function ProfitabilityPage() {
                   <div className="af-clip"><div className="af-inner">
                     <div className="af-head">How to crack it</div>
                     <div className="flow">
-                      <div className="flow-step"><span className="flow-node">1</span><h6>Revenue&rsquo;s up — so this is entirely cost-side</h6><p>Subscribers grew 15%, so set the revenue line aside. The 12% profit drop has to be living in the cost structure.</p></div>
-                      <div className="flow-step"><span className="flow-node">2</span><h6>Split costs into fixed vs. variable</h6><p><b>Fixed</b> — infrastructure, licensing minimums, corporate overhead. <b>Variable</b> — content spend per subscriber, payment processing.</p></div>
+                      <div className="flow-step"><span className="flow-node">1</span><h6>Revenue&rsquo;s up, so this is entirely cost-side</h6><p>Subscribers grew 15%, so set the revenue line aside. The 12% profit drop has to be living in the cost structure.</p></div>
+                      <div className="flow-step"><span className="flow-node">2</span><h6>Split costs into fixed vs. variable</h6><p><b>Fixed</b>: infrastructure, licensing minimums, corporate overhead. <b>Variable</b>: content spend per subscriber, payment processing.</p></div>
                       <div className="flow-step"><span className="flow-node">3</span><h6>Benchmark each cost&rsquo;s growth against 15%</h6><p>Anything growing faster than subscribers is a suspect. That one test ranks your buckets before you drill into any of them.</p></div>
-                      <div className="flow-step"><span className="flow-node">4</span><h6>Prime suspect — content spend</h6><p>Streaming budgets are committed in advance, so 15% more subs doesn&rsquo;t fund proportional content. If content grew <b>25% on 15%</b> subscriber growth, that delta explains most of the compression.</p></div>
-                      <div className="flow-step"><span className="flow-node">5</span><h6>Then infrastructure, then licensing</h6><p>Cloud scales with streaming volume — if per-unit cost isn&rsquo;t falling with scale, it&rsquo;s architecturally inefficient. Licensing is usually fixed-contract, so only a swing factor if a major deal renewed higher.</p></div>
+                      <div className="flow-step"><span className="flow-node">4</span><h6>Prime suspect: content spend</h6><p>Streaming budgets are committed in advance, so 15% more subs doesn&rsquo;t fund proportional content. If content grew <b>25% on 15%</b> subscriber growth, that delta explains most of the compression.</p></div>
+                      <div className="flow-step"><span className="flow-node">5</span><h6>Then infrastructure, then licensing</h6><p>Cloud scales with streaming volume, so if per-unit cost isn&rsquo;t falling with scale, it&rsquo;s architecturally inefficient. Licensing is usually fixed-contract, so only a swing factor if a major deal renewed higher.</p></div>
                       <div className="flow-step landing">
                         <span className="flow-node"><CheckIcon /></span>
                         <div className="land-box">
                           <span className="land-lbl">Where you land</span>
-                          <p>Quantify the dollars from each bucket, <em>then</em> recommend — don&rsquo;t jump to &ldquo;cut content spend&rdquo; before you&rsquo;ve confirmed it&rsquo;s the driver.</p>
+                          <p>Quantify the dollars from each bucket, <em>then</em> recommend. Don&rsquo;t jump to &ldquo;cut content spend&rdquo; before you&rsquo;ve confirmed it&rsquo;s the driver.</p>
                         </div>
                       </div>
                     </div>
@@ -470,7 +470,7 @@ export default function ProfitabilityPage() {
                     <div className="af-head">How to crack it</div>
                     <div className="flow">
                       <div className="flow-step"><span className="flow-node">1</span><h6>Same prices, same regions → it&rsquo;s cost structure</h6><p>Identical pricing and geography rules out a revenue-side story. The 5-point margin gap equals roughly the same dollar gap in cost efficiency.</p></div>
-                      <div className="flow-step"><span className="flow-node">2</span><h6>COGS first</h6><p>If the competitor sources coffee, milk and packaging cheaper — scale purchasing, better supplier contracts, vertical integration — that alone is <b>2–3 points</b>.</p></div>
+                      <div className="flow-step"><span className="flow-node">2</span><h6>COGS first</h6><p>If the competitor sources coffee, milk and packaging cheaper (scale purchasing, better supplier contracts, vertical integration), that alone is <b>2–3 points</b>.</p></div>
                       <div className="flow-step"><span className="flow-node">3</span><h6>Labor second</h6><p>Check revenue per employee and labor as a % of sales. More staff per location or higher overtime rates is roughly another point.</p></div>
                       <div className="flow-step"><span className="flow-node">4</span><h6>Occupancy third</h6><p>Same region doesn&rsquo;t mean identical real estate. A lease portfolio skewed to premium high-traffic sites pushes rent as a % of revenue up.</p></div>
                       <div className="flow-step"><span className="flow-node">5</span><h6>G&amp;A last</h6><p>400 cafés should fund a lean corporate function. Overhead that&rsquo;s bloated relative to store count is the final lever.</p></div>
@@ -556,7 +556,7 @@ export default function ProfitabilityPage() {
                 <em style={{ fontStyle: "italic", color: "var(--gold)" }}>practice?</em>
               </h2>
               <p style={{ marginTop: 14, color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", maxWidth: 440, lineHeight: 1.55, fontFamily: "var(--font-body)" }}>
-                Reading the framework gets you halfway. The other half is reps — practice cases that build the muscle memory interviews demand.
+                Reading the framework gets you halfway. The other half is reps: practice cases that build the muscle memory interviews demand.
               </p>
             </div>
             <Link

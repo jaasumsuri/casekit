@@ -5,19 +5,19 @@ export const FIELDCAST = {
       kind: "mc" as const,
       phase: "Problem framing",
       prompt: "Before you pick a framework, what kind of decision is this?",
-      sub: "Name the problem before choosing a direction. Read the brief: the CEO has already scoped a specific move — what is Fieldcast actually asking you to evaluate?",
+      sub: "Name the problem before choosing a direction. Read the brief: the CEO has already scoped a specific move, so what is Fieldcast actually asking you to evaluate?",
       options: [
-        { key: "A", text: "A profitability problem — Fieldcast's margins are under pressure and need new revenue." },
-        { key: "B", text: "A strategic entry decision — Fieldcast is evaluating whether and how to enter a new customer segment." },
-        { key: "C", text: "A growth strategy problem — Fieldcast needs to choose between multiple growth options." },
-        { key: "D", text: "A competitive response — Fieldcast is reacting to SMB-focused competitors moving upmarket." },
+        { key: "A", text: "A profitability problem: Fieldcast's margins are under pressure and need new revenue." },
+        { key: "B", text: "A strategic entry decision: Fieldcast is evaluating whether and how to enter a new customer segment." },
+        { key: "C", text: "A growth strategy problem: Fieldcast needs to choose between multiple growth options." },
+        { key: "D", text: "A competitive response: Fieldcast is reacting to SMB-focused competitors moving upmarket." },
       ],
       correct: "B",
       explain:
-        "<p><strong>This is a market entry decision.</strong> The brief presents a specific, bounded question: should Fieldcast enter the SMB market? That means evaluating a new customer segment — its attractiveness, and Fieldcast's ability to compete in it profitably.</p><p>A is wrong — margins are healthy at 22% and there's no sign of financial pressure. C is close but too broad — Growth Strategy applies when a company is weighing <em>multiple</em> options; here the CEO has scoped it to one move. D inverts the logic — the brief calls competitors underpowered, not a threat moving upmarket.</p>",
+        "<p><strong>This is a market entry decision.</strong> The brief presents a specific, bounded question: should Fieldcast enter the SMB market? That means evaluating a new customer segment: its attractiveness, and Fieldcast's ability to compete in it profitably.</p><p>A is wrong because margins are healthy at 22% and there's no sign of financial pressure. C is close but too broad: Growth Strategy applies when a company is weighing <em>multiple</em> options; here the CEO has scoped it to one move. D inverts the logic: the brief calls competitors underpowered, not a threat moving upmarket.</p>",
       miss: [
-        { h: 'The "growth" trap', p: "Weak candidates pick C because the word \"growth\" appears in the brief. Market Entry is the right call when the question is about entering a <em>specific, defined</em> market. Growth Strategy is for choosing among several options — and the CEO already narrowed it to one." },
-        { h: "What good sounds like", p: "\"The CEO has scoped one move — enter SMB. That's a market entry decision, so I'll evaluate market attractiveness, our ability to compete, and the economics of entry before giving a go or no-go.\"" },
+        { h: 'The "growth" trap', p: "Weak candidates pick C because the word \"growth\" appears in the brief. Market Entry is the right call when the question is about entering a <em>specific, defined</em> market. Growth Strategy is for choosing among several options, and the CEO already narrowed it to one." },
+        { h: "What good sounds like", p: "\"The CEO has scoped one move: enter SMB. That's a market entry decision, so I'll evaluate market attractiveness, our ability to compete, and the economics of entry before giving a go or no-go.\"" },
       ],
     },
     {
@@ -34,10 +34,10 @@ export const FIELDCAST = {
       ],
       correct: "B",
       explain:
-        "<p><strong>The Market Entry framework is built for exactly this.</strong> It forces three questions in sequence: (1) Is the market attractive — large enough, growing, not locked up? (2) Can Fieldcast compete — does it have the capabilities, cost structure, and product to win? (3) Is entry worth it — return vs. cost, and does it fit the strategy?</p><p>Profitability (A) diagnoses why profits are falling — not relevant. M&A (C) is for acquisitions. Ansoff (D) is a positioning tool for \"what are all the ways we could grow?\" — the CEO hasn't asked that.</p>",
+        "<p><strong>The Market Entry framework is built for exactly this.</strong> It forces three questions in sequence: (1) Is the market attractive: large enough, growing, not locked up? (2) Can Fieldcast compete: does it have the capabilities, cost structure, and product to win? (3) Is entry worth it: return vs. cost, and does it fit the strategy?</p><p>Profitability (A) diagnoses why profits are falling, so it's not relevant. M&A (C) is for acquisitions. Ansoff (D) is a positioning tool for \"what are all the ways we could grow?\" and the CEO hasn't asked that.</p>",
       miss: [
-        { h: "The Ansoff temptation", p: "Weak candidates reach for Ansoff because it sounds strategic and has a \"market development\" quadrant. Ansoff is a positioning tool, not an evaluation tool — the Market Entry framework is more structured for a go / no-go." },
-        { h: "What good sounds like", p: "\"I'd use the Market Entry framework — assess market attractiveness, competitive position, then the financial case. I'll start with attractiveness: if the market isn't worth entering, everything else is moot.\"" },
+        { h: "The Ansoff temptation", p: "Weak candidates reach for Ansoff because it sounds strategic and has a \"market development\" quadrant. Ansoff is a positioning tool, not an evaluation tool. The Market Entry framework is more structured for a go / no-go." },
+        { h: "What good sounds like", p: "\"I'd use the Market Entry framework: assess market attractiveness, competitive position, then the financial case. I'll start with attractiveness: if the market isn't worth entering, everything else is moot.\"" },
       ],
     },
     {
@@ -70,10 +70,10 @@ export const FIELDCAST = {
         { key: "risk", label: "Flags the key risk", re: "churn|28%|unit econ|margin|gross|acv gap|stress" },
       ],
       model:
-        "The SMB market has strong surface-level attractiveness: <em>$4.2B</em> TAM, <em>18%</em> annual growth, and only <em>14%</em> penetration. Two competitors hold 61% share, but if they're genuinely underpowered, that dominance may be fragile rather than entrenched.<br><br>However, three numbers should generate concern before any go decision. <strong>First, the ACV gap.</strong> SMB contracts average $4,800/yr vs. Fieldcast's $87,000 enterprise ACV — an <em>18x</em> gap. The unit economics of serving SMB are fundamentally different; a deal that takes similar sales effort for 1/18th the revenue destroys margin unless Fieldcast radically changes how it sells. <strong>Second, churn.</strong> At <em>28%</em> annual churn, roughly one in four customers is lost every year — and at $4,800 ACV against $1,200 CAC, a customer lost in year one nets only ~$3,600 before any support or product cost. <strong>Third, the LTV check.</strong> LTV ≈ ACV / churn ≈ $4,800 / 0.28 ≈ <em>$17,000</em> per customer before margin — whether that works depends entirely on gross margin, which the brief doesn't give us.<br><br>Assessment: attractive in size and growth, but the unit economics raise a real warning flag. Before assessing competitive position, I'd want to know what gross margin is achievable on an SMB contract delivered cheaply enough to earn an acceptable return.",
+        "The SMB market has strong surface-level attractiveness: <em>$4.2B</em> TAM, <em>18%</em> annual growth, and only <em>14%</em> penetration. Two competitors hold 61% share, but if they're genuinely underpowered, that dominance may be fragile rather than entrenched.<br><br>However, three numbers should generate concern before any go decision. <strong>First, the ACV gap.</strong> SMB contracts average $4,800/yr vs. Fieldcast's $87,000 enterprise ACV, an <em>18x</em> gap. The unit economics of serving SMB are fundamentally different; a deal that takes similar sales effort for 1/18th the revenue destroys margin unless Fieldcast radically changes how it sells. <strong>Second, churn.</strong> At <em>28%</em> annual churn, roughly one in four customers is lost every year, and at $4,800 ACV against $1,200 CAC, a customer lost in year one nets only ~$3,600 before any support or product cost. <strong>Third, the LTV check.</strong> LTV ≈ ACV / churn ≈ $4,800 / 0.28 ≈ <em>$17,000</em> per customer before margin. Whether that works depends entirely on gross margin, which the brief doesn't give us.<br><br>Assessment: attractive in size and growth, but the unit economics raise a real warning flag. Before assessing competitive position, I'd want to know what gross margin is achievable on an SMB contract delivered cheaply enough to earn an acceptable return.",
       coaching: [
         { n: "01", h: "Don't stop at TAM", p: "The exhibit is built so the headline numbers look good and the unit economics ($4,800 ACV, 28% churn, $1,200 CAC) tell a different story. Spot the 18x ACV gap immediately and flag it as the central issue." },
-        { n: "02", h: "Do the math", p: "There's enough here for a back-of-envelope LTV/CAC check: LTV ≈ ACV / churn ≈ $17,000; CAC = $1,200. A qualitative read with no numbers does half the job — the figures are right there." },
+        { n: "02", h: "Do the math", p: "There's enough here for a back-of-envelope LTV/CAC check: LTV ≈ ACV / churn ≈ $17,000; CAC = $1,200. A qualitative read with no numbers does half the job. The figures are right there." },
         { n: "03", h: "Question the 61%", p: "If incumbents are \"underpowered,\" why do they hold 61% share? Either the market doesn't need a powerful product (undermining the CEO's thesis) or they have distribution advantages unrelated to quality. Neither is obviously good for Fieldcast." },
       ],
     },
@@ -82,7 +82,7 @@ export const FIELDCAST = {
       kind: "write" as const,
       phase: "Competitive position",
       prompt: "Can Fieldcast actually compete in it?",
-      sub: "Review both exhibits. Assess whether Fieldcast has the right capabilities to win in SMB — and identify the single biggest internal obstacle to entry.",
+      sub: "Review both exhibits. Assess whether Fieldcast has the right capabilities to win in SMB, and identify the single biggest internal obstacle to entry.",
       exhibits: [
         {
           caption: "Exhibit A · Fieldcast product architecture",
@@ -94,7 +94,7 @@ export const FIELDCAST = {
             { label: "Onboarding time", cells: ["6–8 weeks with a dedicated implementation consultant"], flag: true },
             { label: "Pricing model", cells: ["Annual contract, invoiced upfront, minimum 50 seats"], flag: false },
             { label: "Support model", cells: ["Named CSM per account; 4-hour SLA"], flag: false },
-            { label: "Self-serve capability", cells: ["None — all deployments are sales-assisted"], flag: true },
+            { label: "Self-serve capability", cells: ["None; all deployments are sales-assisted"], flag: true },
           ],
         },
         {
@@ -110,26 +110,26 @@ export const FIELDCAST = {
           ],
         },
       ],
-      placeholder: "The capability gap is structural, not cosmetic…  The single biggest internal obstacle is…  This doesn't mean don't enter — it means…",
+      placeholder: "The capability gap is structural, not cosmetic…  The single biggest internal obstacle is…  This doesn't mean don't enter. It means…",
       rubric: [
         { key: "gap", label: "Names the gaps", re: "onboard|6.?8 week|self.?serve|seat|integrat|monthly|billing" },
         { key: "priority", label: "Picks the #1 obstacle", re: "sales motion|biggest|single|most important|go.?to.?market|gtm|plg" },
         { key: "nuance", label: "Conditional, not blanket no", re: "doesn'?t mean|not the way|conditional|reframe|business model|new business" },
       ],
       model:
-        "The gap between what Fieldcast's product is built to do and what SMBs expect is severe and structural — not cosmetic. Onboarding takes <em>6–8 weeks</em> with a dedicated consultant; SMBs expect to be live in under a week, ideally without talking to anyone. Fieldcast needs a <em>50-seat</em> minimum on annual upfront billing; SMBs want monthly billing and 1–5 seats. Fieldcast integrates with SAP, Salesforce, and Oracle; SMBs run on Google Workspace, Slack, Notion, and QuickBooks.<br><br>These aren't features you toggle off. They reflect fundamental architectural decisions — a platform deployed org-wide by IT, sold through high-touch enterprise sales, supported by dedicated CSMs. Rebuilding for self-serve SMB isn't a product update; it's a <strong>parallel product build.</strong><br><br>The single biggest internal obstacle is the <strong>sales motion.</strong> Fieldcast's entire revenue engine is built around $87,000 deals that justify long cycles, dedicated AEs, and implementation consultants. At $4,800 ACV that motion is structurally unprofitable — Fieldcast would spend more acquiring and onboarding an SMB customer than it earns in year one. The company would need a product-led growth motion that exists nowhere in the organization today.<br><br>This doesn't mean Fieldcast shouldn't enter SMB. It means the CEO's framing — \"a lighter version at a lower price point\" — dramatically underestimates what entry actually requires.",
+        "The gap between what Fieldcast's product is built to do and what SMBs expect is severe and structural, not cosmetic. Onboarding takes <em>6–8 weeks</em> with a dedicated consultant; SMBs expect to be live in under a week, ideally without talking to anyone. Fieldcast needs a <em>50-seat</em> minimum on annual upfront billing; SMBs want monthly billing and 1–5 seats. Fieldcast integrates with SAP, Salesforce, and Oracle; SMBs run on Google Workspace, Slack, Notion, and QuickBooks.<br><br>These aren't features you toggle off. They reflect fundamental architectural decisions: a platform deployed org-wide by IT, sold through high-touch enterprise sales, supported by dedicated CSMs. Rebuilding for self-serve SMB isn't a product update; it's a <strong>parallel product build.</strong><br><br>The single biggest internal obstacle is the <strong>sales motion.</strong> Fieldcast's entire revenue engine is built around $87,000 deals that justify long cycles, dedicated AEs, and implementation consultants. At $4,800 ACV that motion is structurally unprofitable. Fieldcast would spend more acquiring and onboarding an SMB customer than it earns in year one. The company would need a product-led growth motion that exists nowhere in the organization today.<br><br>This doesn't mean Fieldcast shouldn't enter SMB. It means the CEO's framing (\"a lighter version at a lower price point\") dramatically underestimates what entry actually requires.",
       coaching: [
-        { n: "01", h: "Prioritize the gaps", p: "A weak answer lists every gap. A strong one names which matters most: the sales motion. Product gaps are solved with engineering; a sales-motion rebuild needs new hiring profiles, comp structures, and org design — that's the one to anchor on." },
+        { n: "01", h: "Prioritize the gaps", p: "A weak answer lists every gap. A strong one names which matters most: the sales motion. Product gaps are solved with engineering; a sales-motion rebuild needs new hiring profiles, comp structures, and org design. That's the one to anchor on." },
         { n: "02", h: "Connect back to Step 3", p: "The 28% churn becomes far more alarming once you know Fieldcast has zero self-serve: every churned SMB customer requires expensive re-acquisition through a motion that was already borderline unprofitable." },
-        { n: "03", h: "Don't snap to \"no\"", p: "The right answer isn't \"don't enter\" — it's \"don't enter the way the CEO is proposing.\" Strong candidates describe what a conditional yes looks like instead of issuing a blanket no." },
+        { n: "03", h: "Don't snap to \"no\"", p: "The right answer isn't \"don't enter\" but \"don't enter the way the CEO is proposing.\" Strong candidates describe what a conditional yes looks like instead of issuing a blanket no." },
       ],
     },
     {
       id: 5,
       kind: "write2" as const,
       phase: "Recommendation & pushback",
-      prompt: "Give the board your recommendation — then handle the pushback.",
-      sub: "This is the part that separates a composed candidate from a rattled one. State your position, support it, define your conditions — then update under pressure without abandoning your logic.",
+      prompt: "Give the board your recommendation, then handle the pushback.",
+      sub: "This is the part that separates a composed candidate from a rattled one. State your position, support it, define your conditions, then update under pressure without abandoning your logic.",
       partA: {
         label: "Part A · Your recommendation",
         intro: "State your go or no-go clearly, support it with two or three findings, and tell the board what would have to be true for your answer to change.",
@@ -140,26 +140,26 @@ export const FIELDCAST = {
           { key: "conditions", label: "States conditions", re: "would change|condition|if .*margin|pilot|unless|provided" },
         ],
         model:
-          "My recommendation is a <strong>conditional no-go</strong> on the CEO's current proposal, with a path to yes under a different entry model.<br><br>The SMB market is genuinely attractive — <em>$4.2B</em> TAM, 18% growth, low penetration — and incumbents look weak. But entering by repricing the existing platform isn't executable at acceptable economics, for two reasons. <strong>First, the unit economics don't work under the current model.</strong> At $4,800 ACV, $1,200 CAC, and 28% churn, Fieldcast needs gross margins above <em>65%</em> per SMB customer just to hit a 3:1 LTV/CAC ratio — implausible with its high-touch delivery. <strong>Second, the product architecture is incompatible</strong> — 6–8 week onboarding, 50-seat minimums, zero self-serve are dealbreakers for SMB buyers. Building SMB-compatible functionality is a parallel product build, not a six-month project.<br><br>I recommend not entering through the proposed approach. If the board wants SMB, the right path is to build a product-led growth motion from scratch — self-serve, low-touch, SMB-native integrations, monthly billing, separate P&L — and treat it as a new business unit, not an extension of the enterprise product.<br><br>This changes if SMB gross margin can be demonstrated above <em>65%</em> in a pilot, or if a low-touch delivery model already exists inside the product that can be repurposed quickly.",
+          "My recommendation is a <strong>conditional no-go</strong> on the CEO's current proposal, with a path to yes under a different entry model.<br><br>The SMB market is genuinely attractive (<em>$4.2B</em> TAM, 18% growth, low penetration) and incumbents look weak. But entering by repricing the existing platform isn't executable at acceptable economics, for two reasons. <strong>First, the unit economics don't work under the current model.</strong> At $4,800 ACV, $1,200 CAC, and 28% churn, Fieldcast needs gross margins above <em>65%</em> per SMB customer just to hit a 3:1 LTV/CAC ratio — implausible with its high-touch delivery. <strong>Second, the product architecture is incompatible:</strong> 6–8 week onboarding, 50-seat minimums, zero self-serve are dealbreakers for SMB buyers. Building SMB-compatible functionality is a parallel product build, not a six-month project.<br><br>I recommend not entering through the proposed approach. If the board wants SMB, the right path is to build a product-led growth motion from scratch (self-serve, low-touch, SMB-native integrations, monthly billing, separate P&L) and treat it as a new business unit, not an extension of the enterprise product.<br><br>This changes if SMB gross margin can be demonstrated above <em>65%</em> in a pilot, or if a low-touch delivery model already exists inside the product that can be repurposed quickly.",
         coaching: [
           { n: "01", h: "Position, then conditions", p: "Real cases rarely have a clean answer. The structure is: state your position → support it with evidence → define the conditions under which you'd change your mind. \"No go\" and stop is half an answer." },
           { n: "02", h: "Quantify the argument", p: "\"The product isn't built for SMBs\" is an opinion. \"At $4,800 ACV and 28% churn, LTV is ~$17,000 before costs, so 65%+ gross margin is implausible today\" is a finding. Interviewers push back on opinions, not on math that checks out." },
-          { n: "03", h: "Offer the alternative", p: "A no-go with no alternative is a veto, not a recommendation. Every no-go should end with what the client should do instead — here, a separate SMB business unit." },
+          { n: "03", h: "Offer the alternative", p: "A no-go with no alternative is a veto, not a recommendation. Every no-go should end with what the client should do instead: here, a separate SMB business unit." },
         ],
       },
       partB: {
         label: "Part B · The board pushes back",
         quote:
-          "The CFO interjects: \"We've already built a lightweight version of the product internally — it's been running as a side project for six months. It has basic self-serve onboarding and integrates with Google Workspace. Engineering says it could be production-ready in 90 days. Does that change your recommendation?\"",
+          "The CFO interjects: \"We've already built a lightweight version of the product internally. It's been running as a side project for six months. It has basic self-serve onboarding and integrates with Google Workspace. Engineering says it could be production-ready in 90 days. Does that change your recommendation?\"",
         intro: "Respond directly. Does this change your position? If yes, what does your updated recommendation look like? If no, what would still need to be true before you'd say go?",
-        placeholder: "Yes, this changes my recommendation — but only partially…  What it solves…  What it doesn't…  Remaining conditions…",
+        placeholder: "Yes, this changes my recommendation, but only partially…  What it solves…  What it doesn't…  Remaining conditions…",
         rubric: [
           { key: "update", label: "Updates proportionally", re: "change|partial|shift|yes|update|moves" },
           { key: "holds", label: "Holds live concerns", re: "unit econ|sales motion|margin|cost structure|gross|still|remain" },
           { key: "structured", label: "Structured response", re: "one|two|three|first|second|third|1\\.|2\\.|3\\." },
         ],
         model:
-          "Yes — this changes my recommendation, but only partially, and with conditions.<br><br>If a lightweight, self-serve product with Google Workspace integration exists and is 90 days from production, the largest obstacle I flagged — the product architecture gap — is partially addressed. That meaningfully shifts the risk profile of entry.<br><br>But my core concern about <strong>unit economics remains</strong>. A product existing doesn't solve the sales motion. Three things still need answers before this is a go. <strong>One — cost structure:</strong> can the lightweight product be deployed and supported at meaningfully lower cost? If it shares the enterprise implementation infrastructure, the margin math is unchanged. <strong>Two — market validation:</strong> a six-month internal side project isn't a market-tested product. I'd want 20–30 SMB pilot customers, churn data, and NPS before calling it ready. <strong>Three — go-to-market capability:</strong> engineering can ship it, but PLG growth and marketing is a different organizational muscle that doesn't exist inside an enterprise SaaS company.<br><br>Updated recommendation: <strong>conditional go</strong> — but only if gross margin on the lightweight product is demonstrated above <em>65%</em> in a pilot, and only if the board commits to a separate P&L with dedicated SMB-native leadership, not a feature managed by the enterprise team.",
+          "Yes, this changes my recommendation, but only partially, and with conditions.<br><br>If a lightweight, self-serve product with Google Workspace integration exists and is 90 days from production, the largest obstacle I flagged (the product architecture gap) is partially addressed. That meaningfully shifts the risk profile of entry.<br><br>But my core concern about <strong>unit economics remains</strong>. A product existing doesn't solve the sales motion. Three things still need answers before this is a go. <strong>One — cost structure:</strong> can the lightweight product be deployed and supported at meaningfully lower cost? If it shares the enterprise implementation infrastructure, the margin math is unchanged. <strong>Two — market validation:</strong> a six-month internal side project isn't a market-tested product. I'd want 20–30 SMB pilot customers, churn data, and NPS before calling it ready. <strong>Three — go-to-market capability:</strong> engineering can ship it, but PLG growth and marketing is a different organizational muscle that doesn't exist inside an enterprise SaaS company.<br><br>Updated recommendation: <strong>conditional go</strong> — but only if gross margin on the lightweight product is demonstrated above <em>65%</em> in a pilot, and only if the board commits to a separate P&L with dedicated SMB-native leadership, not a feature managed by the enterprise team.",
         coaching: [
           { n: "01", h: "Don't fully reverse", p: "Hearing \"we have a product\" and immediately saying \"okay, go then\" is the most common failure. The product gap was one of two problems — the unit economics and sales motion are still live. Reversing entirely means you didn't understand your own argument." },
           { n: "02", h: "But do update", p: "Digging in — \"my recommendation stands\" — ignores material new information. A good consultant updates in proportion to the weight of the new evidence: the architecture risk drops, the economics risk doesn't." },

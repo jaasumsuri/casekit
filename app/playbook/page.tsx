@@ -18,7 +18,7 @@ const MODULES = [
     num: "02",
     cat: "Communication",
     title: <>Thinking <em>out loud</em></>,
-    desc: "The interviewer doesn't just want your answer — they want to watch you get there. Three narration modes that make your thinking followable in real time.",
+    desc: "The interviewer doesn't just want your answer. They want to watch you get there. Three narration modes that make your thinking followable in real time.",
     topics: ["Signposting", "Hypothesis narration", "Navigating uncertainty", "The 60/40 ratio"],
     time: "10 min",
     exercise: "3 practice moments",
@@ -30,7 +30,7 @@ const MODULES = [
     num: "03",
     cat: "Structure",
     title: <>Picking the right <em>framework</em></>,
-    desc: "The framework isn't the answer — it's the lens. How to read a prompt, match it to the right structure, and adapt when the first choice doesn't fit.",
+    desc: "The framework isn't the answer; it's the lens. How to read a prompt, match it to the right structure, and adapt when the first choice doesn't fit.",
     topics: ["Problem-type recognition", "Framework selection", "Custom vs. standard", "Mid-case pivots"],
     time: "9 min",
     exercise: "Framework matcher",
@@ -329,7 +329,7 @@ export default function PlaybookPage() {
                 Frameworks get you in the room. <em>Technique keeps you there.</em>
               </p>
               <p className="iv-phil-sub">
-                Most prep focuses on what to think about — profitability trees, market sizing formulas, MECE structures. That&apos;s necessary but not sufficient. The playbook focuses on the other half: how to open, how to narrate, how to handle the moments where you don&apos;t know what to do next. These are the skills interviewers actually score you on.
+                Most prep focuses on what to think about: profitability trees, market sizing formulas, MECE structures. That&apos;s necessary but not sufficient. The playbook focuses on the other half: how to open, how to narrate, how to handle the moments where you don&apos;t know what to do next. These are the skills interviewers actually score you on.
               </p>
             </div>
           </div>
@@ -358,7 +358,7 @@ export default function PlaybookPage() {
                 </svg>
               </span>
               <h4>Communication</h4>
-              <p>Narrate your thinking so the interviewer follows — and is impressed by — your process.</p>
+              <p>Narrate your thinking so the interviewer follows your process and is impressed by it.</p>
             </div>
             <div className="iv-skill">
               <span className="iv-skill-ico green">
@@ -388,7 +388,7 @@ export default function PlaybookPage() {
           <div className="iv-modules-head">
             <span className="section-label" style={{ justifyContent: "center" }}>The modules</span>
             <h2>Read in order. <em>Practice out loud.</em></h2>
-            <p>Each module is a standalone coaching session — read the technique, study the examples, then practice with the interactive exercises.</p>
+            <p>Each module is a standalone coaching session. Read the technique, study the examples, then practice with the interactive exercises.</p>
           </div>
 
           {MODULES.map((mod) => {

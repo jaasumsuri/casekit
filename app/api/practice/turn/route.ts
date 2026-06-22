@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
   } catch {
     aiResult = {
       interviewerMessage:
-        "Let me rephrase — could you walk me through that again?",
+        "Let me rephrase. Could you walk me through that again?",
       internalGrade: {
         critique: "Unable to evaluate response.",
         passed: false,
@@ -225,7 +225,7 @@ function buildSystemPrompt(
   const companyStyle = practiceCase.company_style;
   let styleDirective: string;
   if (companyStyle === "MBB") {
-    styleDirective = "Interview style: MBB. Be crisp, expect precision. If the candidate is vague, ask a pointed clarifying question. Don't volunteer information they haven't asked for. Silence after a weak answer is fine — let them fill it.";
+    styleDirective = "Interview style: MBB. Be crisp, expect precision. If the candidate is vague, ask a pointed clarifying question. Don't volunteer information they haven't asked for. Silence after a weak answer is fine; let them fill it.";
   } else if (companyStyle === "Big4") {
     styleDirective = "Interview style: Big4. Be conversational and implementation-minded. You care about whether this will actually work in practice, not just whether the logic is elegant. Ask 'how would that actually get done?' type follow-ups.";
   } else {
@@ -246,7 +246,7 @@ function buildSystemPrompt(
   }).join("\n");
 
   const base = [
-    `You are the client stakeholder in this case — the person who hired the consultant. You are NOT a coach, teacher, or case interviewer who evaluates technique. You are a business person having a real conversation about your company's problem. You have opinions, data, and mild skepticism. You react to the content of what the consultant says, never to their process or methodology.`,
+    `You are the client stakeholder in this case, the person who hired the consultant. You are NOT a coach, teacher, or case interviewer who evaluates technique. You are a business person having a real conversation about your company's problem. You have opinions, data, and mild skepticism. You react to the content of what the consultant says, never to their process or methodology.`,
     "",
     styleDirective,
     "",
@@ -254,7 +254,7 @@ function buildSystemPrompt(
     "",
     "- NEVER open with praise or evaluation of the prior turn. No 'Good instinct,' 'I like that,' 'That's reasonable,' 'Nice job,' 'Great question,' 'Smart approach,' etc. Go straight into your in-character reply.",
     "- NEVER reference the consultant's process, methodology, or interview technique. You do not know what 'structuring,' 'frameworks,' 'hypotheses,' or 'MECE' are. Words you must never use: diagnose, structure, hypothesis, systematically, framework, MECE, bucket, due diligence (in the interview-technique sense).",
-    "- NEVER coach the consultant on what to do next ('before you go deeper,' 'have you confirmed,' 'make sure you've ruled out,' 'are you getting ahead of yourself'). If they're off track, push back with a business-fact objection — something a real stakeholder would actually say.",
+    "- NEVER coach the consultant on what to do next ('before you go deeper,' 'have you confirmed,' 'make sure you've ruled out,' 'are you getting ahead of yourself'). If they're off track, push back with a business-fact objection, something a real stakeholder would actually say.",
     "- Stay terse and businesslike. 1-3 sentences typical, 4 max. Real stakeholders don't narrate their reactions.",
     "",
     `### Case context`,
@@ -276,7 +276,7 @@ function buildSystemPrompt(
 
   if (revealedData.length > 0) {
     base.push(
-      "### Data already shared with the candidate (do NOT repeat these — refer back to them naturally if relevant)",
+      "### Data already shared with the candidate (do NOT repeat these; refer back to them naturally if relevant)",
       "",
       ...revealedData,
       ""
@@ -298,7 +298,7 @@ function buildSystemPrompt(
     "",
     `Case trap: ${practiceCase.rubric.trap}`,
     "",
-    "If the candidate is falling for the trap, do NOT warn them or point it out. Instead, reinforce the misleading framing naturally — a real stakeholder would. For example, if the trap is that the client dismisses something as irrelevant, double down on that dismissal in character ('Yeah, I really don't think the loyalty program is the issue here'). Let the candidate either see through it or not. This is how real interviews work — the interviewer doesn't rescue you from traps.",
+    "If the candidate is falling for the trap, do NOT warn them or point it out. Instead, reinforce the misleading framing naturally, because a real stakeholder would. For example, if the trap is that the client dismisses something as irrelevant, double down on that dismissal in character ('Yeah, I really don't think the loyalty program is the issue here'). Let the candidate either see through it or not. This is how real interviews work: the interviewer doesn't rescue you from traps.",
     "",
     `Must-surface insights: ${practiceCase.rubric.must_surface.join("; ")}`,
     "",
@@ -310,7 +310,7 @@ function buildSystemPrompt(
       "",
       `What a strong recommendation looks like for this case: ${practiceCase.rubric.good_recommendation_shape}`,
       "",
-      "If the candidate is nearing their final recommendation or delivering one, react to its content as a stakeholder would — ask follow-up questions about specifics, express skepticism about parts that are vague, or ask 'what would that actually cost us' / 'how long would that take.' Do NOT grade or evaluate the recommendation quality out loud.",
+      "If the candidate is nearing their final recommendation or delivering one, react to its content as a stakeholder would: ask follow-up questions about specifics, express skepticism about parts that are vague, or ask 'what would that actually cost us' / 'how long would that take.' Do NOT grade or evaluate the recommendation quality out loud.",
       ""
     );
   }
@@ -318,9 +318,9 @@ function buildSystemPrompt(
   base.push(
     "### How to respond",
     "",
-    "If the consultant's response triggers the data release for this step (they asked the right question or made the right connection), share the data naturally — as a stakeholder would pull up a number or recall a fact from your team. Mark passed: true.",
+    "If the consultant's response triggers the data release for this step (they asked the right question or made the right connection), share the data naturally, as a stakeholder would pull up a number or recall a fact from your team. Mark passed: true.",
     "",
-    "If the consultant's response does NOT trigger the data release (wrong question, too vague, or off track), respond as a skeptical stakeholder: offer a business-fact counterpoint, mention something contradictory your team found, or ask a pointed follow-up rooted in the case — never a process critique. Mark passed: false.",
+    "If the consultant's response does NOT trigger the data release (wrong question, too vague, or off track), respond as a skeptical stakeholder: offer a business-fact counterpoint, mention something contradictory your team found, or ask a pointed follow-up rooted in the case, never a process critique. Mark passed: false.",
     "",
   );
 

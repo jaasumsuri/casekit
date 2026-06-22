@@ -84,11 +84,11 @@ export default function PricingStrategyPage() {
   const verdictLines = [
     {
       ok: capOk,
-      text: `Captures <b>${cap}%</b> of the <b>$${Math.round(valueK)}K</b> annual value${capOk ? "" : cap < 20 ? " — leaving money on the table" : " — thin ROI for the hospital"}`,
+      text: `Captures <b>${cap}%</b> of the <b>$${Math.round(valueK)}K</b> annual value${capOk ? "" : cap < 20 ? ", leaving money on the table" : ", thin ROI for the hospital"}`,
     },
     {
       ok: premiumOk,
-      text: `<b>${trim(premium)}×</b> the $12K legacy monitor${premiumOk ? " — justified by clinical outcomes" : " — barely above legacy, ignoring your differentiation"}`,
+      text: `<b>${trim(premium)}×</b> the $12K legacy monitor${premiumOk ? ", justified by clinical outcomes" : ", barely above legacy, ignoring your differentiation"}`,
     },
     {
       ok: marginOk,
@@ -99,7 +99,7 @@ export default function PricingStrategyPage() {
   const verdictTitle = allOk
     ? "Value-based sweet spot"
     : cap < 20
-    ? "Underpriced — capture more value"
+    ? "Underpriced: capture more value"
     : "Worth a second look";
 
   const QUIZ_CORRECT = [2, 2, 1];
@@ -144,7 +144,7 @@ export default function PricingStrategyPage() {
         {/* Intro */}
         <div className="detail-intro fw-anim">
           <p>
-            Pricing is one of the most powerful levers a business controls — and one of the most underused. A 1% improvement in price typically delivers a larger profit impact than a 1% improvement in volume or cost. Yet most companies set prices once and rarely revisit them rigorously. In a case interview, pricing questions test whether you understand <em>value</em>, not just math. The live builder below lets you set a value-based price yourself and watch the floor, the ceiling, and the margin move together.
+            Pricing is one of the most powerful levers a business controls, and one of the most underused. A 1% improvement in price typically delivers a larger profit impact than a 1% improvement in volume or cost. Yet most companies set prices once and rarely revisit them rigorously. In a case interview, pricing questions test whether you understand <em>value</em>, not just math. The live builder below lets you set a value-based price yourself and watch the floor, the ceiling, and the margin move together.
           </p>
         </div>
 
@@ -162,7 +162,7 @@ export default function PricingStrategyPage() {
               <li><em>"We're entering a new market — how do we price our existing product there?"</em></li>
             </ul>
             <p style={{ marginTop: 20 }}>
-              <strong>One important nuance:</strong> pricing cases almost always require you to synthesize across three lenses — what the customer is willing to pay, what it costs to produce, and what competitors charge. Anchoring to only one lens is the fastest way to give a weak answer. The best recommendations explicitly reconcile all three.
+              <strong>One important nuance:</strong> pricing cases almost always require you to synthesize across three lenses: what the customer is willing to pay, what it costs to produce, and what competitors charge. Anchoring to only one lens is the fastest way to give a weak answer. The best recommendations explicitly reconcile all three.
             </p>
           </div>
         </section>
@@ -172,7 +172,7 @@ export default function PricingStrategyPage() {
           <div className="block-label"><span className="section-label">The full framework</span></div>
           <div className="block-body">
             <p style={{ marginBottom: 20 }}>
-              Three lenses set the price; tactics decide how you structure it. Toggle through them — but remember Lens 1 is the only one that answers the real question.
+              Three lenses set the price; tactics decide how you structure it. Toggle through them, but remember Lens 1 is the only one that answers the real question.
             </p>
 
             <div className="approach-tabs" role="tablist">
@@ -189,7 +189,7 @@ export default function PricingStrategyPage() {
             </div>
 
             <div className={`mono-box ms-tree${activeTab === "value" ? " active" : ""}`}>
-              <span className="c-gold">LENS 1 — VALUE-BASED</span> <span className="c-mut">(willingness to pay) ← the ceiling</span>{"\n"}
+              <span className="c-gold">LENS 1: VALUE-BASED</span> <span className="c-mut">(willingness to pay) ← the ceiling</span>{"\n"}
               {"What is the product worth to the customer?\n"}
               {"├── What problem does it solve?\n"}
               {"├── What is the economic value of that outcome?\n"}
@@ -202,7 +202,7 @@ export default function PricingStrategyPage() {
             </div>
 
             <div className={`mono-box ms-tree${activeTab === "cost" ? " active" : ""}`}>
-              <span className="c-gold">LENS 2 — COST-BASED</span> <span className="c-mut">← the floor</span>{"\n"}
+              <span className="c-gold">LENS 2: COST-BASED</span> <span className="c-mut">← the floor</span>{"\n"}
               {"What is the minimum viable price?\n"}
               {"├── Variable cost per unit "}<span className="c-mut">(COGS, labor, packaging, delivery)</span>{"\n"}
               {"├── Contribution margin needed to cover fixed costs\n"}
@@ -212,7 +212,7 @@ export default function PricingStrategyPage() {
             </div>
 
             <div className={`mono-box ms-tree${activeTab === "competitive" ? " active" : ""}`}>
-              <span className="c-gold">LENS 3 — COMPETITIVE</span> <span className="c-mut">(ceiling / context)</span>{"\n"}
+              <span className="c-gold">LENS 3: COMPETITIVE</span> <span className="c-mut">(ceiling / context)</span>{"\n"}
               {"What will the market bear given alternatives?\n"}
               {"├── Competitor pricing — what do comparables charge?\n"}
               {"├── Positioning — premium / parity / discount?\n"}
@@ -223,15 +223,15 @@ export default function PricingStrategyPage() {
             <div className={`mono-box ms-tree${activeTab === "tactics" ? " active" : ""}`}>
               <span className="c-gold">PRICING TACTICS</span> <span className="c-mut">(strategy → execution)</span>{"\n"}
               {"Once a target price is set, how do you structure it?\n"}
-              {"├── "}<span className="c-gold">Penetration</span>{" — price low to gain share, raise later\n"}
-              {"├── "}<span className="c-gold">Skimming</span>{" — price high at launch, reduce over time\n"}
+              {"├── "}<span className="c-gold">Penetration</span>{": price low to gain share, raise later\n"}
+              {"├── "}<span className="c-gold">Skimming</span>{": price high at launch, reduce over time\n"}
               {"├── "}<span className="c-gold">Discrimination / segmentation</span>{"\n"}
               {"│   ├── 3rd-degree: student, senior, geographic\n"}
               {"│   ├── 2nd-degree: volume discounts, tiered plans\n"}
               {"│   └── 1st-degree: negotiate per customer (enterprise)\n"}
-              {"├── "}<span className="c-gold">Bundling</span>{" — combine to obscure prices / lift spend\n"}
-              {"├── "}<span className="c-gold">Subscription / usage</span>{" — align revenue to value realized\n"}
-              {"└── "}<span className="c-gold">Psychological</span>{" — $99 vs $100, anchoring, decoys"}
+              {"├── "}<span className="c-gold">Bundling</span>{": combine to obscure prices / lift spend\n"}
+              {"├── "}<span className="c-gold">Subscription / usage</span>{": align revenue to value realized\n"}
+              {"└── "}<span className="c-gold">Psychological</span>{": $99 vs $100, anchoring, decoys"}
             </div>
 
             <div className="sanity-note">
@@ -241,12 +241,12 @@ export default function PricingStrategyPage() {
 
             <p className="sub-h">How to run the framework in an interview</p>
             <ol className="run-steps">
-              <li>Clarify the goal — new launch, repricing, or competitive response?</li>
-              <li>Start with <em>Lens 1 (Value)</em> — quantify what it's worth to the buyer, not what it costs to make.</li>
-              <li>Anchor against <em>Lens 3 (Competition)</em> — set the reference range using comparable alternatives.</li>
-              <li>Check <em>Lens 2 (Cost)</em> — verify the price delivers the margin required at realistic volume.</li>
+              <li>Clarify the goal: new launch, repricing, or competitive response?</li>
+              <li>Start with <em>Lens 1 (Value)</em>: quantify what it's worth to the buyer, not what it costs to make.</li>
+              <li>Anchor against <em>Lens 3 (Competition)</em>: set the reference range using comparable alternatives.</li>
+              <li>Check <em>Lens 2 (Cost)</em>: verify the price delivers the margin required at realistic volume.</li>
               <li>Recommend a price point (or range) and explain the positioning logic.</li>
-              <li>Flag the <em>tactic</em> that fits — skimming, penetration, segmentation — and <em>why</em>.</li>
+              <li>Flag the <em>tactic</em> that fits (skimming, penetration, segmentation) and <em>why</em>.</li>
             </ol>
 
             <p className="sub-h">Pricing discipline — tap a card to flip</p>
@@ -254,7 +254,7 @@ export default function PricingStrategyPage() {
               {[
                 { num: "01", front: "Lead with value, check cost last", back: <>Cost-plus only tells you the <em>floor</em>. In a differentiated product or new market, value-based thinking almost always justifies a higher price than cost-plus would suggest.</> },
                 { num: "02", front: "Quantify value in dollars", back: <>Translate the benefit into <em>dollars saved or earned</em> (EVC = reference price + differentiation value), then capture a share of it. Customers never give up 100% of the savings.</> },
-                { num: "03", front: "Segment — value isn't uniform", back: <>A buyer with 4× the volume has ~4× the economic benefit — and higher WTP. Ask <em>"is value uniform across segments?"</em> If not, tiered or contract pricing beats one flat price.</> },
+                { num: "03", front: "Segment: value isn't uniform", back: <>A buyer with 4× the volume has ~4× the economic benefit, and higher WTP. Ask <em>"is value uniform across segments?"</em> If not, tiered or contract pricing beats one flat price.</> },
                 { num: "04", front: "Match the tactic to the moment", back: <>Skim when patent-protected with no rivals; penetrate to grab share in a contested market. The tactic is part of the recommendation — and you must say <em>why</em> it fits.</> },
               ].map((card, i) => (
                 <div
@@ -291,8 +291,8 @@ export default function PricingStrategyPage() {
 
             {/* Step 1 */}
             <div className="wx-step">
-              <h4><span className="sn">Step 1</span> Value-based analysis — the ceiling</h4>
-              <p>What is the device worth to a hospital? Assume an 8% baseline complication rate; the device cuts that by 30%, to 5.6%. That's <strong>12 fewer complications a year</strong> (500 × 2.4%), each worth $15,000 avoided — <strong>$180,000 of annual economic value</strong>. Hospitals never give up 100% of that, so MedTech captures a share. Build it live below.</p>
+              <h4><span className="sn">Step 1</span> Value-based analysis: the ceiling</h4>
+              <p>What is the device worth to a hospital? Assume an 8% baseline complication rate; the device cuts that by 30%, to 5.6%. That's <strong>12 fewer complications a year</strong> (500 × 2.4%), each worth $15,000 avoided — <strong>$180,000 of annual economic value</strong>. Hospitals never give up 100% of that, so MedTech captures a share of it. Build it live below.</p>
 
               <div className="estimator">
                 <div className="est-grid">
@@ -353,13 +353,13 @@ export default function PricingStrategyPage() {
 
             {/* Step 2 */}
             <div className="wx-step">
-              <h4><span className="sn">Step 2</span> Competitive analysis — the context</h4>
-              <p>Incumbent monitors sell for $10K–$12K and do <em>not</em> offer the 30% reduction. The competitive floor is $12K (matching the best legacy monitor) — but that would be value-destructive, ignoring the clinical differentiation entirely. The real alternative to buying this device isn't a cheaper monitor; it's <strong>paying for complications</strong>. That reframes the reference price completely — this is economic substitution, not "same product, lower price."</p>
+              <h4><span className="sn">Step 2</span> Competitive analysis: the context</h4>
+              <p>Incumbent monitors sell for $10K–$12K and do <em>not</em> offer the 30% reduction. The competitive floor is $12K (matching the best legacy monitor), but that would be value-destructive, ignoring the clinical differentiation entirely. The real alternative to buying this device isn't a cheaper monitor; it's <strong>paying for complications</strong>. That reframes the reference price completely. This is economic substitution, not "same product, lower price."</p>
             </div>
 
             {/* Step 3 */}
             <div className="wx-step">
-              <h4><span className="sn">Step 3</span> Cost check — the floor</h4>
+              <h4><span className="sn">Step 3</span> Cost check: the floor</h4>
               <table className="wx-table">
                 <thead>
                   <tr><th>Scenario</th><th>Price</th><th>Variable cost</th><th>Margin / unit</th><th>Margin %</th></tr>
@@ -370,7 +370,7 @@ export default function PricingStrategyPage() {
                   <tr><td>High value capture</td><td>$54,000</td><td>$8,000</td><td>$46,000</td><td>85%</td></tr>
                 </tbody>
               </table>
-              <p style={{ marginTop: 16 }}>At $12K we're viable but capturing none of the value. At $40K–$54K we generate the 60–85% gross margins common in a differentiated medtech business — enough to fund a clinical, capital-intensive sales motion.</p>
+              <p style={{ marginTop: 16 }}>At $12K we're viable but capturing none of the value. At $40K–$54K we generate the 60–85% gross margins common in a differentiated medtech business, enough to fund a clinical, capital-intensive sales motion.</p>
             </div>
 
             {/* Step 4 */}
@@ -378,7 +378,7 @@ export default function PricingStrategyPage() {
               <h4><span className="sn">Step 4</span> Recommendation</h4>
               <p>Price the device at <strong>$38,000–$42,000/unit</strong> for the US hospital launch.</p>
               <ul>
-                <li>Captures ~22–24% of the $180K annual value, leaving hospitals ~$140K in net savings — a compelling ROI for procurement.</li>
+                <li>Captures ~22–24% of the $180K annual value, leaving hospitals ~$140K in net savings, a compelling ROI for procurement.</li>
                 <li>Prices at a ~3× premium to legacy alternatives, justified entirely by clinical outcome data (requires a value-based sales motion with clinical evidence).</li>
                 <li>Generates ~80% gross margins, supporting a sales cycle that runs through clinical specialists.</li>
               </ul>
@@ -403,15 +403,15 @@ export default function PricingStrategyPage() {
             <div className="mistake">
               <span className="mk"><AlertIcon /></span>
               <div>
-                <h4>Mistake 1 — Starting with cost-plus pricing</h4>
-                <p>The most common amateur move is to take production cost and apply a "reasonable" markup: <em>"it costs $8,000, so price it at $12,000 for a 33% margin."</em> That ignores what the product is actually worth to the customer. Cost sets the floor — the minimum you need, not what the market will pay. In a differentiated product or new-market case, value-based thinking almost always justifies a higher price than cost-plus suggests. Lead with value. Check cost last.</p>
+                <h4>Mistake 1: Starting with cost-plus pricing</h4>
+                <p>The most common amateur move is to take production cost and apply a "reasonable" markup: <em>"it costs $8,000, so price it at $12,000 for a 33% margin."</em> That ignores what the product is actually worth to the customer. Cost sets the floor, the minimum you need, not what the market will pay. In a differentiated product or new-market case, value-based thinking almost always justifies a higher price than cost-plus suggests. Lead with value. Check cost last.</p>
               </div>
             </div>
             <div className="mistake">
               <span className="mk"><AlertIcon /></span>
               <div>
-                <h4>Mistake 2 — Treating all customers as identical</h4>
-                <p>Pricing cases often hide a segmentation insight: different customers value the product very differently. A hospital doing 2,000 cardiac surgeries a year has 4× the economic benefit of a 500-surgery hospital — and higher willingness to pay. Enterprise buyers with 10,000 seats differ from a 50-person startup. Always ask: <em>"is value uniform across buyer segments?"</em> If not, segmented pricing (volume tiers, industry contracts, geographic pricing) is almost always the right call. One flat price leaves money on the table with high-WTP customers and shuts out low-WTP segments you could profitably serve.</p>
+                <h4>Mistake 2: Treating all customers as identical</h4>
+                <p>Pricing cases often hide a segmentation insight: different customers value the product very differently. A hospital doing 2,000 cardiac surgeries a year has 4× the economic benefit of a 500-surgery hospital, and higher willingness to pay. Enterprise buyers with 10,000 seats differ from a 50-person startup. Always ask: <em>"is value uniform across buyer segments?"</em> If not, segmented pricing (volume tiers, industry contracts, geographic pricing) is almost always the right call. One flat price leaves money on the table with high-WTP customers and shuts out low-WTP segments you could profitably serve.</p>
               </div>
             </div>
           </div>
@@ -431,8 +431,8 @@ export default function PricingStrategyPage() {
                     <div className="flow-step"><span className="flow-node">1</span><div><h6>Start from value, not cost</h6><p>The tool delivers <b>$200K</b> in annual savings — that's the ceiling of willingness-to-pay if the client captured everything.</p></div></div>
                     <div className="flow-step"><span className="flow-node">2</span><div><h6>Decide how much to capture</h6><p>Differentiated B2B software typically captures <b>30–40%</b> of value created. That implies a price of <b>$60–80K/year</b>.</p></div></div>
                     <div className="flow-step"><span className="flow-node">3</span><div><h6>Ignore the weak-competitor anchor</h6><p>The $15–20K rivals are worse products. Anchoring your price to them signals you don't believe in your own differentiation.</p></div></div>
-                    <div className="flow-step"><span className="flow-node">4</span><div><h6>Build the ROI case at $70K</h6><p>Client saves $200K, pays $70K, nets $130K — a <b>186%</b> year-one return on the tool spend. That's a compelling procurement story. Cost ($5K) sets the floor, not the target — $70K runs 93% gross margin.</p></div></div>
-                    <div className="flow-step"><span className="flow-node">5</span><div><h6>Segment by economic benefit</h6><p>A hospital system avoiding $500K has 2.5× the benefit of a mid-size firm at $200K. Tier by company size or usage — don't leave large-account upside on a flat rate.</p></div></div>
+                    <div className="flow-step"><span className="flow-node">4</span><div><h6>Build the ROI case at $70K</h6><p>Client saves $200K, pays $70K, nets $130K — a <b>186%</b> year-one return on the tool spend. That's a compelling procurement story. Cost ($5K) sets the floor, not the target. At $70K you run a 93% gross margin.</p></div></div>
+                    <div className="flow-step"><span className="flow-node">5</span><div><h6>Segment by economic benefit</h6><p>A hospital system avoiding $500K has 2.5× the benefit of a mid-size firm at $200K. Tier by company size or usage; don't leave large-account upside on a flat rate.</p></div></div>
                     <div className="flow-step landing">
                       <span className="flow-node"><CheckIcon /></span>
                       <div className="land-box"><span className="land-lbl">Where you land</span><p>Price to value, defend it with the ROI case, and tier by the economic benefit each segment actually captures.</p></div>
@@ -447,7 +447,7 @@ export default function PricingStrategyPage() {
                 flow: (
                   <div className="flow">
                     <div className="flow-step"><span className="flow-node">1</span><div><h6>Don't match immediately</h6><p>The first move is analysis, not reaction. Reflexively matching is the trap.</p></div></div>
-                    <div className="flow-step"><span className="flow-node">2</span><div><h6>Decode whether $220 is sustainable</h6><p>$300 → $220 is a <b>27%</b> cut. At typical 35–45% consumer-electronics margins that puts the rival at or below breakeven — either a real cost advantage or an unsustainable tactical move. Investigate before responding.</p></div></div>
+                    <div className="flow-step"><span className="flow-node">2</span><div><h6>Decode whether $220 is sustainable</h6><p>$300 to $220 is a <b>27%</b> cut. At typical 35–45% consumer-electronics margins that puts the rival at or below breakeven, either a real cost advantage or an unsustainable tactical move. Investigate before responding.</p></div></div>
                     <div className="flow-step"><span className="flow-node">3</span><div><h6>Weigh the signal risk of matching</h6><p>Dropping $350 → $220 tells the market you never believed the premium. You lose the $350 buyers (they feel deceived) and don't automatically win price-sensitive ones (they distrust a brand that just halved).</p></div></div>
                     <div className="flow-step"><span className="flow-node">4</span><div><h6>Hold and make differentiation tangible</h6><p>Stay at $350, invest in sound-quality, build and noise-cancellation benchmarks, and monitor the rival's sell-through. If they're clearing inventory for a new model, the threat dissolves in ~60 days.</p></div></div>
                     <div className="flow-step"><span className="flow-node">5</span><div><h6>If it sustains, flank — don't fold</h6><p>If they hold $220 and take real share over 3–6 months, launch a separate sub-brand or entry model at <b>$200–220</b>, positioned as a different product — not a discounted flagship.</p></div></div>

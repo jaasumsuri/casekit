@@ -12,7 +12,7 @@ const CASES = [
     industry: "Streaming · Profitability",
     difficulty: "Easy", dots: 1,
     title: "NovaCast: the vanishing margin",
-    desc: "A streaming platform is bleeding profit while subscribers hold flat. Diagnose the root cause and pitch a recovery — one decision at a time.",
+    desc: "A streaming platform is bleeding profit while subscribers hold flat. Diagnose the root cause and pitch a recovery, one decision at a time.",
     fw: "Profitability", time: "~15 min", format: "Mostly MCQ",
     startHere: true,
   },
@@ -21,7 +21,7 @@ const CASES = [
     industry: "B2B SaaS · Market entry",
     difficulty: "Easy–Med", dots: 2,
     title: "Fieldcast: the new market bet",
-    desc: "A profitable enterprise SaaS company eyes a tempting SMB segment. The market looks great — should they go? Make the call, then handle the pushback.",
+    desc: "A profitable enterprise SaaS company eyes a tempting SMB segment. The market looks great, but should they go? Make the call, then handle the pushback.",
     fw: "Market entry", time: "~20 min", format: "Half & half",
   },
   {
@@ -29,7 +29,7 @@ const CASES = [
     industry: "Healthcare · M&A",
     difficulty: "Medium", dots: 2,
     title: "Veriomed: the wrong price",
-    desc: "A hospital network wants to acquire a diagnostics lab. The strategic case is real — but the CFO's synergy math is wrong. Catch the error and deliver a recommendation the board can act on.",
+    desc: "A hospital network wants to acquire a diagnostics lab. The strategic case is real, but the CFO's synergy math is wrong. Catch the error and deliver a recommendation the board can act on.",
     fw: "M&A", time: "~25 min", format: "Mostly write",
   },
   {
@@ -45,7 +45,7 @@ const CASES = [
     industry: "Consumer · Growth strategy",
     difficulty: "Hard", dots: 3,
     title: "Brova: the growth trap",
-    desc: "A premium beverages CEO wants $45M for energy drinks. The math says no — but so does just saying 'no.' Build the better plan, then survive two curveballs.",
+    desc: "A premium beverages CEO wants $45M for energy drinks. The math says no, but so does just saying 'no.' Build the better plan, then survive two curveballs.",
     fw: "Growth strategy", time: "~35 min", format: "All freewrite",
   },
 ];
@@ -89,7 +89,7 @@ export default function CasesPage() {
           <span className="section-label">The case library</span>
           <h1>Five cases. <em>One clear path.</em></h1>
           <p className="intro">
-            Work through them in order. Each case builds on the last — harder problems, longer answers, less hand-holding. By the end you&apos;ll be structuring and writing like the real thing.
+            Work through them in order. Each case builds on the last: harder problems, longer answers, less hand-holding. By the end you&apos;ll be structuring and writing like the real thing.
           </p>
         </div>
       </header>

@@ -14,7 +14,7 @@ export default async function FrameworkDetailPage({ params }: Props) {
           color: "#64748b",
         }}
       >
-        Framework guide for <strong>{slug}</strong> — coming soon.
+        Framework guide for <strong>{slug}</strong>, coming soon.
       </p>
     </div>
   );

@@ -70,8 +70,8 @@ const MODES = [
 
 const SELF_CHECKS = [
   { title: "I signpost when moving between sections of my framework", feedback: "Closing one section and opening the next in one sentence keeps the interviewer locked in. Without it, even good analysis feels disorienting." },
-  { title: "I state a hypothesis before asking for data", feedback: <>Every data request should come with a reason. &quot;I think X — let me check Y to confirm&quot; shows intent. Fishing for data without a hypothesis looks directionless.</> },
-  { title: "I narrate through uncertainty instead of going silent", feedback: <>Saying &quot;I&apos;m not sure yet — here are two possibilities and how I&apos;d distinguish them&quot; is far stronger than 30 seconds of silence followed by a guess.</> },
+  { title: "I state a hypothesis before asking for data", feedback: <>Every data request should come with a reason. &quot;I think X, so let me check Y to confirm&quot; shows intent. Fishing for data without a hypothesis looks directionless.</> },
+  { title: "I narrate through uncertainty instead of going silent", feedback: <>Saying &quot;I&apos;m not sure yet, but here are two possibilities and how I&apos;d distinguish them&quot; is far stronger than 30 seconds of silence followed by a guess.</> },
   { title: "I connect new data back to my hypothesis before moving on", feedback: "When the interviewer gives you a data point, say whether it confirms or challenges your hypothesis. This closes the loop and shows analytical discipline." },
   { title: "My narration advances the case — not just fills silence", feedback: "Every sentence you speak should either move the analysis forward or clearly signal where you're headed. If you're talking without adding substance, the interviewer will notice." },
 ];
@@ -79,7 +79,7 @@ const SELF_CHECKS = [
 const MISTAKES = [
   {
     title: "Going silent for more than 20 seconds mid-case",
-    desc: <>Silence at the <em>start</em> (during structuring) is fine and expected. Silence in the <em>middle</em> of an analysis is different — it breaks the interviewer&apos;s ability to follow along and creates an uncomfortable dynamic.</>,
+    desc: <>Silence at the <em>start</em> (during structuring) is fine and expected. Silence in the <em>middle</em> of an analysis is different. It breaks the interviewer&apos;s ability to follow along and creates an uncomfortable dynamic.</>,
     fix: "Say: \"Give me just a second to work through this number...\" Then narrate the math as you do it.",
   },
   {
@@ -99,7 +99,7 @@ const MOMENTS = [
     id: "moment-1",
     title: "You just finished analyzing revenue and found it's flat. Time to move to costs.",
     desc: "Which mode do you use? What do you say?",
-    modeTag: "Mode 1 — Signposting",
+    modeTag: "Mode 1: Signposting",
     modeColor: "var(--gold)",
     quote: "\"Revenue is essentially flat — I don't see a meaningful driver there. I'm going to shift to costs now. I'll start by looking at the fixed vs. variable split to figure out which side is growing faster than the business.\"",
     keys: [
@@ -112,7 +112,7 @@ const MOMENTS = [
     id: "moment-2",
     title: "The interviewer just told you COGS jumped 8% this year. You have a theory about why.",
     desc: "Which mode do you use? What do you say?",
-    modeTag: "Mode 2 — Hypothesis narration",
+    modeTag: "Mode 2: Hypothesis narration",
     modeColor: "#E8C97A",
     quote: "\"An 8% jump in COGS is significant — that's well above inflation. My hypothesis is that this is driven by either input cost increases — raw materials or supplier pricing — or a mix shift toward lower-margin products. These would have different solutions, so I want to isolate which one. Has the product mix changed this year, or has the company been sourcing from the same suppliers at similar volumes?\"",
     keys: [
@@ -126,7 +126,7 @@ const MOMENTS = [
     id: "moment-3",
     title: "The interviewer gives you data that doesn't fit your hypothesis. You're not sure what it means yet.",
     desc: "Which mode do you use? What do you say?",
-    modeTag: "Mode 3 — Thinking through uncertainty",
+    modeTag: "Mode 3: Thinking through uncertainty",
     modeColor: "var(--muted)",
     quote: "\"Interesting — that's not what I expected. If supplier costs are actually flat, then the COGS increase isn't coming from inputs. That points more toward a mix shift or an operational inefficiency — maybe yield losses or rework costs in production. Let me reconsider. I want to look at the product-level margin data to see if there's been a shift in what they're selling. Could we look at revenue and COGS broken out by product category?\"",
     keys: [
@@ -204,7 +204,7 @@ export default function ThinkingOutLoudPage() {
               </div>
               <h1>Thinking <em>out loud</em></h1>
               <p className="pb-hero-lead">
-                The interviewer doesn&apos;t just want your answer. They want to <em>watch you get there.</em> This is the most misunderstood skill in case interviews — and the most learnable.
+                The interviewer doesn&apos;t just want your answer. They want to <em>watch you get there.</em> This is the most misunderstood skill in case interviews, and the most learnable.
               </p>
               <div className="pb-hero-stats">
                 <span className="pb-stat"><ClockIcon /> 10 min read</span>
@@ -290,7 +290,7 @@ export default function ThinkingOutLoudPage() {
             </div>
           </div>
           <div className="pb-step-body">
-            <p>Tell the interviewer where you are and where you&apos;re going. Use explicit transition phrases. Signposting keeps the interviewer oriented — without it, they lose track of where you are in your framework and whether you&apos;re making progress.</p>
+            <p>Tell the interviewer where you are and where you&apos;re going. Use explicit transition phrases. Signposting keeps the interviewer oriented. Without it, they lose track of where you are in your framework and whether you&apos;re making progress.</p>
             <div className="pb-use-when">
               <span className="uw-label">Use when</span>
               <p>Moving between sections of your framework, starting a new line of inquiry, shifting from diagnosis to recommendation.</p>
@@ -327,7 +327,7 @@ export default function ThinkingOutLoudPage() {
             </div>
           </div>
           <div className="pb-step-body">
-            <p>State what you think is true, and explain what evidence you&apos;re looking for to test it. This mode is powerful because it shows the interviewer you&apos;re not just collecting data — <strong>you&apos;re testing a specific idea.</strong></p>
+            <p>State what you think is true, and explain what evidence you&apos;re looking for to test it. This mode is powerful because it shows the interviewer you&apos;re not just collecting data. <strong>You&apos;re testing a specific idea.</strong></p>
             <div className="pb-use-when">
               <span className="uw-label">Use when</span>
               <p>Forming a hypothesis, asking for data, interpreting information the interviewer gives you.</p>
@@ -366,7 +366,7 @@ export default function ThinkingOutLoudPage() {
             </div>
           </div>
           <div className="pb-step-body">
-            <p>When you don&apos;t know, don&apos;t go silent — narrate the uncertainty and how you&apos;re resolving it. Narrating uncertainty correctly — instead of hiding it — actually <strong>builds interviewer confidence.</strong> It shows you know what you don&apos;t know.</p>
+            <p>When you don&apos;t know, don&apos;t go silent. Narrate the uncertainty and how you&apos;re resolving it. Narrating uncertainty correctly, instead of hiding it, actually <strong>builds interviewer confidence.</strong> It shows you know what you don&apos;t know.</p>
             <div className="pb-use-when">
               <span className="uw-label">Use when</span>
               <p>You&apos;re not sure which direction to go, you&apos;re doing mental math, or you&apos;ve hit an ambiguous data point.</p>
@@ -411,11 +411,11 @@ export default function ThinkingOutLoudPage() {
             <div className="tol-ratio-labels">
               <div className="tol-rl-item">
                 <span className="tol-rl-dot" style={{ background: "var(--forest)" }} />
-                <p><strong>Moving the analysis forward</strong> — math, synthesis, answering the question, drawing conclusions</p>
+                <p><strong>Moving the analysis forward:</strong> math, synthesis, answering the question, drawing conclusions</p>
               </div>
               <div className="tol-rl-item">
                 <span className="tol-rl-dot" style={{ background: "var(--gold)" }} />
-                <p><strong>Narrating what you&apos;re doing</strong> — signposting, stating hypotheses, flagging uncertainty, explaining why</p>
+                <p><strong>Narrating what you&apos;re doing:</strong> signposting, stating hypotheses, flagging uncertainty, explaining why</p>
               </div>
             </div>
           </div>
@@ -446,11 +446,11 @@ export default function ThinkingOutLoudPage() {
               <div className="pb-panel-verdict">
                 <h5>What&apos;s wrong</h5>
                 <ul>
-                  <li>No signposting — the interviewer doesn&apos;t know what section you&apos;re in</li>
+                  <li>No signposting, so the interviewer doesn&apos;t know what section you&apos;re in</li>
                   <li>No hypothesis stated before asking for or interpreting data</li>
-                  <li>No visible reasoning process — silence, then a conclusion dump</li>
+                  <li>No visible reasoning process: silence, then a conclusion dump</li>
                   <li>Jumped straight to a recommendation without testing it</li>
-                  <li>Interviewer can&apos;t evaluate your thinking — only your answer</li>
+                  <li>Interviewer can&apos;t evaluate your thinking, only your answer</li>
                 </ul>
               </div>
             </div>
@@ -595,7 +595,7 @@ export default function ThinkingOutLoudPage() {
         <div className="container">
           <div className="pb-mod-cta">
             <h2>Practice narration <em>live.</em></h2>
-            <p>The best way to build this skill is to use it. Try a full case and focus on narrating every move — signpost, hypothesize, navigate.</p>
+            <p>The best way to build this skill is to use it. Try a full case and focus on narrating every move: signpost, hypothesize, navigate.</p>
             <Link className="btn-gold" href="/cases">
               Try a case
               <ArrowIcon />
