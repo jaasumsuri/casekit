@@ -153,6 +153,12 @@ export default function PracticeModePage() {
               conversation, just like sitting across from a real partner. When
               you&apos;re done, get a full critique.
             </p>
+            <p className="pm-hero-tip">
+              New to case interviews? Start with the{" "}
+              <Link href="/frameworks">frameworks</Link> and{" "}
+              <Link href="/cases">guided cases</Link> first to build a
+              foundation before jumping into practice.
+            </p>
           </div>
           <div className="pm-mockup-wrap">
             <div className="pm-mockup">
@@ -288,8 +294,7 @@ export default function PracticeModePage() {
                 <span className="dot dot-available" />
               </div>
               <p className="pm-sessions-note">
-                Free tier · 5 sessions per month.{" "}
-                <a href="#">Upgrade</a> for unlimited.
+                5 free sessions per week. More cases coming soon.
               </p>
             </div>
           </div>

@@ -25,15 +25,15 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabase();
 
   try {
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - 7);
+    weekStart.setHours(0, 0, 0, 0);
 
     const { count, error: countError } = await supabase
       .from("practice_sessions")
       .select("*", { count: "exact", head: true })
       .eq("user_id", userId)
-      .gte("created_at", monthStart.toISOString());
+      .gte("created_at", weekStart.toISOString());
 
     if (countError) {
       return Response.json(

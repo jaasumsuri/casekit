@@ -266,8 +266,8 @@ export default function InterviewClient({
         <div className="iv-limit-card">
           <h2>Session limit reached</h2>
           <p>
-            You&apos;ve used all 5 practice sessions for this month. Upgrade
-            for unlimited access, or come back next month.
+            You&apos;ve used all 5 practice sessions for this week.
+            Come back next week — more cases coming soon.
           </p>
           <Link href="/practice" className="iv-btn iv-btn-solid">
             Back to practice
@@ -362,7 +362,7 @@ export default function InterviewClient({
         <h2>End this session early?</h2>
         <p>
           You&apos;ve completed {stepsCompleted} of {caseMeta.totalSteps} steps.
-          This counts against your 5 monthly sessions.
+          This counts against your 5 weekly sessions.
         </p>
         <div className="iv-confirm-actions">
           <button

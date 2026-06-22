@@ -63,6 +63,21 @@
   line-height: 1.6;
   max-width: 480px;
 }
+.pm-hero-tip {
+  margin-top: 14px;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  max-width: 480px;
+}
+.pm-hero-tip a {
+  color: var(--gold, #C4933A);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pm-hero-tip a:hover {
+  color: #fff;
+}
 
 
 /* ─── MOCKUP ──────────────────────────────────────────── */
