@@ -179,39 +179,73 @@ export default function Header() {
             </button>
           )}
           {status === "authenticated" && (
-            <Link
-              href="/practice"
-              className="hidden md:inline-flex"
-              style={{
-                alignItems: "center",
-                gap: 8,
-                background: "var(--forest)",
-                color: "#fff",
-                padding: "10px 18px",
-                borderRadius: "var(--r-pill)",
-                fontSize: "0.92rem",
-                fontWeight: 500,
-                fontFamily: "var(--font-body)",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget;
-                el.style.transform = "translateY(-1px)";
-                el.style.boxShadow = "var(--shadow-soft)";
-                el.style.background = "#244c39";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget;
-                el.style.transform = "";
-                el.style.boxShadow = "";
-                el.style.background = "var(--forest)";
-              }}
-            >
-              Start Practicing
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-              </svg>
-            </Link>
+            <div className="hidden md:flex" style={{ alignItems: "center", gap: 10 }}>
+              <Link
+                href="/dashboard"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  color: "var(--forest)",
+                  padding: "10px 16px",
+                  borderRadius: "var(--r-pill)",
+                  fontSize: "0.92rem",
+                  fontWeight: 500,
+                  fontFamily: "var(--font-body)",
+                  border: "1px solid var(--border)",
+                  transition: "transform 0.2s ease, background 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.background = "var(--forest-light)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "";
+                  e.currentTarget.style.background = "transparent";
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="9" rx="1" />
+                  <rect x="14" y="3" width="7" height="5" rx="1" />
+                  <rect x="14" y="12" width="7" height="9" rx="1" />
+                  <rect x="3" y="16" width="7" height="5" rx="1" />
+                </svg>
+                Dashboard
+              </Link>
+              <Link
+                href="/practice"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--forest)",
+                  color: "#fff",
+                  padding: "10px 18px",
+                  borderRadius: "var(--r-pill)",
+                  fontSize: "0.92rem",
+                  fontWeight: 500,
+                  fontFamily: "var(--font-body)",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget;
+                  el.style.transform = "translateY(-1px)";
+                  el.style.boxShadow = "var(--shadow-soft)";
+                  el.style.background = "#244c39";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget;
+                  el.style.transform = "";
+                  el.style.boxShadow = "";
+                  el.style.background = "var(--forest)";
+                }}
+              >
+                Start Practicing
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                </svg>
+              </Link>
+            </div>
           )}
 
           <button
@@ -272,19 +306,28 @@ export default function Header() {
             </button>
           )}
           {status === "authenticated" && (
-            <Link
-              href="/practice"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                background: "var(--forest)", color: "#fff",
-                padding: "10px 18px", borderRadius: "var(--r-pill)",
-                fontSize: "0.92rem", fontWeight: 500, fontFamily: "var(--font-body)",
-                width: "fit-content",
-              }}
-            >
-              Start Practicing
-            </Link>
+            <>
+              <Link
+                href="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--ink)" }}
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/practice"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  background: "var(--forest)", color: "#fff",
+                  padding: "10px 18px", borderRadius: "var(--r-pill)",
+                  fontSize: "0.92rem", fontWeight: 500, fontFamily: "var(--font-body)",
+                  width: "fit-content",
+                }}
+              >
+                Start Practicing
+              </Link>
+            </>
           )}
         </div>
       )}
