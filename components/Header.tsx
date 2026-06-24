@@ -37,9 +37,9 @@ export default function Header() {
           margin: "0 auto",
           padding: "0 28px",
           height: 72,
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
+          display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         {/* Logo */}
@@ -179,32 +179,41 @@ export default function Header() {
             </button>
           )}
           {status === "authenticated" && (
-            <div className="hidden md:flex" style={{ alignItems: "center", gap: 10 }}>
+            <div className="hidden md:flex" style={{ alignItems: "center", gap: 20, marginLeft: 12 }}>
               <Link
                 href="/dashboard"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 6,
-                  color: "var(--forest)",
-                  padding: "10px 16px",
+                  gap: 7,
+                  color: pathname.startsWith("/dashboard") ? "#fff" : "var(--gold)",
+                  padding: "9px 16px",
                   borderRadius: "var(--r-pill)",
-                  fontSize: "0.92rem",
-                  fontWeight: 500,
+                  fontSize: "0.84rem",
+                  fontWeight: 600,
                   fontFamily: "var(--font-body)",
-                  border: "1px solid var(--border)",
-                  transition: "transform 0.2s ease, background 0.2s ease",
+                  letterSpacing: "0.02em",
+                  background: pathname.startsWith("/dashboard")
+                    ? "rgba(196,147,58,0.18)"
+                    : "transparent",
+                  border: "1.5px solid rgba(196,147,58,0.35)",
+                  transition: "transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-1px)";
-                  e.currentTarget.style.background = "var(--forest-light)";
+                  e.currentTarget.style.background = "rgba(196,147,58,0.15)";
+                  e.currentTarget.style.borderColor = "rgba(196,147,58,0.55)";
+                  e.currentTarget.style.color = "var(--gold)";
                 }}
                 onMouseLeave={(e) => {
+                  const active = pathname.startsWith("/dashboard");
                   e.currentTarget.style.transform = "";
-                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.background = active ? "rgba(196,147,58,0.18)" : "transparent";
+                  e.currentTarget.style.borderColor = "rgba(196,147,58,0.35)";
+                  e.currentTarget.style.color = active ? "#fff" : "var(--gold)";
                 }}
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="7" height="9" rx="1" />
                   <rect x="14" y="3" width="7" height="5" rx="1" />
                   <rect x="14" y="12" width="7" height="9" rx="1" />
@@ -225,6 +234,7 @@ export default function Header() {
                   fontSize: "0.92rem",
                   fontWeight: 500,
                   fontFamily: "var(--font-body)",
+                  whiteSpace: "nowrap" as const,
                   transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
