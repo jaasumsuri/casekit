@@ -44,7 +44,17 @@
       "Bash(cp /Users/jaasumsuri/Downloads/practice-cases.json /Users/jaasumsuri/casekit/data/practice-cases.json)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); slugs=[c['slug'] for c in d['cases']]; print\\(f'Count: {len\\(slugs\\)}'\\); [print\\(s\\) for s in slugs]\")",
       "Bash(node scripts/test-supabase.mjs)",
-      "Bash(kill 33744)"
+      "Bash(kill 33744)",
+      "mcp__763ef779-26e4-4f4e-b81d-0a38fb09dfdd__notion-fetch",
+      "Bash(git diff *)",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "mcp__Claude_in_Chrome__computer",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__1a5aecd1-20bf-4c22-b5a9-c5708ef187ab__web_fetch_vercel_url",
+      "mcp__1a5aecd1-20bf-4c22-b5a9-c5708ef187ab__get_project",
+      "mcp__1a5aecd1-20bf-4c22-b5a9-c5708ef187ab__get_runtime_logs",
+      "mcp__1a5aecd1-20bf-4c22-b5a9-c5708ef187ab__get_runtime_errors",
+      "Bash(npx vercel *)"
     ]
   }
 }
