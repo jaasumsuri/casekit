@@ -88,6 +88,16 @@ const QUIZ = [
     ],
     answer: <><b>Answer: B.</b> Prioritize where the problem is biggest. Variable costs are the dominant driver here, so that&rsquo;s where your recommendation should lead. Fixed costs may also need attention, but sequencing recommendations by impact size shows consultants&rsquo; discipline. D is a deflection: you should address both the cost problem and explore growth, but don&rsquo;t use growth as an excuse to avoid diagnosing costs.</>,
   },
+  {
+    q: "A candidate hears \"our client's profits are declining\" and immediately responds: \"I'd recommend they cut headcount and raise prices by 5%.\" What's wrong with this response?",
+    opts: [
+      { letter: "A", text: "Nothing, speed matters in interviews", correct: false },
+      { letter: "B", text: "It skips diagnosis entirely; the candidate doesn't yet know whether the problem is revenue, costs, fixed, variable, price, or volume", correct: true },
+      { letter: "C", text: "5% is too small an increase to matter", correct: false },
+      { letter: "D", text: "Headcount cuts are never a good recommendation", correct: false },
+    ],
+    answer: <><b>Answer: B.</b> This is the single most common failure mode in profitability cases. Recommending a specific fix before isolating the actual driver isn&rsquo;t confidence. It&rsquo;s guessing. A strong candidate would ask clarifying questions and decompose the problem first, and only recommend once the dollar-and-cause is identified.</>,
+  },
 ];
 
 function fmt(v: number) {
@@ -102,8 +112,8 @@ export default function ProfitabilityPage() {
   const [fixed, setFixed] = useState(208);
   const [opex, setOpex] = useState(80);
   const [promptOpen, setPromptOpen] = useState<boolean[]>([false, false]);
-  const [quizAnswered, setQuizAnswered] = useState<(number | null)[]>([null, null, null]);
-  const [answerOpen, setAnswerOpen] = useState<boolean[]>([false, false, false]);
+  const [quizAnswered, setQuizAnswered] = useState<(number | null)[]>([null, null, null, null]);
+  const [answerOpen, setAnswerOpen] = useState<boolean[]>([false, false, false, false]);
 
   const cogsAmt = rev * cogs / 100;
   const profit = rev - cogsAmt - fixed - opex;
@@ -151,14 +161,33 @@ export default function ProfitabilityPage() {
 
         {/* Intro */}
         <div className="detail-intro">
-          <p>Profitability cases show up constantly, and they look deceptively simple. The math is easy. The discipline is hard. Most candidates rush to solutions before they&rsquo;ve actually diagnosed the problem. This guide will teach you to slow down, decompose properly, and arrive at answers that sound like a consultant, not a student.</p>
+          <p>Profitability cases show up constantly, and they look deceptively simple. The math is easy: subtraction. The discipline is hard. Most candidates rush toward a solution before they&rsquo;ve actually figured out what&rsquo;s broken. This guide will slow you down on purpose, so that by the end you&rsquo;re decomposing problems the way a real consultant does, not guessing the way a nervous student does.</p>
+          <p style={{ marginTop: 12 }}>If you&rsquo;ve never done a case interview before, start here. You&rsquo;ll leave this page able to run this framework cold.</p>
         </div>
+
+        {/* Start here */}
+        <section className="block">
+          <div className="block-label"><span className="section-label">Start here</span></div>
+          <div className="block-body">
+            <p>Imagine your friend runs a lemonade stand. Last summer she made $500 in profit. This summer, she only made $300, even though she sold <em>more</em> cups of lemonade than last year. She&rsquo;s confused. So is her business partner. They ask you to figure out what happened.</p>
+            <p style={{ marginTop: 14 }}>You have exactly one honest starting point: <b>profit is just revenue minus costs.</b></p>
+
+            <div className="pf-formula">
+              <div className="pf-formula-eq">PROFIT = REVENUE <em>−</em> COSTS</div>
+              <div className="pf-formula-cap">The entire framework, at its core</div>
+            </div>
+
+            <p style={{ marginTop: 18 }}>That&rsquo;s it. Every consulting profitability case, whether it&rsquo;s a $2M lemonade stand or a $2B retail chain, is a fancier version of &ldquo;figure out why this subtraction problem changed.&rdquo;</p>
+            <p style={{ marginTop: 14 }}>The reason this framework exists isn&rsquo;t to give you something to memorize. It exists because <em>&ldquo;profit went down&rdquo; could mean a hundred different things</em>, and if you don&rsquo;t have a structure, you&rsquo;ll either freeze or start guessing randomly (&ldquo;maybe rent went up?&rdquo; &ldquo;maybe they have too many employees?&rdquo;). A framework is just a checklist that guarantees you look everywhere important, in a sensible order, without missing anything or repeating yourself. Consultants call this <b>MECE</b>: Mutually Exclusive, Collectively Exhaustive. Don&rsquo;t worry about the jargon yet; you&rsquo;ll feel <em>why</em> it matters by the end of this page.</p>
+            <p style={{ marginTop: 14 }}>So: revenue went down, or costs went up, or both. That&rsquo;s step one. Everything else is just zooming in.</p>
+          </div>
+        </section>
 
         {/* When to use it */}
         <section className="block">
-          <div className="block-label"><span className="section-label">When to use it</span></div>
+          <div className="block-label"><span className="section-label">When you&rsquo;ll see it</span></div>
           <div className="block-body">
-            <p>Use the profitability framework any time a company&rsquo;s financial performance is declining, underperforming, or confusing. The trigger is almost always a deterioration in profit, but the <em>cause</em> could be anywhere.</p>
+            <p>Use it any time a company&rsquo;s financial performance is declining, underperforming, or just confusing. The trigger is almost always &ldquo;profit changed&rdquo;, but the <em>cause</em> could be hiding anywhere.</p>
             <p className="sub-h">Classic prompts that signal profitability</p>
             <ul>
               <li><em>&ldquo;Our client&rsquo;s profits have been declining for two years despite growing revenue.&rdquo;</em></li>
@@ -166,75 +195,108 @@ export default function ProfitabilityPage() {
               <li><em>&ldquo;Our client is less profitable than its closest competitor. Help us understand why.&rdquo;</em></li>
               <li><em>&ldquo;Net income fell 20% last year. Where should we look first?&rdquo;</em></li>
             </ul>
-            <p style={{ marginTop: 20 }}><strong>One important nuance:</strong> Profitability thinking is embedded inside other framework types too. Market entry cases ask &ldquo;will this be profitable?&rdquo; Growth cases ask &ldquo;which lever improves margins?&rdquo; M&amp;A cases require synergy math. Learn this framework cold. It&rsquo;s the foundation everything else builds on.</p>
+            <p style={{ marginTop: 20 }}><strong>One important nuance:</strong> profitability thinking doesn&rsquo;t only show up in &ldquo;profitability cases.&rdquo; Market entry cases secretly ask &ldquo;will this be profitable?&rdquo; Growth cases ask &ldquo;which lever improves margins?&rdquo; M&amp;A cases require synergy math, which is just profitability math on two companies at once. Learn this framework cold. It&rsquo;s the foundation everything else is built on. Every other framework in this guide borrows from it.</p>
           </div>
         </section>
 
-        {/* The full framework */}
+        {/* Building the framework, one question at a time */}
         <section className="block">
-          <div className="block-label"><span className="section-label">The full framework</span></div>
+          <div className="block-label"><span className="section-label">Building the framework</span></div>
           <div className="block-body">
-            <p className="lede" style={{ marginBottom: 20 }}>Profit splits cleanly into revenue and cost. Toggle a branch and decompose it until you hit a lever you can actually move.</p>
+            <p style={{ marginBottom: 24 }}>Don&rsquo;t memorize the tree below yet. First, walk through <em>why</em> it&rsquo;s built the way it is. That&rsquo;s the part that actually transfers to a live interview, where you won&rsquo;t have the tree in front of you.</p>
 
-            <div className="approach-tabs" role="tablist">
-              <button
-                className={`approach-tab${activeTree === "revenue" ? " active" : ""}`}
-                type="button"
-                onClick={() => setActiveTree("revenue")}
-              >Revenue side</button>
-              <button
-                className={`approach-tab${activeTree === "cost" ? " active" : ""}`}
-                type="button"
-                onClick={() => setActiveTree("cost")}
-              >Cost side</button>
+            <div className="wx-step">
+              <h4><span className="sn">Step 1</span> Revenue or costs?</h4>
+              <p>Profit = Revenue &minus; Costs. So logically, a profit decline can only come from three places: revenue fell, costs rose, or both happened at once. This is always your first move, and it&rsquo;s a question you can usually ask the interviewer directly (&ldquo;Do we know if this is being driven by revenue, costs, or both?&rdquo;). Never skip this step to jump straight into a subcategory. You wouldn&rsquo;t know which half of the tree is even worth exploring.</p>
             </div>
 
-            <div className={`mono-box ms-tree${activeTree === "revenue" ? " active" : ""}`}>
-              <span className="c-gold">{"REVENUE = Price × Volume\n\n"}</span>
-              <span className="c-gold">{"Price\n"}</span>
-              {"├── Has average selling price changed?\n"}
-              {"├── Are we discounting more than before?\n"}
-              {"├── Have we changed our product/tier mix?\n"}
-              {"│   └── "}<span className="c-mut">{"(Mix shift: more low-margin SKUs = lower blended price)\n"}</span>
-              {"└── Are competitors forcing price down?\n\n"}
-              <span className="c-gold">{"Volume\n"}</span>
-              {"├── Total units sold: up, down, or flat?\n"}
-              {"├── Customer count: acquiring fewer customers?\n"}
-              {"├── Purchase frequency: buying less often?\n"}
-              {"└── Average order size: smaller baskets?"}
+            <div className="wx-step">
+              <h4><span className="sn">Step 2a</span> If it&rsquo;s revenue, break it into Price and Volume</h4>
+              <p>Revenue is a single number, but it&rsquo;s secretly two numbers multiplied together:</p>
+              <div className="pf-mini"><b>Revenue</b> = Price × Volume</div>
+              <p>Why does this matter? Because Price and Volume can move in <em>opposite</em> directions and hide from you. Imagine prices rose 8% but the number of units sold fell 7%. Total revenue looks almost flat, up about 1%. A sloppy candidate would see &ldquo;revenue&rsquo;s basically flat&rdquo; and conclude nothing&rsquo;s wrong. But something&rsquo;s very wrong: the company is losing nearly as many customers as it&rsquo;s gaining in price. That&rsquo;s a business bleeding volume, disguised by a price hike. You only catch this if you split Price from Volume and check both.</p>
+              <p>Once you&rsquo;re inside Volume, you can go one level deeper still. Volume itself is a function of <em>how many customers you have</em> and <em>how often they buy</em>:</p>
+              <ul>
+                <li><b>Customer count</b>, are we acquiring fewer new customers, or losing existing ones?</li>
+                <li><b>Purchase frequency</b>, are existing customers buying less often?</li>
+                <li><b>Average order size</b>, are the same customers buying less each time?</li>
+              </ul>
             </div>
 
-            <div className={`mono-box ms-tree${activeTree === "cost" ? " active" : ""}`}>
-              <span className="c-gold">{"COSTS = Fixed + Variable\n\n"}</span>
-              <span className="c-gold">{"Fixed Costs"}</span>
-              {" "}<span className="c-mut">{"(don't change with output volume)\n"}</span>
-              {"├── Rent / lease payments\n"}
-              {"├── Salaries and benefits (salaried staff)\n"}
-              {"├── Depreciation and amortization\n"}
-              {"├── Insurance, software subscriptions\n"}
-              {"└── R&D, corporate overhead\n\n"}
-              <span className="c-gold">{"Variable Costs"}</span>
-              {" "}<span className="c-mut">{"(scale with each unit sold)\n"}</span>
-              {"├── Cost of Goods Sold (raw materials, manufacturing)\n"}
-              {"├── Packaging and logistics\n"}
-              {"├── Sales commissions\n"}
-              {"├── Payment processing fees\n"}
-              {"└── Customer support (if per-ticket)"}
+            <div className="wx-step">
+              <h4><span className="sn">Step 2b</span> If it&rsquo;s costs, break them into Fixed and Variable</h4>
+              <div className="pf-mini" style={{ textAlign: "left", lineHeight: 1.75 }}>
+                <b>Fixed Costs</b> &nbsp;&rarr;&nbsp; don&rsquo;t change with how much you produce or sell<br />
+                <span style={{ color: "var(--muted)", paddingLeft: 24 }}>(rent, salaried staff, insurance, software, R&amp;D)</span><br />
+                <b>Variable Costs</b> &nbsp;&rarr;&nbsp; scale up and down with each unit produced or sold<br />
+                <span style={{ color: "var(--muted)", paddingLeft: 24 }}>(raw materials, packaging, sales commissions, payment fees)</span>
+              </div>
+              <p>Why split this way instead of, say, alphabetically, or by department? Because the split tells you something <em>actionable</em>. If fixed costs spiked, that&rsquo;s usually a structural, slower-moving problem (a new lease, a hiring binge), often visible from one line in a budget. If variable costs spiked, that&rsquo;s usually tied to volume or input prices, and it means something changed <em>per unit</em>, a supplier raised prices, or your product mix shifted toward cheaper, thinner-margin items. Diagnosing &ldquo;fixed vs. variable&rdquo; instantly tells you what kind of investigation to run next.</p>
             </div>
 
-            <div className="sanity-note">
-              <span className="sn-ico"><CheckIcon /></span>
-              <p><b>Diagnose before you prescribe.</b> Whichever branch you explore, quantify the gap first. Never say the word &ldquo;recommend&rdquo; until you&rsquo;ve named the dollar amount and the root cause.</p>
+            <div className="wx-step">
+              <h4><span className="sn">Putting it together</span></h4>
+              <p style={{ marginBottom: 18 }}>Now the tree assembles itself. Toggle a branch and decompose it until you hit a lever you can actually move.</p>
+
+              <div className="approach-tabs" role="tablist">
+                <button
+                  className={`approach-tab${activeTree === "revenue" ? " active" : ""}`}
+                  type="button"
+                  onClick={() => setActiveTree("revenue")}
+                >Revenue side</button>
+                <button
+                  className={`approach-tab${activeTree === "cost" ? " active" : ""}`}
+                  type="button"
+                  onClick={() => setActiveTree("cost")}
+                >Cost side</button>
+              </div>
+
+              <div className={`mono-box ms-tree${activeTree === "revenue" ? " active" : ""}`}>
+                <span className="c-gold">{"REVENUE = Price × Volume\n\n"}</span>
+                <span className="c-gold">{"Price\n"}</span>
+                {"├── Has average selling price changed?\n"}
+                {"├── Are we discounting more than before?\n"}
+                {"├── Have we changed our product/tier mix?\n"}
+                {"│   └── "}<span className="c-mut">{"(Mix shift: more low-margin SKUs = lower blended price)\n"}</span>
+                {"└── Are competitors forcing price down?\n\n"}
+                <span className="c-gold">{"Volume\n"}</span>
+                {"├── Total units sold: up, down, or flat?\n"}
+                {"├── Customer count: acquiring fewer customers?\n"}
+                {"├── Purchase frequency: buying less often?\n"}
+                {"└── Average order size: smaller baskets?"}
+              </div>
+
+              <div className={`mono-box ms-tree${activeTree === "cost" ? " active" : ""}`}>
+                <span className="c-gold">{"COSTS = Fixed + Variable\n\n"}</span>
+                <span className="c-gold">{"Fixed Costs"}</span>
+                {" "}<span className="c-mut">{"(don't change with output volume)\n"}</span>
+                {"├── Rent / lease payments\n"}
+                {"├── Salaries and benefits (salaried staff)\n"}
+                {"├── Depreciation and amortization\n"}
+                {"├── Insurance, software subscriptions\n"}
+                {"└── R&D, corporate overhead\n\n"}
+                <span className="c-gold">{"Variable Costs"}</span>
+                {" "}<span className="c-mut">{"(scale with each unit sold)\n"}</span>
+                {"├── Cost of Goods Sold (raw materials, manufacturing)\n"}
+                {"├── Packaging and logistics\n"}
+                {"├── Sales commissions\n"}
+                {"├── Payment processing fees\n"}
+                {"└── Customer support (if per-ticket)"}
+              </div>
+
+              <div className="sanity-note">
+                <span className="sn-ico"><CheckIcon /></span>
+                <p><b>Diagnose before you prescribe.</b> Whichever branch you explore, quantify the gap first. Never say the word &ldquo;recommend&rdquo; until you&rsquo;ve named the dollar amount and the root cause.</p>
+              </div>
             </div>
 
-            <p className="sub-h">How to run the framework in an interview</p>
+            <p className="sub-h" style={{ marginTop: 32 }}>How to actually run this out loud in an interview</p>
             <ol className="run-steps">
-              <li>Ask: <em>is the problem revenue-side, cost-side, or both?</em></li>
-              <li>Isolate the culprit bucket first before drilling down.</li>
-              <li>Within revenue: decompose Price vs. Volume separately.</li>
-              <li>Within costs: separate Fixed vs. Variable, then go category by category.</li>
-              <li>Quantify the gap: how much of the decline does each driver explain?</li>
-              <li>Then (and only then) recommend solutions.</li>
+              <li>Ask whether the problem is revenue-side, cost-side, or both. Isolate the culprit bucket first.</li>
+              <li>Within revenue: check Price and Volume <em>separately</em>, out loud, even if one looks fine at first glance.</li>
+              <li>Within costs: separate Fixed from Variable, then go category by category within whichever one is moving.</li>
+              <li>Quantify the gap as you go: how much of the total profit decline does each driver explain? Consultants think in dollars, not adjectives.</li>
+              <li>Only once you can point to a specific number and a specific cause do you say the word &ldquo;recommend.&rdquo;</li>
             </ol>
 
             <p className="sub-h">Diagnostic discipline: tap a card to flip</p>
@@ -264,6 +326,37 @@ export default function ProfitabilityPage() {
           </div>
         </section>
 
+        {/* What this actually sounds like */}
+        <section className="block">
+          <div className="block-label"><span className="section-label">What it sounds like</span></div>
+          <div className="block-body">
+            <p style={{ marginBottom: 20 }}>Reading the framework is one thing. Hearing it applied out loud is what makes it click. Here&rsquo;s a short exchange showing how a strong candidate opens a profitability case. Notice they&rsquo;re narrating their <em>thinking</em>, not just their conclusion.</p>
+
+            <div className="pf-dialogue">
+              <div className="pf-turn pf-i">
+                <div className="pf-turn-who">Interviewer</div>
+                <div className="pf-turn-what">&ldquo;Our client, a national coffee chain, has seen profit fall 15% this year even though revenue grew 3%. They&rsquo;ve asked us to figure out why.&rdquo;</div>
+              </div>
+              <div className="pf-turn pf-c">
+                <div className="pf-turn-who">Candidate</div>
+                <div className="pf-turn-what">&ldquo;Got it, so revenue is actually up slightly, which tells me the problem is probably concentrated on the cost side, but I&rsquo;d like to confirm that before I rule revenue out entirely. Do we have a breakdown of how costs have moved year over year, split between things like rent and salaries versus things like ingredients and packaging?&rdquo;</div>
+              </div>
+              <div className="pf-turn pf-i">
+                <div className="pf-turn-who">Interviewer</div>
+                <div className="pf-turn-what">&ldquo;Good instinct. Costs are up 9% overall. What would you want to know next?&rdquo;</div>
+              </div>
+              <div className="pf-turn pf-c">
+                <div className="pf-turn-who">Candidate</div>
+                <div className="pf-turn-what">&ldquo;I&rsquo;d want to know whether that 9% is concentrated in fixed costs, like new store leases or corporate hires, or in variable costs, like coffee bean prices or cup packaging, since those point to very different root causes. I&rsquo;d also want to sanity-check revenue isn&rsquo;t hiding something, for instance if price per cup rose but transaction volume fell, that could still show up as &lsquo;3% revenue growth&rsquo; while masking a real customer problem.&rdquo;</div>
+              </div>
+            </div>
+
+            <div className="pf-dialogue-outro">
+              Notice what the candidate <b>didn&rsquo;t</b>&nbsp;do: they didn&rsquo;t guess a cause (&ldquo;maybe rent went up&rdquo;), and they didn&rsquo;t recommend anything yet. They asked a structured question that would let them isolate the right bucket first. That&rsquo;s the entire skill this framework is training.
+            </div>
+          </div>
+        </section>
+
         {/* Worked example */}
         <section className="block">
           <div className="block-label"><span className="section-label">Worked example</span></div>
@@ -274,12 +367,62 @@ export default function ProfitabilityPage() {
 
             <div className="wx-step">
               <h4><span className="sn">Step 1</span> Revenue or costs?</h4>
-              <p>Revenue went from $800M to $820M, up $20M (2.5%). That&rsquo;s not the problem. So the $32M profit decline is entirely cost-driven. We can set revenue aside (for now) and focus on the cost structure.</p>
+              <p>Revenue went from $800M to $820M, up $20M (2.5%). That&rsquo;s not the problem. So the $32M profit decline is entirely cost-driven. We can set revenue aside for now and focus on the cost structure.</p>
             </div>
 
             <div className="wx-step">
               <h4><span className="sn">Step 2</span> Fixed vs. variable?</h4>
-              <p>Decompose it yourself. The builder starts at this year&rsquo;s troubled numbers. Drag the drivers and watch profit, margin, and the diagnosis react. Notice which lever actually moves the needle.</p>
+              <p>The interviewer shares a cost breakdown:</p>
+              <table className="wx-table" style={{ marginTop: 14 }}>
+                <thead>
+                  <tr>
+                    <th>Cost category</th>
+                    <th>2 years ago</th>
+                    <th>This year</th>
+                    <th>Change</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>COGS <span style={{ color: "var(--muted)", fontWeight: 400 }}>(variable)</span></td>
+                    <td>$440M (55%)</td>
+                    <td>$492M (60%)</td>
+                    <td>+$52M</td>
+                  </tr>
+                  <tr>
+                    <td>Store rent <span style={{ color: "var(--muted)", fontWeight: 400 }}>(fixed)</span></td>
+                    <td>$120M</td>
+                    <td>$126M</td>
+                    <td>+$6M</td>
+                  </tr>
+                  <tr>
+                    <td>Corporate overhead <span style={{ color: "var(--muted)", fontWeight: 400 }}>(fixed)</span></td>
+                    <td>$80M</td>
+                    <td>$82M</td>
+                    <td>+$2M</td>
+                  </tr>
+                  <tr>
+                    <td>Marketing <span style={{ color: "var(--muted)", fontWeight: 400 }}>(semi-variable)</span></td>
+                    <td>$40M</td>
+                    <td>$38M</td>
+                    <td>−$2M</td>
+                  </tr>
+                  <tr>
+                    <td>Other</td>
+                    <td>$40M</td>
+                    <td>$42M</td>
+                    <td>+$2M</td>
+                  </tr>
+                  <tr style={{ background: "var(--forest-light)" }}>
+                    <td><b>Total costs</b></td>
+                    <td><b>$720M</b></td>
+                    <td><b>$780M</b></td>
+                    <td><b>+$60M</b></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style={{ marginTop: 14 }}>Revenue up $20M. Costs up $60M. Net effect: −$40M pre-tax (roughly −$32M after tax). Numbers reconcile.</p>
+              <p style={{ marginTop: 16 }}>Decompose it yourself with the builder below. The sliders start at this year&rsquo;s troubled numbers. Drag the drivers and watch profit, margin, and the diagnosis react. Notice which lever actually moves the needle.</p>
               <div className="estimator">
                 <div className="est-grid">
                   <div className="est-controls">
@@ -340,7 +483,6 @@ export default function ProfitabilityPage() {
                   </div>
                 </div>
               </div>
-              <p>Revenue up $20M. Costs up $60M. Net effect: −$40M pre-tax (roughly −$32M after tax). Numbers reconcile.</p>
             </div>
 
             <div className="wx-step">
@@ -349,8 +491,8 @@ export default function ProfitabilityPage() {
               <p>You ask the interviewer: <em>&ldquo;What&rsquo;s driving the COGS increase?&rdquo;</em> They tell you:</p>
               <ul>
                 <li>Raw cotton and polyester prices spiked 18% due to supply chain disruptions after flooding in key manufacturing regions.</li>
-                <li>RetailCo&rsquo;s supplier contracts are spot-priced (no fixed-rate agreements), so 100% of the increase was passed through.</li>
-                <li>RetailCo also shifted product mix toward lower-margin basics this year to compete on price with fast-fashion entrants, reducing average gross margin per unit even before the input cost increase.</li>
+                <li>RetailCo&rsquo;s contracts with suppliers are spot-priced (no fixed-rate agreements), so 100% of the increase was passed through.</li>
+                <li>RetailCo also shifted product mix toward lower-margin basics this year to compete on price with fast-fashion entrants. This reduced average gross margin per unit even before the input cost increase.</li>
               </ul>
             </div>
 
@@ -359,8 +501,8 @@ export default function ProfitabilityPage() {
               <ul>
                 <li>Input cost spike: ~$28M of the COGS increase</li>
                 <li>Product mix shift toward lower-margin items: ~$13M of the COGS increase</li>
-                <li>Rent increase: $6M (lease renewals at higher market rates, unavoidable short-term)</li>
-                <li>Total explained: ~$47M in cost increases, offset by $20M revenue growth = ~$27M net. With the marketing reduction ($2M) and other small items, total impact lands at ~$32M. Checks out.</li>
+                <li>Rent increase: $6M (lease renewals at higher market rates, largely unavoidable short-term)</li>
+                <li>Total explained: $47M in cost increases, offset by $20M in revenue growth = ~$27M net. With the $2M marketing reduction and other small items, total impact lands at ~$32M. Checks out.</li>
               </ul>
             </div>
 
@@ -369,14 +511,14 @@ export default function ProfitabilityPage() {
               <div className="rec-group">
                 <p className="sub-h">Short-term (0–6 months)</p>
                 <ul>
-                  <li>Renegotiate supplier contracts to lock in fixed pricing for 12–18 months. Even at elevated rates, certainty reduces planning risk.</li>
-                  <li>Pause the push into basics. Price competition with fast fashion is margin-dilutive, and RetailCo&rsquo;s strength is premium product, not price.</li>
+                  <li>Renegotiate supplier contracts to lock in fixed pricing for 12&ndash;18 months. Even at current elevated rates, certainty reduces planning risk.</li>
+                  <li>Pause the push into basics. Price competition with fast fashion is margin-dilutive. RetailCo&rsquo;s strength is premium product, not price.</li>
                 </ul>
               </div>
               <div className="rec-group">
                 <p className="sub-h">Medium-term (6–18 months)</p>
                 <ul>
-                  <li>Diversify the supplier base geographically (reduce concentration in flood-prone regions).</li>
+                  <li>Diversify the supplier base geographically to reduce concentration in flood-prone regions.</li>
                   <li>Explore partial vertical integration for key materials (cotton blends) to improve cost control.</li>
                 </ul>
               </div>
@@ -393,7 +535,7 @@ export default function ProfitabilityPage() {
               <span className="mk"><WarnIcon /></span>
               <div>
                 <h4>Mistake 1: Jumping to recommendations before diagnosing</h4>
-                <p>This is the most common error in profitability cases. The candidate hears &ldquo;profits are down&rdquo; and immediately says &ldquo;they should cut costs&rdquo; or &ldquo;raise prices.&rdquo; That&rsquo;s not analysis; it&rsquo;s guessing. The interviewer wants to watch you think, not hear your first instinct. Diagnose the specific driver before you suggest anything.</p>
+                <p>The most common error in profitability cases. The candidate hears &ldquo;profits are down&rdquo; and immediately says &ldquo;they should cut costs&rdquo; or &ldquo;raise prices.&rdquo; That&rsquo;s not analysis. That&rsquo;s guessing. The interviewer wants to watch you think, not hear your first instinct. Diagnose the specific driver before you suggest anything.</p>
                 <p style={{ marginTop: 10 }}>A good rule: don&rsquo;t say the word &ldquo;recommend&rdquo; until you&rsquo;ve identified the specific dollar amount and root cause of the problem.</p>
               </div>
             </div>
@@ -401,9 +543,44 @@ export default function ProfitabilityPage() {
               <span className="mk"><WarnIcon /></span>
               <div>
                 <h4>Mistake 2: Treating Revenue as a single number</h4>
-                <p>Revenue = Price &times; Volume. These can move in opposite directions and still produce flat total revenue. If prices rose 8% but volume fell 7%, revenue looks almost flat, but the underlying dynamic is very different from a healthy business. Always decompose. Ask about price trends and volume trends separately. Ask about customer count and purchase frequency separately. Mix shifts (selling more of a lower-margin product) are also invisible unless you decompose.</p>
+                <p>Revenue = Price &times; Volume. These can move in opposite directions and still produce flat total revenue. The &ldquo;8% price up, 7% volume down&rdquo; trap from earlier in this page is a real pattern that shows up constantly. Always decompose. Ask about price trends and volume trends separately. Ask about customer count and purchase frequency separately. Mix shifts are invisible unless you go looking for them.</p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* How this connects to other frameworks */}
+        <section className="block">
+          <div className="block-label"><span className="section-label">How it connects</span></div>
+          <div className="block-body">
+            <p style={{ marginBottom: 18 }}>You&rsquo;ll see this exact Revenue/Cost skeleton reappear everywhere:</p>
+            <div className="pf-connects">
+              <Link className="pf-connect" href="/frameworks/market-entry">
+                <div className="pf-connect-head">
+                  <span className="pf-conn-num">01</span>
+                  <h5>Market Entry</h5>
+                </div>
+                <p>&ldquo;Will this new market be profitable?&rdquo; is this same tree, applied to a hypothetical business instead of an existing one.</p>
+                <span className="pf-conn-go">Open framework <ArrowRight /></span>
+              </Link>
+              <Link className="pf-connect" href="/frameworks/growth-strategy">
+                <div className="pf-connect-head">
+                  <span className="pf-conn-num">02</span>
+                  <h5>Growth Strategy</h5>
+                </div>
+                <p>&ldquo;Which lever moves the needle most?&rdquo; is usually asking which branch of this tree has the most room to improve.</p>
+                <span className="pf-conn-go">Open framework <ArrowRight /></span>
+              </Link>
+              <Link className="pf-connect" href="/frameworks/ma-investment">
+                <div className="pf-connect-head">
+                  <span className="pf-conn-num">03</span>
+                  <h5>M&amp;A / Investment</h5>
+                </div>
+                <p>Synergy math is this framework run twice (once per company) and then combined into a single joint profitability picture.</p>
+                <span className="pf-conn-go">Open framework <ArrowRight /></span>
+              </Link>
+            </div>
+            <p className="pf-connect-outro">Master this page and the other frameworks will feel like <em>variations on a theme</em> instead of six separate things to memorize.</p>
           </div>
         </section>
 
@@ -478,7 +655,7 @@ export default function ProfitabilityPage() {
                         <span className="flow-node"><CheckIcon /></span>
                         <div className="land-box">
                           <span className="land-lbl">Where you land</span>
-                          <p>Present all four buckets <em>ranked by likely magnitude</em>, quantify what closing each gap means in margin points, and let the data point you — it&rsquo;s almost never one thing.</p>
+                          <p>Present all four buckets <em>ranked by likely magnitude</em>, quantify what closing each gap means in margin points, and let the data point you. It&rsquo;s almost never one thing.</p>
                         </div>
                       </div>
                     </div>
@@ -489,7 +666,7 @@ export default function ProfitabilityPage() {
 
             <div className="try-note">
               <span className="tn-ico"><BulbIcon /></span>
-              <span><b>Try it yourself first.</b> Talk through your full structure out loud before you click to reveal the answers below — that&rsquo;s where the real reps happen.</span>
+              <span><b>Try it yourself first.</b> Talk through your full structure out loud before you click to reveal the answers below. That&rsquo;s where the real reps happen.</span>
             </div>
           </div>
         </section>

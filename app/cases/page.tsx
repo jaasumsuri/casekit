@@ -9,7 +9,7 @@ const ArrowSvg = () => (
 const CASES = [
   {
     num: "01", slug: "novacast", cls: "prof",
-    industry: "Streaming · Profitability",
+    industry: "Streaming",
     difficulty: "Easy", dots: 1,
     title: "NovaCast: the vanishing margin",
     desc: "A streaming platform is bleeding profit while subscribers hold flat. Diagnose the root cause and pitch a recovery, one decision at a time.",
@@ -18,7 +18,7 @@ const CASES = [
   },
   {
     num: "02", slug: "fieldcast", cls: "entry",
-    industry: "B2B SaaS · Market entry",
+    industry: "B2B SaaS",
     difficulty: "Easy–Med", dots: 2,
     title: "Fieldcast: the new market bet",
     desc: "A profitable enterprise SaaS company eyes a tempting SMB segment. The market looks great, but should they go? Make the call, then handle the pushback.",
@@ -26,7 +26,7 @@ const CASES = [
   },
   {
     num: "03", slug: "veriomed", cls: "ma",
-    industry: "Healthcare · M&A",
+    industry: "Healthcare",
     difficulty: "Medium", dots: 2,
     title: "Veriomed: the wrong price",
     desc: "A hospital network wants to acquire a diagnostics lab. The strategic case is real, but the CFO's synergy math is wrong. Catch the error and deliver a recommendation the board can act on.",
@@ -34,7 +34,7 @@ const CASES = [
   },
   {
     num: "04", slug: "harken", cls: "ops",
-    industry: "Manufacturing · Operations",
+    industry: "Manufacturing",
     difficulty: "Medium", dots: 2,
     title: "Harken: the hidden cost",
     desc: "A manufacturer is bleeding margin and thinks they know why. They're wrong. The real root cause is buried in a scheduling decision nobody modeled. Find it, then hold your ground.",
@@ -42,7 +42,7 @@ const CASES = [
   },
   {
     num: "05", slug: "brova", cls: "growth",
-    industry: "Consumer · Growth strategy",
+    industry: "Consumer",
     difficulty: "Hard", dots: 3,
     title: "Brova: the growth trap",
     desc: "A premium beverages CEO wants $45M for energy drinks. The math says no, but so does just saying 'no.' Build the better plan, then survive two curveballs.",
@@ -212,7 +212,6 @@ export default function CasesPage() {
                       <p className="pc-desc">{c.desc}</p>
                       <div className="pc-meta">
                         <div className="pc-tags">
-                          <span className="pc-tag fw">{c.fw}</span>
                           <span className="pc-tag time">{c.time}</span>
                           <span className="pc-tag format">{c.format}</span>
                         </div>

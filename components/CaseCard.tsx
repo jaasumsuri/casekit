@@ -71,7 +71,7 @@ export default function CaseCard({ title, industry, framework, difficulty, slug,
           fontWeight: 600,
         }}
       >
-        {industry} · {framework}
+        {industry}
       </div>
 
       {/* Title */}
@@ -99,20 +99,6 @@ export default function CaseCard({ title, industry, framework, difficulty, slug,
 
       {/* Tags */}
       <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", gap: 6 }}>
-        {/* Framework tag — green */}
-        <span
-          style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "0.74rem",
-            padding: "4px 10px",
-            borderRadius: "var(--r-pill)",
-            fontWeight: 500,
-            background: "var(--forest-light)",
-            color: "var(--forest)",
-          }}
-        >
-          {framework}
-        </span>
         {/* Difficulty tag — gold */}
         <span
           style={{

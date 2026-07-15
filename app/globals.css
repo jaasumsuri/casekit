@@ -1199,10 +1199,74 @@ a.section-label:hover {
 .fw-anim .block:nth-of-type(3) { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.46s; }
 .fw-anim .block:nth-of-type(4) { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.54s; }
 .fw-anim .block:nth-of-type(5) { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.62s; }
-.fw-anim .detail-nav { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.78s; }
+.fw-anim .block:nth-of-type(6) { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.68s; }
+.fw-anim .block:nth-of-type(7) { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.74s; }
+.fw-anim .block:nth-of-type(8) { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.80s; }
+.fw-anim .block:nth-of-type(9) { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.86s; }
+.fw-anim .detail-nav { animation: fwUp 0.62s cubic-bezier(0.2,0.7,0.2,1) both 0.94s; }
 @media (prefers-reduced-motion: reduce) {
   .fw-anim .detail-top, .fw-anim .detail-header, .fw-anim .detail-intro,
   .fw-anim .block, .fw-anim .detail-nav { animation: none; }
+}
+
+/* ─── Profitability page — enhancements ─────────────── */
+.pf-formula { margin: 20px 0 8px; padding: 34px 26px 30px; background: var(--forest); color: #fff; border-radius: 16px; text-align: center; position: relative; overflow: hidden; box-shadow: var(--shadow-soft); }
+.pf-formula::after { content: ""; position: absolute; top: -80px; right: -80px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(196,147,58,0.32), transparent 65%); pointer-events: none; }
+.pf-formula::before { content: ""; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; border-radius: 50%; border: 1px solid rgba(196,147,58,0.28); pointer-events: none; }
+.pf-formula .pf-formula-eq { position: relative; z-index: 1; font-family: var(--font-display), "Instrument Serif", Georgia, serif; font-size: clamp(1.9rem, 4.4vw, 2.8rem); letter-spacing: -0.01em; line-height: 1.1; }
+.pf-formula .pf-formula-eq em { font-style: italic; color: var(--gold); }
+.pf-formula .pf-formula-cap { position: relative; z-index: 1; margin-top: 10px; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 600; }
+
+.pf-mini { background: var(--forest-light); border: 1px dashed rgba(28,61,46,0.28); border-radius: 12px; padding: 16px 20px; margin: 10px 0 8px; font-family: var(--font-body), "DM Sans", -apple-system, sans-serif; color: var(--forest); font-size: 1rem; text-align: center; letter-spacing: 0.01em; }
+.pf-mini b { color: #9c6f1f; font-weight: 700; }
+
+.pf-dialogue { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 6px 26px; margin: 4px 0 8px; box-shadow: var(--shadow-soft); }
+.pf-turn { display: flex; gap: 18px; padding: 18px 0; }
+.pf-turn + .pf-turn { border-top: 1px solid var(--border); }
+.pf-turn-who { flex-shrink: 0; width: 110px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; padding-top: 3px; }
+.pf-turn.pf-i .pf-turn-who { color: var(--muted); }
+.pf-turn.pf-c .pf-turn-who { color: var(--forest); }
+.pf-turn.pf-c .pf-turn-who::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-right: 8px; vertical-align: middle; }
+.pf-turn-what { flex: 1; font-size: 1rem; line-height: 1.62; color: var(--ink); }
+.pf-turn.pf-i .pf-turn-what { color: #4a5a52; }
+.pf-dialogue-outro { margin-top: 16px; font-size: 0.96rem; color: var(--muted); line-height: 1.6; padding: 16px 20px; background: var(--forest-light); border-radius: 12px; border-left: 3px solid var(--forest); }
+.pf-dialogue-outro b { color: var(--forest); }
+
+.pf-connects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 8px 0 4px; }
+.pf-connect { display: flex; flex-direction: column; padding: 22px 22px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; text-decoration: none; position: relative; overflow: hidden; transition: border-color var(--t), box-shadow var(--t), transform var(--t); }
+.pf-connect::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--forest); transform: scaleY(0); transform-origin: top; transition: transform var(--t); }
+.pf-connect:hover { border-color: rgba(28,61,46,0.24); box-shadow: var(--shadow-soft); transform: translateY(-2px); }
+.pf-connect:hover::before { transform: scaleY(1); }
+.pf-connect-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.pf-connect-head .pf-conn-num { font-family: var(--font-display), "Instrument Serif", Georgia, serif; color: var(--gold); font-size: 1.4rem; line-height: 1; font-weight: 400; }
+.pf-connect h5 { margin: 0; font-family: var(--font-body), "DM Sans", sans-serif; font-weight: 700; font-size: 1rem; color: var(--ink); }
+.pf-connect p { font-size: 0.9rem; line-height: 1.52; color: var(--muted); flex: 1; }
+.pf-connect .pf-conn-go { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; color: var(--forest); }
+.pf-connect .pf-conn-go svg { width: 12px; height: 12px; transition: transform var(--t); }
+.pf-connect:hover .pf-conn-go svg { transform: translateX(3px); }
+.pf-connect-outro { margin-top: 18px; font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
+.pf-connect-outro em { font-style: italic; color: var(--forest); }
+
+/* Market Entry - 4-step hero chain */
+.me-hero-chain { margin: 20px 0 8px; padding: 30px 26px 26px; background: var(--forest); color: #fff; border-radius: 16px; position: relative; overflow: hidden; box-shadow: var(--shadow-soft); }
+.me-hero-chain::after { content: ""; position: absolute; top: -80px; right: -80px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(196,147,58,0.28), transparent 65%); pointer-events: none; }
+.me-hero-chain::before { content: ""; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; border-radius: 50%; border: 1px solid rgba(196,147,58,0.28); pointer-events: none; }
+.me-hero-cap { position: relative; z-index: 1; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 600; margin-bottom: 18px; display: block; }
+.me-hero-flow { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 8px; align-items: stretch; }
+.me-hero-node { display: flex; flex-direction: column; gap: 8px; padding: 16px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); border-radius: 12px; }
+.me-hero-node .me-hero-num { font-family: var(--font-display), "Instrument Serif", Georgia, serif; font-size: 1.35rem; line-height: 1; color: var(--gold); font-weight: 400; }
+.me-hero-node h5 { margin: 0; font-family: var(--font-body), "DM Sans", sans-serif; font-size: 0.88rem; font-weight: 600; color: #fff; line-height: 1.4; letter-spacing: 0.005em; }
+.me-hero-sep { display: flex; align-items: center; justify-content: center; color: var(--gold); opacity: 0.75; }
+.me-hero-sep svg { width: 18px; height: 18px; }
+@media (max-width: 900px) {
+  .me-hero-flow { grid-template-columns: 1fr; gap: 6px; }
+  .me-hero-sep { transform: rotate(90deg); margin: -2px 0; }
+}
+
+@media (max-width: 760px) {
+  .pf-connects { grid-template-columns: 1fr; }
+  .pf-turn { flex-direction: column; gap: 6px; padding: 16px 0; }
+  .pf-turn-who { width: auto; }
 }
 
 /* Responsive — detail pages */

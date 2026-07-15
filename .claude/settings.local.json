@@ -54,7 +54,12 @@
       "mcp__1a5aecd1-20bf-4c22-b5a9-c5708ef187ab__get_project",
       "mcp__1a5aecd1-20bf-4c22-b5a9-c5708ef187ab__get_runtime_logs",
       "mcp__1a5aecd1-20bf-4c22-b5a9-c5708ef187ab__get_runtime_errors",
-      "Bash(npx vercel *)"
+      "Bash(npx vercel *)",
+      "Bash(kill 95415)",
+      "Bash(curl -sS \"http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__0v3f4hd._.css\")",
+      "Bash(awk 'BEGIN{RS=\"}\"; ORS=\"}\\\\n\"} /pf-mini \\\\{/ {print}')",
+      "Bash(awk '/me-hero-chain \\\\{/,/me-hero-sep svg/' /Users/jaasumsuri/casekit/app/globals.css)",
+      "Bash(curl -sS \"http://localhost:3000/frameworks/market-entry\")"
     ]
   }
 }
