@@ -223,19 +223,29 @@ export async function POST(request: NextRequest) {
     if (nextIndex < steps.length) {
       nextStepId = String(nextIndex);
     } else {
+      // Last step passed. Set every completion field together so the row is
+      // never internally inconsistent — if the client fails to POST /end,
+      // the row still has completion_status + ended_at + status matching.
+      // final_critique stays NULL until /end fills it in.
       try {
         const { error: updateError } = await supabase
           .from("practice_sessions")
-          .update({ status: "completed" })
+          .update({
+            status: "completed",
+            completion_status: "completed",
+            ended_at: new Date().toISOString(),
+          })
           .eq("id", sessionId);
 
         if (updateError) {
+          console.error("turn route: last-step completion update failed:", updateError);
           return Response.json(
             { error: "Failed to update session status" },
             { status: 500 }
           );
         }
-      } catch {
+      } catch (err) {
+        console.error("turn route: last-step completion update threw:", err);
         return Response.json(
           { error: "Failed to update session status" },
           { status: 500 }

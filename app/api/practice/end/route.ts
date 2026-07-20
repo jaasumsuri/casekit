@@ -198,9 +198,10 @@ export async function POST(request: NextRequest) {
 
         await stream.finalMessage();
 
-        controller.close();
-
-        // Persist the critique after streaming completes
+        // Persist the critique BEFORE closing the stream. Closing first can
+        // let the request context tear down while the DB call is in flight,
+        // which is how sessions ended up with status='completed' but the
+        // other three completion fields NULL.
         try {
           const { error: updateError } = await supabase
             .from("practice_sessions")
@@ -212,13 +213,15 @@ export async function POST(request: NextRequest) {
             })
             .eq("id", sessionId);
           if (updateError) {
-            console.log("end route updateError full:", JSON.stringify(updateError, null, 2));
+            console.error("end route: completion update failed:", updateError);
           }
-        } catch {
-          // Persistence failure after streaming is non-fatal to the client;
-          // the critique was already delivered. A retry will regenerate it.
+        } catch (err) {
+          console.error("end route: completion update threw:", err);
         }
-      } catch {
+
+        controller.close();
+      } catch (err) {
+        console.error("end route: critique stream failed:", err);
         controller.enqueue(
           "\n\n[Unable to generate the full critique. Please try again.]"
         );
