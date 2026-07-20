@@ -109,6 +109,33 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Dedupe guard: if a turn with this (session_id, turn_number) already exists
+  // (double-fire, retry after network hiccup), don't insert again — return
+  // its stored ai_critique instead of re-running the model.
+  try {
+    const { data: existingTurn } = await supabase
+      .from("practice_turns")
+      .select("turn_number, step_id, ai_critique, passed")
+      .eq("session_id", sessionId)
+      .eq("turn_number", turnNumber)
+      .maybeSingle();
+
+    if (existingTurn) {
+      const nextIndex = existingTurn.passed ? stepIndex + 1 : stepIndex;
+      const nextStepId =
+        nextIndex < steps.length ? String(nextIndex) : String(stepIndex);
+      return Response.json({
+        interviewerMessage:
+          existingTurn.ai_critique ??
+          "Could you walk me through your thinking on that again?",
+        passed: existingTurn.passed ?? false,
+        nextStepId,
+      });
+    }
+  } catch {
+    // non-fatal; fall through
+  }
+
   const systemPrompt = buildSystemPrompt(practiceCase, currentStep, stepIndex, steps, responseType, priorTurns);
 
   let aiResult: AITurnResult;
@@ -164,12 +191,25 @@ export async function POST(request: NextRequest) {
       });
 
     if (insertError) {
+      // Postgres unique-violation from the (session_id, turn_number) constraint:
+      // a concurrent request beat us to it. Treat as a duplicate submit — return
+      // success with our freshly-generated interviewer reply so the client doesn't
+      // see an error, and the stored (winning) row remains authoritative.
+      if (insertError.code === "23505") {
+        return Response.json({
+          interviewerMessage: aiResult.interviewerMessage,
+          passed: aiResult.internalGrade.passed,
+          nextStepId: stepId,
+        });
+      }
+      console.error("turn insert failed:", insertError);
       return Response.json(
         { error: "Failed to save turn" },
         { status: 500 }
       );
     }
-  } catch {
+  } catch (err) {
+    console.error("turn insert threw:", err);
     return Response.json(
       { error: "Failed to save turn" },
       { status: 500 }

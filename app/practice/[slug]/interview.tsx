@@ -70,6 +70,7 @@ export default function InterviewClient({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const initStartedRef = useRef(false);
+  const sendingRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -146,7 +147,11 @@ export default function InterviewClient({
 
   async function handleSend() {
     const text = input.trim();
-    if (!text || !sessionId || isTyping) return;
+    if (!text || !sessionId || isTyping || sendingRef.current) return;
+    // ref-lock: setIsTyping is async, so two rapid Enter presses (or a
+    // held-Enter repeat) can both pass the isTyping guard before React
+    // re-renders. The ref flips synchronously.
+    sendingRef.current = true;
 
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
@@ -194,6 +199,7 @@ export default function InterviewClient({
       ]);
     } finally {
       setIsTyping(false);
+      sendingRef.current = false;
     }
   }
 
