@@ -527,6 +527,20 @@ export default function ProfitabilityPage() {
           </div>
         </section>
 
+        {/* Real-world cautionary tale */}
+        <section className="block">
+          <div className="block-label"><span className="section-label">Cautionary tale</span></div>
+          <div className="block-body">
+            <div className="ma-tale">
+              <span className="ma-tale-label"><WarnIcon /> Price and volume hiding from each other</span>
+              <h4>JCPenney, 2012: when a &ldquo;neutral&rdquo; price change collapsed revenue</h4>
+              <p>Worth knowing because it&rsquo;s one of the most-cited cautionary tales in retail: <b>JCPenney</b>, under CEO Ron Johnson in 2012, eliminated the company&rsquo;s constant coupons and &ldquo;sale&rdquo; events in favor of a simplified <em>&ldquo;everyday low prices&rdquo;</em> strategy. On paper, this looked like a clean win for the customer. The math said shoppers would pay roughly the same or less, without needing a coupon to get there. Revenue collapsed anyway, falling by roughly a quarter that year, and Johnson was gone within about 17 months.</p>
+              <p>What happened is a real-world version of exactly the trap this page warned about earlier: <b>revenue isn&rsquo;t one number, it&rsquo;s Price &times; Volume</b>, and the two don&rsquo;t always move for the reasons you&rsquo;d expect. JCPenney&rsquo;s effective prices barely changed. But volume cratered, because a huge share of their customers weren&rsquo;t actually shopping for the lowest price, they were shopping for <em>the feeling of getting a deal</em>. Remove the &ldquo;60% off&rdquo; sign and the same price tag underneath suddenly sold far less, even though nothing about the actual dollar amount had changed. A team looking only at &ldquo;did we raise or lower price&rdquo; would have missed this completely. The real driver was on the volume side, and it was psychological, not economic.</p>
+              <p>The lesson: always check price and volume <em>separately</em>, and don&rsquo;t assume a change that looks neutral on paper will actually behave neutrally in the real world. Customers respond to more than the number on the price tag.</p>
+            </div>
+          </div>
+        </section>
+
         {/* Common mistakes */}
         <section className="block">
           <div className="block-label"><span className="section-label">Common beginner mistakes</span></div>

@@ -530,6 +530,20 @@ export default function MarketEntryPage() {
           </div>
         </section>
 
+        {/* Real-world cautionary tale */}
+        <section className="block">
+          <div className="block-label"><span className="section-label">Cautionary tale</span></div>
+          <div className="block-body">
+            <div className="ma-tale">
+              <span className="ma-tale-label"><WarnIcon /> A real-world lesson</span>
+              <h4>Walmart in Germany: attractive market, wrong company</h4>
+              <p>Worth knowing because it&rsquo;s one of the most-taught market entry failures in business school: <b>Walmart entered Germany in 1997</b> by acquiring two existing retail chains, and exited in 2006 having lost well over a billion dollars. On the surface, Germany looked exactly like the kind of market this framework would flag as attractive: a large, wealthy economy with a well-developed retail sector. That&rsquo;s precisely why this case is such a good teaching example: the market was genuinely attractive, and the deal still failed, because <em>the failure wasn&rsquo;t in Step 1. It was in Step 3.</em></p>
+              <p>Walmart&rsquo;s ability to win in Germany was far weaker than it looked from the outside. German shoppers were already loyal to deep-discount grocers like <b>Aldi and Lidl</b>, who owned the low-price positioning Walmart wanted to compete on. That&rsquo;s Step 2 territory that should have raised a flag. And Walmart&rsquo;s operating playbook, built for the American customer, didn&rsquo;t transfer: American-style customer service touches like baggers and greeters, which many German consumers found insincere rather than friendly, and German labor law and works councils made Walmart&rsquo;s flexible US-style staffing model difficult to run as-is. Culturally and operationally, Walmart never closed the gap between what it knew how to do and what winning in Germany actually required.</p>
+              <p>The lesson: a market can be large, wealthy, and genuinely attractive by every Step 1 metric, and still be the wrong place for a specific company to enter, if Steps 2 and 3 don&rsquo;t hold up. <b>Attractiveness answers &ldquo;is there money to be made here at all.&rdquo;</b> It never answers &ldquo;can we be the ones to make it.&rdquo;</p>
+            </div>
+          </div>
+        </section>
+
         {/* Common mistakes */}
         <section className="block">
           <div className="block-label"><span className="section-label">Common beginner mistakes</span></div>
