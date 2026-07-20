@@ -63,6 +63,33 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "case_not_found" }, { status: 404 });
   }
 
+  // Guard: if the client double-fires start (StrictMode double invoke, Fast
+  // Refresh, route re-mount), return the recent in_progress row instead of
+  // inserting an orphan duplicate.
+  try {
+    const tenSecondsAgo = new Date(Date.now() - 10_000).toISOString();
+    const { data: existing } = await supabase
+      .from("practice_sessions")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("case_slug", caseSlug)
+      .eq("status", "in_progress")
+      .gte("created_at", tenSecondsAgo)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existing?.id) {
+      return Response.json({
+        sessionId: existing.id,
+        brief: practiceCase.brief,
+        companyStyle: practiceCase.company_style,
+      });
+    }
+  } catch {
+    // non-fatal; fall through to insert
+  }
+
   try {
     const { data, error: insertError } = await supabase
       .from("practice_sessions")

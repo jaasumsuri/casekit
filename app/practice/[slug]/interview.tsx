@@ -69,6 +69,7 @@ export default function InterviewClient({
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const initStartedRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -91,6 +92,9 @@ export default function InterviewClient({
 
   // Init session
   useEffect(() => {
+    if (initStartedRef.current) return;
+    initStartedRef.current = true;
+
     async function init() {
       const userId = await fetchUserId();
 
