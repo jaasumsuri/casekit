@@ -28,6 +28,29 @@ interface AITurnResult {
   };
 }
 
+// Extract the first JSON object from the model output. Handles the two
+// realistic non-strict cases: markdown-fenced JSON (```json ... ```) and
+// a preamble sentence before the object. Does NOT try to recover from
+// truncated JSON — that surfaces as a parse error into the caller, which
+// logs it (see fallback catch) so we can distinguish parse vs. truncation.
+function parseAIResponse(raw: string): AITurnResult {
+  const trimmed = raw.trim();
+  const fenceStart = trimmed.indexOf("```");
+  if (fenceStart !== -1) {
+    const afterOpen = trimmed.indexOf("\n", fenceStart);
+    const fenceEnd = trimmed.indexOf("```", afterOpen + 1);
+    if (afterOpen !== -1 && fenceEnd !== -1) {
+      return JSON.parse(trimmed.slice(afterOpen + 1, fenceEnd).trim());
+    }
+  }
+  const braceStart = trimmed.indexOf("{");
+  const braceEnd = trimmed.lastIndexOf("}");
+  if (braceStart !== -1 && braceEnd > braceStart) {
+    return JSON.parse(trimmed.slice(braceStart, braceEnd + 1));
+  }
+  return JSON.parse(trimmed);
+}
+
 export async function POST(request: NextRequest) {
   const { sessionId, stepId, responseType, candidateResponse } =
     (await request.json()) as TurnRequest;
@@ -139,11 +162,17 @@ export async function POST(request: NextRequest) {
   const systemPrompt = buildSystemPrompt(practiceCase, currentStep, stepIndex, steps, responseType, priorTurns);
 
   let aiResult: AITurnResult;
+  let rawModelOutput = "";
+  let stopReason: string | null = null;
   try {
     const anthropic = new Anthropic();
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 1024,
+      // Was 1024 — long detailed candidate answers produced longer internal
+      // critiques, tripped max_tokens, truncated the JSON mid-string, and
+      // hit the fallback. 2048 comfortably covers the schema plus a full
+      // critique note without breaking the bank.
+      max_tokens: 2048,
       system: systemPrompt,
       messages: [
         {
@@ -153,10 +182,11 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    const raw =
+    stopReason = message.stop_reason ?? null;
+    rawModelOutput =
       message.content[0].type === "text" ? message.content[0].text : "";
 
-    aiResult = JSON.parse(raw);
+    aiResult = parseAIResponse(rawModelOutput);
 
     if (
       typeof aiResult.interviewerMessage !== "string" ||
@@ -165,14 +195,21 @@ export async function POST(request: NextRequest) {
     ) {
       throw new Error("malformed AI response");
     }
-  } catch {
+  } catch (err) {
+    console.error("turn route: AI response fallback triggered", {
+      reason: err instanceof Error ? err.message : String(err),
+      stopReason,
+      candidateResponseLength: candidateResponse.length,
+      rawModelOutputLength: rawModelOutput.length,
+      rawModelOutputTail: rawModelOutput.slice(-300),
+    });
     aiResult = {
       interviewerMessage:
-        "Let me rephrase. Could you walk me through that again?",
+        "Could you walk me through your thinking on that again?",
       internalGrade: {
-        critique: "Unable to evaluate response.",
+        critique: `Model output could not be parsed (stop_reason=${stopReason ?? "unknown"}).`,
         passed: false,
-        hint: "Try resubmitting your answer.",
+        hint: "Retry — this is a system fallback, not a real interviewer reply.",
       },
     };
   }
