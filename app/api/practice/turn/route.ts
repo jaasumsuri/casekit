@@ -12,6 +12,11 @@ function getSupabase() {
   );
 }
 
+// Hard ceiling on turns per session. 6 steps × ~3 avg turns = ~18; 20 gives
+// buffer without letting a stuck session run forever. Hitting the cap marks
+// the session completion_status='abandoned' rather than 'completed'.
+const SESSION_TURN_CAP = 20;
+
 interface TurnRequest {
   sessionId: string;
   stepId: string;
@@ -26,6 +31,7 @@ interface AITurnResult {
     passed: boolean;
     hint?: string;
   };
+  finalRecommendationDelivered: boolean;
 }
 
 // Forced tool_use guarantees the reply shape at the API level: the model
@@ -57,6 +63,11 @@ const INTERVIEWER_TOOL = {
       hint: {
         type: "string",
         description: "Optional internal note if failed; omit if passed.",
+      },
+      finalRecommendationDelivered: {
+        type: "boolean",
+        description:
+          "Set to true ONLY when the candidate has delivered a complete final recommendation covering the case — a specific diagnosis, a specific lever, and acknowledgment of tradeoffs where the case rubric calls for them. Setting this true ends the interview and transitions to the coach critique, regardless of which step you're on. Do NOT set true just because they've done good analysis or asked good questions — only when they've actually delivered a recommendation.",
       },
     },
     required: ["interviewerMessage", "critique", "passed"],
@@ -156,6 +167,8 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existingTurn) {
+      const passedLastStep =
+        !!existingTurn.passed && stepIndex === steps.length - 1;
       const nextIndex = existingTurn.passed ? stepIndex + 1 : stepIndex;
       const nextStepId =
         nextIndex < steps.length ? String(nextIndex) : String(stepIndex);
@@ -165,6 +178,7 @@ export async function POST(request: NextRequest) {
           "Could you walk me through your thinking on that again?",
         passed: existingTurn.passed ?? false,
         nextStepId,
+        sessionComplete: passedLastStep,
       });
     }
   } catch {
@@ -208,6 +222,7 @@ export async function POST(request: NextRequest) {
       critique?: unknown;
       passed?: unknown;
       hint?: unknown;
+      finalRecommendationDelivered?: unknown;
     };
 
     if (
@@ -225,6 +240,8 @@ export async function POST(request: NextRequest) {
         passed: input.passed,
         hint: typeof input.hint === "string" ? input.hint : undefined,
       },
+      finalRecommendationDelivered:
+        input.finalRecommendationDelivered === true,
     };
   } catch (err) {
     console.error("turn route: AI response fallback triggered", {
@@ -240,6 +257,7 @@ export async function POST(request: NextRequest) {
         passed: false,
         hint: "Retry — this is a system fallback, not a real interviewer reply.",
       },
+      finalRecommendationDelivered: false,
     };
   }
 
@@ -282,41 +300,58 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let nextStepId: string | null = stepId;
+  // Determine advancement + whether the session is complete. Three ways to end:
+  //   1. Last step passed (candidate hit every step trigger)
+  //   2. Model marked finalRecommendationDelivered=true (candidate delivered
+  //      a recommendation regardless of which step's trigger they hit)
+  //   3. Turn cap reached (safety net for stuck sessions)
+  const passedLastStep =
+    aiResult.internalGrade.passed && stepIndex === steps.length - 1;
+  const finalRecommendationDelivered = aiResult.finalRecommendationDelivered;
+  const turnCapReached = turnNumber >= SESSION_TURN_CAP;
+  const sessionComplete =
+    passedLastStep || finalRecommendationDelivered || turnCapReached;
 
-  if (aiResult.internalGrade.passed) {
+  let nextStepId: string | null = stepId;
+  if (!sessionComplete && aiResult.internalGrade.passed) {
     const nextIndex = stepIndex + 1;
     if (nextIndex < steps.length) {
       nextStepId = String(nextIndex);
-    } else {
-      // Last step passed. Set every completion field together so the row is
-      // never internally inconsistent — if the client fails to POST /end,
-      // the row still has completion_status + ended_at + status matching.
-      // final_critique stays NULL until /end fills it in.
-      try {
-        const { error: updateError } = await supabase
-          .from("practice_sessions")
-          .update({
-            status: "completed",
-            completion_status: "completed",
-            ended_at: new Date().toISOString(),
-          })
-          .eq("id", sessionId);
+    }
+  }
 
-        if (updateError) {
-          console.error("turn route: last-step completion update failed:", updateError);
-          return Response.json(
-            { error: "Failed to update session status" },
-            { status: 500 }
-          );
-        }
-      } catch (err) {
-        console.error("turn route: last-step completion update threw:", err);
+  if (sessionComplete) {
+    // Set every completion field together so the row is never internally
+    // inconsistent — if the client fails to POST /end, the row still has
+    // completion_status + ended_at + status matching. final_critique stays
+    // NULL until /end fills it in.
+    const completionStatus =
+      turnCapReached && !passedLastStep && !finalRecommendationDelivered
+        ? "abandoned"
+        : "completed";
+    try {
+      const { error: updateError } = await supabase
+        .from("practice_sessions")
+        .update({
+          status: "completed",
+          completion_status: completionStatus,
+          ended_at: new Date().toISOString(),
+        })
+        .eq("id", sessionId);
+
+      if (updateError) {
+        console.error("turn route: session completion update failed:", updateError);
         return Response.json(
           { error: "Failed to update session status" },
           { status: 500 }
         );
       }
+    } catch (err) {
+      console.error("turn route: session completion update threw:", err);
+      return Response.json(
+        { error: "Failed to update session status" },
+        { status: 500 }
+      );
     }
   }
 
@@ -324,6 +359,7 @@ export async function POST(request: NextRequest) {
     interviewerMessage: aiResult.interviewerMessage,
     passed: aiResult.internalGrade.passed,
     nextStepId,
+    sessionComplete,
   });
 }
 
@@ -390,6 +426,10 @@ function buildSystemPrompt(
       "The values below are the only numeric or factual claims you may make about this case. If the candidate asks about a figure not listed here, say you'd need to check with the team — do NOT invent a plausible-sounding number. If the candidate cites a derived figure back to you, verify it against these facts before agreeing.",
       "",
       ...Object.entries(caseFacts).map(([key, value]) => `- ${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`),
+      "",
+      "### Handling arithmetic contradictions",
+      "",
+      "If the candidate points out that a figure you cited is inconsistent with other numbers you've given or with case_facts, OWN the error immediately — say something like \"You're right, I misspoke — X is the correct figure per the numbers\" and cite the authoritative value from case_facts above. Do NOT blame the candidate, push back on their math, or reframe the contradiction as something they said. When your prior response contradicts case_facts, the candidate is right and you are wrong. A real stakeholder who misquoted a number would acknowledge it, not deflect.",
       ""
     );
   }
@@ -440,6 +480,8 @@ function buildSystemPrompt(
       `What a strong recommendation looks like for this case: ${practiceCase.rubric.good_recommendation_shape}`,
       "",
       "If the candidate is nearing their final recommendation or delivering one, react to its content as a stakeholder would: ask follow-up questions about specifics, express skepticism about parts that are vague, or ask 'what would that actually cost us' / 'how long would that take.' Do NOT grade or evaluate the recommendation quality out loud.",
+      "",
+      "When the candidate has delivered a COMPLETE final recommendation — meaning they've covered the diagnosis, named a specific lever, and addressed the tradeoffs the case rubric calls for (see good_recommendation_shape above) — set finalRecommendationDelivered: true on your reply. This ends the interview and transitions to the coach critique. Do NOT set it true just because they've asked good questions or done thorough analysis, only when they've actually delivered the recommendation. If they've delivered a partial recommendation (e.g., a diagnosis without a lever, or a lever without acknowledging tradeoffs), keep finalRecommendationDelivered: false and push them on the missing piece in your interviewerMessage.",
       ""
     );
   }

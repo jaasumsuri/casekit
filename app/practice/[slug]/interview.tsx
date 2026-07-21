@@ -180,14 +180,14 @@ export default function InterviewClient({
 
       if (data.passed) {
         const nextIdx = parseInt(data.nextStepId, 10);
-        if (nextIdx > currentStep) {
+        if (!isNaN(nextIdx) && nextIdx > currentStep) {
           setCurrentStep(nextIdx);
           setStepsCompleted(nextIdx);
         }
-        if (nextIdx >= caseMeta.totalSteps) {
-          await endSession();
-          return;
-        }
+      }
+      if (data.sessionComplete) {
+        await endSession();
+        return;
       }
     } catch {
       setMessages((prev) => [
