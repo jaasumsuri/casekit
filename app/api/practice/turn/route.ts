@@ -157,11 +157,11 @@ export async function POST(request: NextRequest) {
 
   // Dedupe guard: if a turn with this (session_id, turn_number) already exists
   // (double-fire, retry after network hiccup), don't insert again — return
-  // its stored ai_critique instead of re-running the model.
+  // the stored interviewer_message instead of re-running the model.
   try {
     const { data: existingTurn } = await supabase
       .from("practice_turns")
-      .select("turn_number, step_id, ai_critique, passed")
+      .select("turn_number, step_id, ai_critique, interviewer_message, passed")
       .eq("session_id", sessionId)
       .eq("turn_number", turnNumber)
       .maybeSingle();
@@ -173,8 +173,12 @@ export async function POST(request: NextRequest) {
       const nextStepId =
         nextIndex < steps.length ? String(nextIndex) : String(stepIndex);
       return Response.json({
+        // Prior code returned ai_critique here — that's the internal grading
+        // note, not the interviewer's visible reply. Fixed: return the
+        // stored interviewer_message. Pre-migration turns have NULL, so
+        // fall back to a neutral prompt.
         interviewerMessage:
-          existingTurn.ai_critique ??
+          existingTurn.interviewer_message ??
           "Could you walk me through your thinking on that again?",
         passed: existingTurn.passed ?? false,
         nextStepId,
@@ -271,6 +275,7 @@ export async function POST(request: NextRequest) {
         candidate_response: candidateResponse,
         response_type: responseType,
         ai_critique: aiResult.internalGrade.critique,
+        interviewer_message: aiResult.interviewerMessage,
         passed: aiResult.internalGrade.passed,
       });
 

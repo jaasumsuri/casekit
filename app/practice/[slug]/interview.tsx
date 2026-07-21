@@ -107,6 +107,82 @@ export default function InterviewClient({
         return;
       }
 
+      // Resume path — check for an existing in-progress or recently-
+      // completed session for this case before creating a new one. This
+      // is what makes a page refresh mid-interview or mid-critique
+      // rehydrate correctly instead of losing state.
+      const resumeRes = await fetch(
+        `/api/practice/sessions/current?caseSlug=${encodeURIComponent(caseMeta.slug)}`
+      );
+      if (resumeRes.ok) {
+        const resumeData = (await resumeRes.json()) as {
+          session: {
+            id: string;
+            status: string;
+            final_critique: string | null;
+          } | null;
+          turns?: Array<{
+            turn_number: number;
+            step_id: string;
+            candidate_response: string;
+            interviewer_message: string | null;
+            passed: boolean | null;
+          }>;
+        };
+
+        if (resumeData.session) {
+          const s = resumeData.session;
+          setSessionId(s.id);
+
+          if (s.status === "completed") {
+            // Restore the critique view. If final_critique is present, show
+            // it. If not, the /end call likely failed previously — surface
+            // the retry state via the critique-error flow.
+            if (s.final_critique) {
+              setCritique(s.final_critique);
+              setCritiqueError(null);
+            } else {
+              setCritiqueError(
+                "Critique wasn't saved from the previous attempt. Retry to regenerate."
+              );
+            }
+            setPhase("critique");
+            return;
+          }
+
+          // in_progress: rehydrate messages + current step from turns
+          const turns = resumeData.turns ?? [];
+          const hydratedMessages: Message[] = [
+            { role: "interviewer", text: caseMeta.brief },
+          ];
+          let step = 0;
+          let completed = 0;
+          for (const t of turns) {
+            hydratedMessages.push({
+              role: "candidate",
+              text: t.candidate_response,
+            });
+            hydratedMessages.push({
+              role: "interviewer",
+              text:
+                t.interviewer_message ??
+                "[This turn's response wasn't archived. Continue from here.]",
+            });
+            const idx = parseInt(t.step_id, 10);
+            if (!isNaN(idx) && t.passed && idx + 1 > step) {
+              step = idx + 1;
+              completed = idx + 1;
+            }
+          }
+          setMessages(hydratedMessages);
+          setCurrentStep(step);
+          setStepsCompleted(completed);
+          setPhase("interview");
+          return;
+        }
+      }
+
+      // No resumable session — check cap, then start a new one
       const countRes = await fetch(
         `/api/practice/session-count?userId=${userId}`
       );
