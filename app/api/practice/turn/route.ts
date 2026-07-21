@@ -28,28 +28,40 @@ interface AITurnResult {
   };
 }
 
-// Extract the first JSON object from the model output. Handles the two
-// realistic non-strict cases: markdown-fenced JSON (```json ... ```) and
-// a preamble sentence before the object. Does NOT try to recover from
-// truncated JSON — that surfaces as a parse error into the caller, which
-// logs it (see fallback catch) so we can distinguish parse vs. truncation.
-function parseAIResponse(raw: string): AITurnResult {
-  const trimmed = raw.trim();
-  const fenceStart = trimmed.indexOf("```");
-  if (fenceStart !== -1) {
-    const afterOpen = trimmed.indexOf("\n", fenceStart);
-    const fenceEnd = trimmed.indexOf("```", afterOpen + 1);
-    if (afterOpen !== -1 && fenceEnd !== -1) {
-      return JSON.parse(trimmed.slice(afterOpen + 1, fenceEnd).trim());
-    }
-  }
-  const braceStart = trimmed.indexOf("{");
-  const braceEnd = trimmed.lastIndexOf("}");
-  if (braceStart !== -1 && braceEnd > braceStart) {
-    return JSON.parse(trimmed.slice(braceStart, braceEnd + 1));
-  }
-  return JSON.parse(trimmed);
-}
+// Forced tool_use guarantees the reply shape at the API level: the model
+// cannot return markdown-fenced text, a preamble, or a malformed object,
+// which were the failure modes of prompt-only JSON. tool_choice locks the
+// call site to this tool.
+const INTERVIEWER_TOOL = {
+  name: "submit_interviewer_response",
+  description:
+    "Submit your in-character reply to the candidate along with an internal grading note. Call this exactly once for every response — it is the only way to reply.",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      interviewerMessage: {
+        type: "string",
+        description:
+          "Your in-character reply to the candidate — the ONLY text the candidate will see. Natural dialogue, first person, addressed to them. 1-3 sentences typical, 4 max.",
+      },
+      critique: {
+        type: "string",
+        description:
+          "Internal-only grading note for the rubric log. The candidate never sees this. Be specific about what they got right or wrong relative to the step trigger.",
+      },
+      passed: {
+        type: "boolean",
+        description:
+          "true if the candidate's response triggered the data release for this step (asked the right question or made the right connection); false otherwise.",
+      },
+      hint: {
+        type: "string",
+        description: "Optional internal note if failed; omit if passed.",
+      },
+    },
+    required: ["interviewerMessage", "critique", "passed"],
+  },
+};
 
 export async function POST(request: NextRequest) {
   const { sessionId, stepId, responseType, candidateResponse } =
@@ -162,18 +174,15 @@ export async function POST(request: NextRequest) {
   const systemPrompt = buildSystemPrompt(practiceCase, currentStep, stepIndex, steps, responseType, priorTurns);
 
   let aiResult: AITurnResult;
-  let rawModelOutput = "";
   let stopReason: string | null = null;
   try {
     const anthropic = new Anthropic();
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      // Was 1024 — long detailed candidate answers produced longer internal
-      // critiques, tripped max_tokens, truncated the JSON mid-string, and
-      // hit the fallback. 2048 comfortably covers the schema plus a full
-      // critique note without breaking the bank.
       max_tokens: 2048,
       system: systemPrompt,
+      tools: [INTERVIEWER_TOOL],
+      tool_choice: { type: "tool", name: INTERVIEWER_TOOL.name },
       messages: [
         {
           role: "user",
@@ -183,25 +192,45 @@ export async function POST(request: NextRequest) {
     });
 
     stopReason = message.stop_reason ?? null;
-    rawModelOutput =
-      message.content[0].type === "text" ? message.content[0].text : "";
 
-    aiResult = parseAIResponse(rawModelOutput);
+    const toolUseBlock = message.content.find(
+      (b): b is Extract<typeof b, { type: "tool_use" }> => b.type === "tool_use"
+    );
+
+    if (!toolUseBlock || toolUseBlock.name !== INTERVIEWER_TOOL.name) {
+      throw new Error(
+        `expected tool_use block for ${INTERVIEWER_TOOL.name}, got stop_reason=${stopReason}`
+      );
+    }
+
+    const input = toolUseBlock.input as {
+      interviewerMessage?: unknown;
+      critique?: unknown;
+      passed?: unknown;
+      hint?: unknown;
+    };
 
     if (
-      typeof aiResult.interviewerMessage !== "string" ||
-      typeof aiResult.internalGrade?.critique !== "string" ||
-      typeof aiResult.internalGrade?.passed !== "boolean"
+      typeof input.interviewerMessage !== "string" ||
+      typeof input.critique !== "string" ||
+      typeof input.passed !== "boolean"
     ) {
-      throw new Error("malformed AI response");
+      throw new Error("tool_use input failed shape check");
     }
+
+    aiResult = {
+      interviewerMessage: input.interviewerMessage,
+      internalGrade: {
+        critique: input.critique,
+        passed: input.passed,
+        hint: typeof input.hint === "string" ? input.hint : undefined,
+      },
+    };
   } catch (err) {
     console.error("turn route: AI response fallback triggered", {
       reason: err instanceof Error ? err.message : String(err),
       stopReason,
       candidateResponseLength: candidateResponse.length,
-      rawModelOutputLength: rawModelOutput.length,
-      rawModelOutputTail: rawModelOutput.slice(-300),
     });
     aiResult = {
       interviewerMessage:
@@ -421,20 +450,9 @@ function buildSystemPrompt(
     );
   }
 
-  base.push(
-    "",
-    "### Response format",
-    "",
-    "Respond ONLY with JSON, no preamble or markdown. Use this exact schema:",
-    '{',
-    '  "interviewerMessage": "Your in-character reply to the candidate. This is the ONLY text the candidate will see. Natural dialogue, first person, addressed to them.",',
-    '  "internalGrade": {',
-    '    "critique": "Internal-only grading note for the rubric log. The candidate never sees this. Be specific about what they got right or wrong relative to the step trigger.",',
-    '    "passed": true or false,',
-    '    "hint": "Optional internal note if failed, omit key if passed"',
-    '  }',
-    '}'
-  );
+  // Response shape is enforced via the submit_interviewer_response tool
+  // (forced tool_choice), so no JSON schema instruction is included here.
+  // The tool's parameter descriptions carry the same guidance.
 
   return base.filter((line) => line !== undefined).join("\n");
 }
