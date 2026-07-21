@@ -173,8 +173,15 @@ export async function POST(request: NextRequest) {
   // Stream the critique using the Anthropic SDK
   const anthropic = new Anthropic();
 
+  // Sentinel the client detects to switch into an error-with-retry state.
+  // Chosen to be unambiguous and unlikely to appear in real critique text.
+  const CRITIQUE_ERROR_SENTINEL = "\n\n[[CRITIQUE_ERROR]]\n";
+
   const textStream = new ReadableStream<string>({
     async start(controller) {
+      let fullText = "";
+      let generationFailed = false;
+
       try {
         const stream = anthropic.messages.stream({
           model: "claude-sonnet-4-6",
@@ -189,8 +196,6 @@ export async function POST(request: NextRequest) {
           ],
         });
 
-        let fullText = "";
-
         stream.on("text", (text) => {
           fullText += text;
           controller.enqueue(text);
@@ -198,35 +203,48 @@ export async function POST(request: NextRequest) {
 
         await stream.finalMessage();
 
-        // Persist the critique BEFORE closing the stream. Closing first can
-        // let the request context tear down while the DB call is in flight,
-        // which is how sessions ended up with status='completed' but the
-        // other three completion fields NULL.
-        try {
-          const { error: updateError } = await supabase
-            .from("practice_sessions")
-            .update({
-              status: "completed",
-              final_critique: fullText,
-              completion_status: completionStatus,
-              ended_at: new Date().toISOString(),
-            })
-            .eq("id", sessionId);
-          if (updateError) {
-            console.error("end route: completion update failed:", updateError);
-          }
-        } catch (err) {
-          console.error("end route: completion update threw:", err);
+        // Model returned an empty response — safety refusal, silent
+        // truncation, or upstream oddity. Treat the same as a thrown error.
+        if (fullText.trim() === "") {
+          generationFailed = true;
+          console.error("end route: critique stream produced empty text");
         }
-
-        controller.close();
       } catch (err) {
+        generationFailed = true;
         console.error("end route: critique stream failed:", err);
-        controller.enqueue(
-          "\n\n[Unable to generate the full critique. Please try again.]"
-        );
-        controller.close();
       }
+
+      if (generationFailed) {
+        controller.enqueue(CRITIQUE_ERROR_SENTINEL);
+        controller.close();
+        // final_critique stays NULL so a retry regenerates cleanly.
+        return;
+      }
+
+      // Persist the critique BEFORE closing the stream. Closing first can
+      // let the request context tear down while the DB call is in flight,
+      // which is how sessions ended up with status='completed' but the
+      // other three completion fields NULL.
+      try {
+        const { error: updateError } = await supabase
+          .from("practice_sessions")
+          .update({
+            status: "completed",
+            final_critique: fullText,
+            completion_status: completionStatus,
+            ended_at: new Date().toISOString(),
+          })
+          .eq("id", sessionId);
+        if (updateError) {
+          console.error("end route: completion update failed:", updateError);
+          controller.enqueue(CRITIQUE_ERROR_SENTINEL);
+        }
+      } catch (err) {
+        console.error("end route: completion update threw:", err);
+        controller.enqueue(CRITIQUE_ERROR_SENTINEL);
+      }
+
+      controller.close();
     },
   });
 

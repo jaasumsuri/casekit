@@ -64,7 +64,10 @@ export default function InterviewClient({
   const [elapsed, setElapsed] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [critique, setCritique] = useState("");
+  const [critiqueError, setCritiqueError] = useState<string | null>(null);
   const [stepsCompleted, setStepsCompleted] = useState(0);
+
+  const CRITIQUE_ERROR_SENTINEL = "[[CRITIQUE_ERROR]]";
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -209,6 +212,7 @@ export default function InterviewClient({
 
     setPhase("critique");
     setCritique("");
+    setCritiqueError(null);
 
     try {
       const res = await fetch("/api/practice/end", {
@@ -216,6 +220,11 @@ export default function InterviewClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId }),
       });
+
+      if (!res.ok) {
+        setCritiqueError("Couldn't generate the critique. Try again in a moment.");
+        return;
+      }
 
       if (!res.body) {
         const data = await res.json();
@@ -233,8 +242,19 @@ export default function InterviewClient({
         buffer += decoder.decode(value, { stream: true });
         setCritique(buffer);
       }
+
+      // Server signaled a failed generation via sentinel, or the stream
+      // closed with no content at all. Either way, discard whatever text
+      // did make it through and let the user retry from a clean state.
+      if (
+        buffer.includes(CRITIQUE_ERROR_SENTINEL) ||
+        buffer.trim() === ""
+      ) {
+        setCritique("");
+        setCritiqueError("Couldn't generate the critique. Try again in a moment.");
+      }
     } catch {
-      setCritique("Unable to generate critique. Please try again.");
+      setCritiqueError("Network error while generating the critique. Try again.");
     }
   }
 
@@ -309,7 +329,24 @@ export default function InterviewClient({
               <StarIcon />
               <span>COACH</span>
             </div>
-            {critique ? (
+            {critiqueError ? (
+              <div className="iv-critique-error">
+                <p>{critiqueError}</p>
+                <button
+                  className="iv-btn iv-btn-solid"
+                  onClick={() => endSession()}
+                >
+                  Retry
+                </button>
+                <Link
+                  href="/practice"
+                  className="iv-btn iv-btn-outline"
+                  style={{ marginLeft: 12 }}
+                >
+                  Back to practice
+                </Link>
+              </div>
+            ) : critique ? (
               <div className="iv-critique-text">
                 {critique.split("\n").map((line, i) => {
                   if (line.startsWith("# ")) {
@@ -354,7 +391,7 @@ export default function InterviewClient({
                 <p>Generating your critique…</p>
               </div>
             )}
-            {critique && (
+            {critique && !critiqueError && (
               <Link href="/practice" className="iv-btn iv-btn-solid iv-btn-back">
                 Back to practice
               </Link>
