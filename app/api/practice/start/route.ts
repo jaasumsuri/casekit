@@ -102,7 +102,30 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.log("insertError full:", JSON.stringify(insertError, null, 2));
+      // Partial unique index practice_sessions_user_case_inprogress_unique
+      // fires here when two concurrent inserts race past the pre-check.
+      // Look up the row that won and return its id — the client sees a
+      // clean success either way, and the DB stays deduped.
+      if (insertError.code === "23505") {
+        const { data: winner } = await supabase
+          .from("practice_sessions")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("case_slug", caseSlug)
+          .eq("status", "in_progress")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (winner?.id) {
+          return Response.json({
+            sessionId: winner.id,
+            brief: practiceCase.brief,
+            companyStyle: practiceCase.company_style,
+          });
+        }
+      }
+      console.error("start insert failed:", insertError);
       return Response.json(
         { error: "Failed to create session" },
         { status: 500 }
@@ -114,7 +137,8 @@ export async function POST(request: NextRequest) {
       brief: practiceCase.brief,
       companyStyle: practiceCase.company_style,
     });
-  } catch {
+  } catch (err) {
+    console.error("start insert threw:", err);
     return Response.json(
       { error: "Failed to create session" },
       { status: 500 }
