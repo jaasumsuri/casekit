@@ -158,13 +158,25 @@ export async function POST(request: NextRequest) {
   // Dedupe guard: if a turn with this (session_id, turn_number) already exists
   // (double-fire, retry after network hiccup), don't insert again — return
   // the stored interviewer_message instead of re-running the model.
+  // Uses .select("*") so the query works both pre- and post- the
+  // interviewer_message column migration (the field is missing entirely if
+  // the migration hasn't run, and .select("*") tolerates that).
   try {
-    const { data: existingTurn } = await supabase
+    const { data: existingTurnRaw } = await supabase
       .from("practice_turns")
-      .select("turn_number, step_id, ai_critique, interviewer_message, passed")
+      .select("*")
       .eq("session_id", sessionId)
       .eq("turn_number", turnNumber)
       .maybeSingle();
+    const existingTurn = existingTurnRaw as
+      | {
+          turn_number: number;
+          step_id: string;
+          ai_critique: string | null;
+          interviewer_message?: string | null;
+          passed: boolean | null;
+        }
+      | null;
 
     if (existingTurn) {
       const passedLastStep =
@@ -266,18 +278,33 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { error: insertError } = await supabase
+    const basePayload = {
+      session_id: sessionId,
+      turn_number: turnNumber,
+      step_id: stepId,
+      candidate_response: candidateResponse,
+      response_type: responseType,
+      ai_critique: aiResult.internalGrade.critique,
+      passed: aiResult.internalGrade.passed,
+    };
+    let { error: insertError } = await supabase
       .from("practice_turns")
       .insert({
-        session_id: sessionId,
-        turn_number: turnNumber,
-        step_id: stepId,
-        candidate_response: candidateResponse,
-        response_type: responseType,
-        ai_critique: aiResult.internalGrade.critique,
+        ...basePayload,
         interviewer_message: aiResult.interviewerMessage,
-        passed: aiResult.internalGrade.passed,
       });
+
+    // Pre-migration fallback: if the interviewer_message column hasn't been
+    // added yet (PGRST204 from PostgREST's schema cache), retry the insert
+    // without it so /turn keeps working. Log a loud warning so this doesn't
+    // get missed. Once the migration lands, this branch stops firing.
+    if (insertError?.code === "PGRST204") {
+      console.warn(
+        "turn route: interviewer_message column missing — resume will show placeholders for these turns. Apply scripts/sql/2026-07-21_practice_turns_interviewer_message.sql."
+      );
+      const retry = await supabase.from("practice_turns").insert(basePayload);
+      insertError = retry.error;
+    }
 
     if (insertError) {
       // Postgres unique-violation from the (session_id, turn_number) constraint:

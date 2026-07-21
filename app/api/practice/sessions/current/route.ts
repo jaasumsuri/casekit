@@ -71,14 +71,36 @@ export async function GET(request: NextRequest) {
     return Response.json({ session: null });
   }
 
-  const { data: turns } = await supabase
+  // .select("*") + explicit projection below keeps this working pre-migration
+  // (interviewer_message column may not exist yet — falls back to null in that
+  // case). Explicit projection also ensures internal-only fields like
+  // ai_critique don't leak to the client.
+  const { data: turnRows } = await supabase
     .from("practice_turns")
-    .select("turn_number, step_id, candidate_response, interviewer_message, passed")
+    .select("*")
     .eq("session_id", sessionRow.id)
     .order("turn_number", { ascending: true });
 
+  type Turn = {
+    turn_number: number;
+    step_id: string;
+    candidate_response: string;
+    interviewer_message?: string | null;
+    passed: boolean | null;
+  };
+  const turns = (turnRows ?? []).map((t) => {
+    const row = t as Turn;
+    return {
+      turn_number: row.turn_number,
+      step_id: row.step_id,
+      candidate_response: row.candidate_response,
+      interviewer_message: row.interviewer_message ?? null,
+      passed: row.passed,
+    };
+  });
+
   return Response.json({
     session: sessionRow,
-    turns: turns ?? [],
+    turns,
   });
 }
