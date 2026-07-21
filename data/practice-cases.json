@@ -20,13 +20,53 @@
         ],
         "trap": "The CEO frames both the lease renegotiation and the loyalty program as irrelevant ('I don't think either is related'). A weak candidate accepts this framing and looks elsewhere — wage inflation, competition, etc. — and burns time. A strong candidate treats 'the client doesn't think it's related' as a flag to check, not a reason to skip it, and finds that the loyalty program's discount mechanics are the larger of the two drivers (roughly 70% of the margin decline), with the lease renegotiation contributing the remaining ~30% through higher fixed costs.",
         "data_release_sequence": [
-          { "trigger": "asks for revenue trend or confirms revenue is flat", "reveal": "Revenue: $182M two years ago, $185M last year, $184M this year. Essentially flat, slight uptick then slight pullback." },
-          { "trigger": "asks for a cost breakdown by category", "reveal": "COGS as % of revenue: stable at 54-55% across all three years. Labor: stable at 18%. Lease/occupancy: rose from 9% to 12% of revenue over the period. Marketing/loyalty program costs: rose from 3% to 9% of revenue over the period." },
-          { "trigger": "asks specifically about the warehouse lease renegotiation", "reveal": "The lease was renegotiated for a longer term in exchange for a higher fixed annual rate, trading flexibility for what the CFO thought was cost certainty. It increased fixed occupancy costs by roughly $5.5M per year." },
-          { "trigger": "asks specifically about the loyalty program", "reveal": "The program launched 18 months ago. Members get 8% back in points on every purchase, redeemable on future purchases. Enrollment is now 61% of transactions. Redeemed points are booked as a discount against revenue at the point of redemption." },
-          { "trigger": "asks for store-level or channel (online vs. in-store) performance split", "reveal": "Both channels show the same pattern — flat revenue, declining margin — roughly proportionally. This is a company-wide structural issue, not a single-channel or single-store problem." },
-          { "trigger": "asks about competitor pricing or market conditions", "reveal": "No major competitive pricing changes in the period. This is a useful question to ask but the data won't point anywhere — it's a dead end by design, included so the candidate practices ruling things out with evidence rather than assuming." }
+          {
+            "trigger": "asks for revenue trend or confirms revenue is flat",
+            "reveal": "Revenue: $182M two years ago, $185M last year, $184M this year. Essentially flat, slight uptick then slight pullback."
+          },
+          {
+            "trigger": "asks for a cost breakdown by category",
+            "reveal": "COGS as % of revenue: stable at 54-55% across all three years. Labor: stable at 18%. Lease/occupancy: rose from 9% to 12% of revenue over the period. Marketing/loyalty program costs: rose from 3% to 9% of revenue over the period."
+          },
+          {
+            "trigger": "asks specifically about the warehouse lease renegotiation",
+            "reveal": "The lease was renegotiated for a longer term in exchange for a higher fixed annual rate, trading flexibility for what the CFO thought was cost certainty. It increased fixed occupancy costs by roughly $5.5M per year."
+          },
+          {
+            "trigger": "asks specifically about the loyalty program",
+            "reveal": "The program launched 18 months ago. Members get 8% back in points on every purchase, redeemable on future purchases. Enrollment is now 61% of transactions. Redeemed points are booked as a discount against revenue at the point of redemption."
+          },
+          {
+            "trigger": "asks for store-level or channel (online vs. in-store) performance split",
+            "reveal": "Both channels show the same pattern — flat revenue, declining margin — roughly proportionally. This is a company-wide structural issue, not a single-channel or single-store problem."
+          },
+          {
+            "trigger": "asks about competitor pricing or market conditions",
+            "reveal": "No major competitive pricing changes in the period. This is a useful question to ask but the data won't point anywhere — it's a dead end by design, included so the candidate practices ruling things out with evidence rather than assuming."
+          }
         ],
+        "case_facts": {
+          "store_count": 42,
+          "time_period": "last 2 fiscal years",
+          "revenue_two_years_ago_usd_m": 182,
+          "revenue_last_year_usd_m": 185,
+          "revenue_this_year_usd_m": 184,
+          "revenue_trend": "essentially flat across all three years",
+          "operating_profit_decline_pct": "roughly 30% over the two-year period",
+          "cogs_pct_of_revenue": "stable at 54-55% across all three years",
+          "labor_pct_of_revenue": "stable at 18% across all three years",
+          "lease_pct_of_revenue": "rose from 9% to 12% over the period",
+          "marketing_and_loyalty_pct_of_revenue": "rose from 3% to 9% over the period",
+          "lease_renegotiation_impact_usd_m_per_year": 5.5,
+          "lease_renegotiation_terms": "longer term traded for higher fixed annual rate",
+          "loyalty_program_launch": "18 months ago",
+          "loyalty_program_reward_rate_pct": 8,
+          "loyalty_program_enrollment_pct_of_transactions": 61,
+          "loyalty_points_accounting": "redeemed points booked as a discount against revenue at point of redemption",
+          "channel_pattern": "both online and in-store show the same flat-revenue, declining-margin pattern proportionally — company-wide structural issue, not channel-specific",
+          "competitor_pricing": "no major competitor pricing changes in the period (dead-end line)",
+          "driver_relative_weight": "loyalty program discounting drives ~70% of the margin decline; lease renegotiation drives ~30%"
+        },
         "good_recommendation_shape": "The recommendation should (1) name both drivers with their approximate relative weight (loyalty program discounting ~70% of the decline, lease renegotiation ~30%), (2) propose a specific lever for the larger driver — e.g. capping or tiering the loyalty reward rate, or shifting toward non-discount loyalty perks — rather than just 'review the loyalty program,' and (3) acknowledge the lease cost is largely locked in for now but flag it as a renegotiation point at the next lease cycle. A recommendation that only addresses one driver, or that's vague about which lever to pull, should be marked as incomplete even if the diagnosis was correct."
       }
     },
@@ -39,7 +79,9 @@
       "brief": "Meridian Diagnostics operates a chain of 18 outpatient imaging centers (MRI, CT, X-ray) across three states. The company has grown revenue steadily for years, but the CFO flagged last quarter that operating margin has compressed from 22% to 14% over the past 18 months — even though patient volume is up 9% and the company recently won a large new payer contract that the CFO expected would help, not hurt, margins.\n\nThe CEO wants a clear answer before the board meeting next week: where is the margin going, and is the new payer contract part of the problem or part of the solution?\n\nYou have access to the management team for clarifying questions. Volume, revenue, and cost data are available by request.",
       "rubric": {
         "correct_framework": "profitability",
-        "framework_acceptable_alternates": ["pricing"],
+        "framework_acceptable_alternates": [
+          "pricing"
+        ],
         "framework_notes": "Pricing is an acceptable alternate entry point since the core issue is reimbursement rate per scan, but the candidate must still build out a full profitability tree (volume x price/reimbursement, cost structure) to reach the right answer — pricing alone without the cost-side check would be incomplete.",
         "must_surface": [
           "Separates volume effect from price/reimbursement effect from cost effect before concluding anything",
@@ -51,13 +93,53 @@
         ],
         "trap": "The CFO's framing implies the new payer contract 'should' have helped margins because it brought in significant new volume, and the case explicitly says the CFO expected it to help. A weak candidate treats the contract as a probable positive and looks elsewhere first, burning time on cost-side investigation before checking reimbursement mix. A strong candidate immediately asks what the new contract's reimbursement rate actually is relative to the existing book, since 'more volume' and 'better margins' are not the same thing — volume can grow while blended profitability falls if the new volume is lower-margin.",
         "data_release_sequence": [
-          { "trigger": "asks for revenue and volume trend", "reveal": "Total scan volume up 9% over 18 months. Total revenue up 4% over the same period — revenue is NOT growing in line with volume." },
-          { "trigger": "asks for a cost breakdown", "reveal": "Direct costs (techs, equipment maintenance, supplies) up 7% — roughly in line with volume growth, slightly below. Fixed costs (facility leases, equipment leases, admin) flat. Cost structure is not the primary driver, though it's a real secondary contributor." },
-          { "trigger": "asks for reimbursement rate by payer or asks specifically about the new payer contract's terms", "reveal": "Existing payer mix average reimbursement: $410/scan. New payer contract reimbursement: $265/scan — about 35% lower. The new contract now represents 22% of total scan volume, up from 0% 18 months ago." },
-          { "trigger": "asks why the company signed a lower-reimbursing contract", "reveal": "The new payer guarantees a minimum volume commitment and faster claims processing, which leadership valued for cash flow predictability — but no one modeled the blended margin impact before signing." },
-          { "trigger": "asks about scan mix (MRI vs CT vs X-ray) shifting", "reveal": "Scan type mix has stayed roughly constant across the period — this is a dead end, included to test whether the candidate chases a plausible-sounding but unsupported hypothesis." },
-          { "trigger": "asks for center-by-center performance", "reveal": "The margin decline is broad-based across all 18 centers, roughly proportional to each center's share of new-payer volume — confirms this is a payer mix issue, not a specific underperforming location." }
+          {
+            "trigger": "asks for revenue and volume trend",
+            "reveal": "Total scan volume up 9% over 18 months. Total revenue up 4% over the same period — revenue is NOT growing in line with volume."
+          },
+          {
+            "trigger": "asks for a cost breakdown",
+            "reveal": "Direct costs (techs, equipment maintenance, supplies) up 7% — roughly in line with volume growth, slightly below. Fixed costs (facility leases, equipment leases, admin) flat. Cost structure is not the primary driver, though it's a real secondary contributor."
+          },
+          {
+            "trigger": "asks for reimbursement rate by payer or asks specifically about the new payer contract's terms",
+            "reveal": "Existing payer mix average reimbursement: $410/scan. New payer contract reimbursement: $265/scan — about 35% lower. The new contract now represents 22% of total scan volume, up from 0% 18 months ago."
+          },
+          {
+            "trigger": "asks why the company signed a lower-reimbursing contract",
+            "reveal": "The new payer guarantees a minimum volume commitment and faster claims processing, which leadership valued for cash flow predictability — but no one modeled the blended margin impact before signing."
+          },
+          {
+            "trigger": "asks about scan mix (MRI vs CT vs X-ray) shifting",
+            "reveal": "Scan type mix has stayed roughly constant across the period — this is a dead end, included to test whether the candidate chases a plausible-sounding but unsupported hypothesis."
+          },
+          {
+            "trigger": "asks for center-by-center performance",
+            "reveal": "The margin decline is broad-based across all 18 centers, roughly proportional to each center's share of new-payer volume — confirms this is a payer mix issue, not a specific underperforming location."
+          }
         ],
+        "case_facts": {
+          "center_count": 18,
+          "states_served": 3,
+          "time_period": "past 18 months",
+          "operating_margin_before_pct": 22,
+          "operating_margin_now_pct": 14,
+          "operating_margin_decline_pct_points": 8,
+          "total_volume_growth_pct": 9,
+          "total_revenue_growth_pct": 4,
+          "revenue_per_scan_change": "roughly 4-5% decline over the 18-month period, derivable from volume vs revenue growth gap",
+          "direct_cost_growth_pct": 7,
+          "fixed_cost_trend": "flat (facility leases, equipment leases, admin)",
+          "existing_payer_avg_reimbursement_usd_per_scan": 410,
+          "new_payer_reimbursement_usd_per_scan": 265,
+          "new_payer_rate_gap_pct": "about 35% lower than existing payer mix",
+          "new_payer_share_of_total_volume_pct": 22,
+          "new_payer_share_18mo_ago_pct": 0,
+          "scan_mix_shift": "roughly constant across MRI / CT / X-ray — dead-end line, do not attribute margin decline to mix shift",
+          "center_by_center_pattern": "margin decline broad-based across all 18 centers, roughly proportional to each center's share of new-payer volume — not a specific-location problem",
+          "contract_rationale": "signed for guaranteed minimum volume commitment and faster claims processing (cash flow predictability); no blended margin model run pre-signing",
+          "driver_relative_weight": "payer mix shift ~75-80% of margin decline; cost scaling ~20-25%"
+        },
         "good_recommendation_shape": "Recommendation should (1) quantify that the payer mix shift is the dominant driver (~75-80% of the margin decline) with cost scaling as a secondary factor (~20-25%), (2) propose a specific lever — renegotiating the new contract's rate, capping the volume share allowed under that contract, or both — rather than vaguely 'reassess the contract,' and (3) note the cash-flow benefit the contract provides isn't free and should be weighed explicitly against the margin cost, not ignored. Should NOT recommend simply exiting the contract without acknowledging the cash flow tradeoff that motivated it in the first place."
       }
     },
@@ -81,13 +163,45 @@
         ],
         "trap": "The founders' framing ('basically like the US') invites the candidate to skip competitive and localization analysis and jump straight to a yes. The real wrinkle is that PulseFit already has organic, unmarketed users in Canada — a fact the candidate has to think to ask about. A weak candidate treats this as a textbook fresh market entry; a strong candidate discovers the existing user base and revises the recommendation toward a lower-cost soft launch rather than a full market entry investment.",
         "data_release_sequence": [
-          { "trigger": "asks for Canadian fitness app market size or growth", "reveal": "Canadian fitness/wellness app market estimated at roughly CAD $180M annually, growing ~12% per year — healthy and growing, comparable growth rate to the US market." },
-          { "trigger": "asks about competitors already in Canada", "reveal": "Two major US-based fitness apps already operate in Canada with localized pricing; no strong Canadian-native competitor dominates the space. Market is contested but not saturated." },
-          { "trigger": "asks whether PulseFit has any existing Canadian users or data", "reveal": "Despite no marketing spend in Canada, PulseFit already has approximately 140,000 active Canadian users who downloaded the US app organically. Retention and engagement among this group match US averages." },
-          { "trigger": "asks about pricing or currency considerations", "reveal": "The app currently charges in USD with no Canadian pricing tier. Canadian users have historically tolerated this, but conversion to paid tiers among Canadian users is 30% lower than US users — likely a currency/price-sensitivity friction point." },
-          { "trigger": "asks about language or Quebec-specific considerations", "reveal": "The app is English-only. Quebec represents about 23% of the Canadian population and French-language support would be needed to fully serve that segment, though it's not required for an initial English-Canada launch." },
-          { "trigger": "asks about regulatory or data privacy requirements", "reveal": "No material regulatory barriers for a fitness app of this kind in Canada — standard data privacy compliance (PIPEDA) applies but isn't a meaningful obstacle. Dead end by design." }
+          {
+            "trigger": "asks for Canadian fitness app market size or growth",
+            "reveal": "Canadian fitness/wellness app market estimated at roughly CAD $180M annually, growing ~12% per year — healthy and growing, comparable growth rate to the US market."
+          },
+          {
+            "trigger": "asks about competitors already in Canada",
+            "reveal": "Two major US-based fitness apps already operate in Canada with localized pricing; no strong Canadian-native competitor dominates the space. Market is contested but not saturated."
+          },
+          {
+            "trigger": "asks whether PulseFit has any existing Canadian users or data",
+            "reveal": "Despite no marketing spend in Canada, PulseFit already has approximately 140,000 active Canadian users who downloaded the US app organically. Retention and engagement among this group match US averages."
+          },
+          {
+            "trigger": "asks about pricing or currency considerations",
+            "reveal": "The app currently charges in USD with no Canadian pricing tier. Canadian users have historically tolerated this, but conversion to paid tiers among Canadian users is 30% lower than US users — likely a currency/price-sensitivity friction point."
+          },
+          {
+            "trigger": "asks about language or Quebec-specific considerations",
+            "reveal": "The app is English-only. Quebec represents about 23% of the Canadian population and French-language support would be needed to fully serve that segment, though it's not required for an initial English-Canada launch."
+          },
+          {
+            "trigger": "asks about regulatory or data privacy requirements",
+            "reveal": "No material regulatory barriers for a fitness app of this kind in Canada — standard data privacy compliance (PIPEDA) applies but isn't a meaningful obstacle. Dead end by design."
+          }
         ],
+        "case_facts": {
+          "us_active_users_m": 4,
+          "canadian_existing_organic_users_k": 140,
+          "canadian_market_size_cad_m": 180,
+          "canadian_market_growth_pct_per_year": 12,
+          "competitor_count_already_in_canada": 2,
+          "competitor_description": "two major US-based fitness apps operate in Canada with localized pricing; no strong Canadian-native competitor",
+          "current_pricing_currency": "USD only (no CAD tier)",
+          "canadian_paid_conversion_gap": "30% lower than US users, likely due to currency / price-sensitivity friction",
+          "canadian_user_engagement_and_retention": "matches US averages",
+          "app_language": "English only",
+          "quebec_population_share_pct": 23,
+          "regulatory_status": "PIPEDA data privacy compliance applies but is not a meaningful obstacle — dead-end line"
+        },
         "good_recommendation_shape": "Recommendation should (1) confirm Canada is attractive (market size, growth, no dominant incumbent), (2) explicitly use the existing 140K organic user base as the core entry strategy — a low-cost soft launch via localized pricing (CAD currency tier) rather than a full from-scratch entry, and (3) treat French-language/Quebec expansion as a clear phase 2, not a blocker to an initial English-Canada launch. A recommendation that ignores the existing user base, or that proposes a large upfront marketing investment as if this were a true greenfield entry, misses the core insight of this case."
       }
     },
@@ -100,7 +214,9 @@
       "brief": "Torvalt Components is a $400M industrial manufacturer that makes precision bearings and fasteners for heavy machinery OEMs. Its leadership team is considering entering the electric vehicle (EV) drivetrain components market, where demand is growing quickly and several smaller players have entered in the last two years.\n\nTorvalt has deep manufacturing expertise and strong OEM relationships in its current categories, but has never sold into the automotive industry, which has different quality certification requirements (e.g., IATF 16949) and a very different sales cycle than its current industrial machinery customers.\n\nThe board wants a recommendation: enter the EV components market or stay focused on the current business? If entry makes sense, how should Torvalt do it?",
       "rubric": {
         "correct_framework": "market_entry",
-        "framework_acceptable_alternates": ["growth_strategy"],
+        "framework_acceptable_alternates": [
+          "growth_strategy"
+        ],
         "framework_notes": "Growth strategy is an acceptable alternate framing since this is fundamentally a new-market growth decision for an existing player, but the candidate must still address market attractiveness, competitive intensity, and — critically — capability fit/certification barriers. A candidate who treats this purely as 'where to grow' without addressing the automotive certification barrier has missed the hardest part of the case.",
         "must_surface": [
           "Assesses market attractiveness (size, growth, competitive intensity) before assuming entry is automatically good just because the market is growing",
@@ -111,14 +227,52 @@
         ],
         "trap": "The market growth numbers look attractive at first glance, and a candidate eager to recommend 'yes, growing market' may under-weight the certification barrier, treating it as a minor compliance step. In reality, IATF 16949 certification for a new manufacturing line typically takes 18-24 months and meaningful capital investment before Torvalt could even bid on automotive contracts — by which point several competitors will have entrenched relationships. The trap is recommending organic entry without pricing in this delay, when an acquisition of an already-certified smaller player may be the only entry mode that doesn't lose the window.",
         "data_release_sequence": [
-          { "trigger": "asks for EV drivetrain components market size and growth", "reveal": "Market estimated at $2.1B currently, projected to grow at 18-22% annually over the next five years as EV adoption accelerates." },
-          { "trigger": "asks about competitive landscape", "reveal": "Roughly 6 mid-sized specialized players have entered in the last two years, plus 2 large diversified industrial conglomerates. No single player has more than 15% share — fragmented but increasingly contested." },
-          { "trigger": "asks about certification requirements or barriers to entry", "reveal": "IATF 16949 automotive quality certification is required by virtually all automotive OEMs before they'll even evaluate a supplier. Certification typically takes 18-24 months and requires dedicated quality systems investment, estimated at $8-12M for a facility Torvalt's size." },
-          { "trigger": "asks about Torvalt's existing manufacturing capability fit", "reveal": "Torvalt's precision tolerances and materials expertise are technically comparable to automotive requirements — the engineering capability largely transfers. The gap is specifically in quality certification systems and automotive-specific testing protocols, not core manufacturing skill." },
-          { "trigger": "asks about sales cycle or customer relationship differences", "reveal": "Automotive OEM design-in cycles typically run 2-3 years before a part is selected for a vehicle program, and once selected, contracts often run the life of that vehicle platform (5-7 years) — longer and more relationship/trust-dependent than Torvalt's current industrial sales cycle, but also stickier once won." },
-          { "trigger": "asks whether any acquisition targets exist", "reveal": "At least 2 of the smaller specialized entrants are already IATF certified and have small but real automotive OEM relationships; both are reportedly open to acquisition or partnership given capital constraints on their own growth." },
-          { "trigger": "asks about raw material or input cost trends", "reveal": "Raw material costs (specialty steel, alloys) have been stable and aren't a differentiating factor in this decision — dead end by design." }
+          {
+            "trigger": "asks for EV drivetrain components market size and growth",
+            "reveal": "Market estimated at $2.1B currently, projected to grow at 18-22% annually over the next five years as EV adoption accelerates."
+          },
+          {
+            "trigger": "asks about competitive landscape",
+            "reveal": "Roughly 6 mid-sized specialized players have entered in the last two years, plus 2 large diversified industrial conglomerates. No single player has more than 15% share — fragmented but increasingly contested."
+          },
+          {
+            "trigger": "asks about certification requirements or barriers to entry",
+            "reveal": "IATF 16949 automotive quality certification is required by virtually all automotive OEMs before they'll even evaluate a supplier. Certification typically takes 18-24 months and requires dedicated quality systems investment, estimated at $8-12M for a facility Torvalt's size."
+          },
+          {
+            "trigger": "asks about Torvalt's existing manufacturing capability fit",
+            "reveal": "Torvalt's precision tolerances and materials expertise are technically comparable to automotive requirements — the engineering capability largely transfers. The gap is specifically in quality certification systems and automotive-specific testing protocols, not core manufacturing skill."
+          },
+          {
+            "trigger": "asks about sales cycle or customer relationship differences",
+            "reveal": "Automotive OEM design-in cycles typically run 2-3 years before a part is selected for a vehicle program, and once selected, contracts often run the life of that vehicle platform (5-7 years) — longer and more relationship/trust-dependent than Torvalt's current industrial sales cycle, but also stickier once won."
+          },
+          {
+            "trigger": "asks whether any acquisition targets exist",
+            "reveal": "At least 2 of the smaller specialized entrants are already IATF certified and have small but real automotive OEM relationships; both are reportedly open to acquisition or partnership given capital constraints on their own growth."
+          },
+          {
+            "trigger": "asks about raw material or input cost trends",
+            "reveal": "Raw material costs (specialty steel, alloys) have been stable and aren't a differentiating factor in this decision — dead end by design."
+          }
         ],
+        "case_facts": {
+          "torvalt_revenue_usd_m": 400,
+          "ev_drivetrain_market_size_usd_b": 2.1,
+          "ev_drivetrain_market_growth_pct_per_year": "18-22% over the next 5 years",
+          "recent_entrants_mid_sized_specialized": 6,
+          "recent_entrants_large_conglomerates": 2,
+          "entrant_timeframe": "last two years",
+          "market_concentration": "no single player has more than 15% share — fragmented but increasingly contested",
+          "certification_required": "IATF 16949 (automotive quality certification)",
+          "certification_timeline": "18-24 months",
+          "certification_investment_usd_m": "8-12",
+          "manufacturing_capability_fit": "Torvalt's precision tolerances and materials expertise transfer to automotive; the gap is specifically in quality certification systems and automotive-specific testing protocols, not core manufacturing skill",
+          "automotive_design_in_cycle_years": "2-3",
+          "automotive_contract_life_once_won_years": "5-7",
+          "acquisition_targets": "at least 2 of the smaller specialized entrants are already IATF certified with small but real automotive OEM relationships; both are reportedly open to acquisition or partnership",
+          "raw_material_costs": "stable, not a differentiating factor — dead-end line"
+        },
         "good_recommendation_shape": "Recommendation should (1) affirm the market is attractive enough to justify entry given size and growth, (2) explicitly name the certification timeline as the binding constraint on entry speed, and (3) recommend acquisition or partnership with an already-certified smaller player as the primary path — or at minimum present it as the faster alternative to organic entry — rather than defaulting to a from-scratch organic build that ignores the 18-24 month certification lag. A recommendation to enter organically without addressing how to compress the certification timeline, or a recommendation to not enter at all without weighing the growth opportunity, should be marked incomplete."
       }
     },
@@ -144,14 +298,49 @@
         ],
         "trap": "This case has two layered traps. First, a weak candidate sides with whichever team's framing came first in the brief (often the growth team's bullish numbers) without digging into why compliance disagrees — treating the disagreement as something to wave away rather than investigate. Second, even candidates who take compliance seriously often assume the fix is simply 'get a license' without realizing licensing must happen at the member-state level and the choice of which state to license in materially changes the achievable speed and segment access — some states have faster regulatory approval but smaller direct access to the target client segment, creating a real tradeoff the candidate has to engage with, not just acknowledge.",
         "data_release_sequence": [
-          { "trigger": "asks for the growth team's market sizing or demand data", "reveal": "Target mass-affluent segment in the EU estimated at roughly €38B in investable assets, growing 7% annually, with fewer than 3 meaningful competitors serving this specific segment well. Demand signal is genuinely strong." },
-          { "trigger": "asks what the growth team's proposed entry approach was", "reveal": "The growth team proposed opening EU client accounts directly from the US entity, marketing digitally to EU residents, similar to how Northbridge operates domestically." },
-          { "trigger": "asks what specifically concerns the compliance team", "reveal": "Compliance flags that providing investment services to EU residents without a licensed presence in the EU is not permitted under EU financial services regulation — a US entity cannot simply market and serve EU clients remotely without either an EU license or a passporting arrangement through an already-licensed EU entity." },
-          { "trigger": "asks about licensing options or how other US firms have entered the EU", "reveal": "Two paths exist: (1) establish a licensed subsidiary in a single EU member state, which then allows 'passporting' to serve clients in other member states under most circumstances, or (2) partner with or acquire an existing EU-licensed firm. Licensing a new subsidiary from scratch typically takes 9-15 months and requires meeting that state's capital and governance requirements." },
-          { "trigger": "asks about differences between member states for licensing", "reveal": "Ireland and Luxembourg are commonly used as licensing jurisdictions by US financial firms due to faster regulatory approval and English-language processes, but neither is where the bulk of the identified target client segment is concentrated — that segment is concentrated in Germany and the Netherlands, which have somewhat slower licensing processes." },
-          { "trigger": "asks about acquisition or partnership options", "reveal": "At least one small, already-licensed wealth manager in the Netherlands with roughly €900M AUM has been identified by Northbridge's corporate development team as a potential acquisition target, though no formal valuation work has been done." },
-          { "trigger": "asks about currency or tax considerations", "reveal": "Standard cross-border tax and currency considerations apply but aren't a differentiating factor in this decision relative to the licensing question — dead end by design." }
+          {
+            "trigger": "asks for the growth team's market sizing or demand data",
+            "reveal": "Target mass-affluent segment in the EU estimated at roughly €38B in investable assets, growing 7% annually, with fewer than 3 meaningful competitors serving this specific segment well. Demand signal is genuinely strong."
+          },
+          {
+            "trigger": "asks what the growth team's proposed entry approach was",
+            "reveal": "The growth team proposed opening EU client accounts directly from the US entity, marketing digitally to EU residents, similar to how Northbridge operates domestically."
+          },
+          {
+            "trigger": "asks what specifically concerns the compliance team",
+            "reveal": "Compliance flags that providing investment services to EU residents without a licensed presence in the EU is not permitted under EU financial services regulation — a US entity cannot simply market and serve EU clients remotely without either an EU license or a passporting arrangement through an already-licensed EU entity."
+          },
+          {
+            "trigger": "asks about licensing options or how other US firms have entered the EU",
+            "reveal": "Two paths exist: (1) establish a licensed subsidiary in a single EU member state, which then allows 'passporting' to serve clients in other member states under most circumstances, or (2) partner with or acquire an existing EU-licensed firm. Licensing a new subsidiary from scratch typically takes 9-15 months and requires meeting that state's capital and governance requirements."
+          },
+          {
+            "trigger": "asks about differences between member states for licensing",
+            "reveal": "Ireland and Luxembourg are commonly used as licensing jurisdictions by US financial firms due to faster regulatory approval and English-language processes, but neither is where the bulk of the identified target client segment is concentrated — that segment is concentrated in Germany and the Netherlands, which have somewhat slower licensing processes."
+          },
+          {
+            "trigger": "asks about acquisition or partnership options",
+            "reveal": "At least one small, already-licensed wealth manager in the Netherlands with roughly €900M AUM has been identified by Northbridge's corporate development team as a potential acquisition target, though no formal valuation work has been done."
+          },
+          {
+            "trigger": "asks about currency or tax considerations",
+            "reveal": "Standard cross-border tax and currency considerations apply but aren't a differentiating factor in this decision relative to the licensing question — dead end by design."
+          }
         ],
+        "case_facts": {
+          "aum_usd_b": 14,
+          "target_eu_segment_size_eur_b": 38,
+          "target_eu_segment_growth_pct_per_year": 7,
+          "competitor_count_serving_target_segment_well": "fewer than 3",
+          "growth_team_proposal": "open EU client accounts directly from the US entity, marketing digitally to EU residents",
+          "compliance_position": "not permitted under EU financial services regulation — a US entity cannot serve EU clients remotely without either an EU license or a passporting arrangement through an already-licensed EU entity",
+          "licensing_paths": "(1) establish a licensed subsidiary in a single EU member state, then passport to other member states; or (2) partner with or acquire an existing EU-licensed firm",
+          "licensing_timeline_months": "9-15",
+          "faster_licensing_jurisdictions": "Ireland and Luxembourg (English-language processes, faster regulatory approval, but NOT where the bulk of the target segment is concentrated)",
+          "target_segment_concentration_jurisdictions": "Germany and the Netherlands (somewhat slower licensing)",
+          "netherlands_acquisition_target_aum_eur_m": 900,
+          "tax_and_currency": "standard cross-border considerations apply but are not a differentiating factor — dead-end line"
+        },
         "good_recommendation_shape": "Recommendation should (1) explicitly reconcile the two teams — affirm the market opportunity is real while validating compliance's concern that direct entry isn't viable, (2) recommend a specific entry mode: either licensing in a faster jurisdiction (Ireland/Luxembourg) and accepting slower access to the core target segment initially, or pursuing the Netherlands acquisition target to get both licensing and segment access simultaneously — and explicitly weigh the speed-vs-segment-access tradeoff between these options rather than picking one without justification, and (3) attach a rough timeline (9-15+ months) so the CEO understands this isn't a quick entry regardless of path chosen. A recommendation that doesn't name a specific jurisdiction or entry mechanism, or that ignores the speed/segment-access tradeoff entirely, should be marked incomplete even if the overall direction is sound."
       }
     },
@@ -175,12 +364,35 @@
         ],
         "trap": "Because this resembles the classic 'size the dryer sheet market' sizing question that's a known prep staple, candidates may default to dryer-SHEET market logic (a recurring weekly consumable purchase) without noticing this product is reusable and durable. A weak candidate sizes it like a consumable, producing a wildly inflated repeat-purchase revenue estimate. A strong candidate explicitly flags that the business model resembles a durable goods purchase with occasional replacement (e.g., every 1-2 years) rather than a weekly consumable, and sizes accordingly.",
         "data_release_sequence": [
-          { "trigger": "asks for total US households or population figures", "reveal": "Roughly 130 million households in the US. If the candidate doesn't ask and just states a reasonable estimate themselves (120-130M), that's also acceptable — this is a number a well-prepared candidate may already know." },
-          { "trigger": "asks what % of households have a dryer", "reveal": "No hard data given — the candidate should state and justify their own reasonable assumption (commonly cited estimates range 80-85% of US households have a clothes dryer). Accept any assumption in a reasonable range as long as it's stated explicitly." },
-          { "trigger": "asks about price point or what the product might sell for", "reveal": "No hard data given — candidate should propose and justify a reasonable retail price (e.g., $15-25, comparable to other small reusable household gadgets). Accept reasonable assumptions." },
-          { "trigger": "asks about replacement frequency or product lifespan", "reveal": "No hard data given, but this is the most important assumption in the case — the candidate should reason that since it's reusable/durable, replacement likely happens every 1-3 years (wear, loss, gifting to others) rather than weekly/monthly like a consumable. Reward any answer that explicitly reasons through this rather than defaulting to consumable-style frequency." },
-          { "trigger": "asks about adoption rate or what % of dryer-owning households would actually buy this", "reveal": "No hard data given — candidate should propose a conservative adoption assumption for a new, unproven product category (e.g., 2-5% in an early year, with room to grow). Accept reasonable assumptions with justification." }
+          {
+            "trigger": "asks for total US households or population figures",
+            "reveal": "Roughly 130 million households in the US. If the candidate doesn't ask and just states a reasonable estimate themselves (120-130M), that's also acceptable — this is a number a well-prepared candidate may already know."
+          },
+          {
+            "trigger": "asks what % of households have a dryer",
+            "reveal": "No hard data given — the candidate should state and justify their own reasonable assumption (commonly cited estimates range 80-85% of US households have a clothes dryer). Accept any assumption in a reasonable range as long as it's stated explicitly."
+          },
+          {
+            "trigger": "asks about price point or what the product might sell for",
+            "reveal": "No hard data given — candidate should propose and justify a reasonable retail price (e.g., $15-25, comparable to other small reusable household gadgets). Accept reasonable assumptions."
+          },
+          {
+            "trigger": "asks about replacement frequency or product lifespan",
+            "reveal": "No hard data given, but this is the most important assumption in the case — the candidate should reason that since it's reusable/durable, replacement likely happens every 1-3 years (wear, loss, gifting to others) rather than weekly/monthly like a consumable. Reward any answer that explicitly reasons through this rather than defaulting to consumable-style frequency."
+          },
+          {
+            "trigger": "asks about adoption rate or what % of dryer-owning households would actually buy this",
+            "reveal": "No hard data given — candidate should propose a conservative adoption assumption for a new, unproven product category (e.g., 2-5% in an early year, with room to grow). Accept reasonable assumptions with justification."
+          }
         ],
+        "case_facts": {
+          "us_households_m": "roughly 130 (candidate may cite 120-130M from own knowledge)",
+          "pct_households_with_dryer": "candidate assumption — commonly cited estimates 80-85%; accept any stated reasonable value",
+          "price_point_usd": "candidate assumption — reasonable range $15-25 for a small reusable household gadget",
+          "replacement_frequency": "candidate assumption — every 1-3 years given reusable/durable nature; NOT weekly like a consumable dryer sheet",
+          "early_year_adoption_pct": "candidate assumption — conservative 2-5% for a new unproven product category",
+          "hard_facts_note": "this case is intentionally light on hard numbers; the interviewer's job is to accept reasonable stated assumptions, not to reveal fixed answers"
+        },
         "good_recommendation_shape": "Final answer should show the full chain of multiplication explicitly (households × % with dryers × % adoption × price ÷ replacement cycle if calculating annual revenue, or simply households × % with dryers × % adoption × price for a one-time TAM figure) with each assumption clearly labeled. The number itself matters less than the structure and the explicit handling of the reusable-vs-consumable distinction. A candidate who reaches a number without showing the assumption chain, or who sizes this as if it were a recurring weekly purchase, should be marked down even if their arithmetic is correct."
       }
     },
@@ -204,13 +416,41 @@
         ],
         "trap": "The case explicitly offers both top-down and bottom-up as legitimate-sounding options, and a candidate eager to use 'real' market research data may default to a pure top-down approach (e.g., 'the cooking content market is $X billion, therefore...') because it feels more rigorous with real numbers attached. This produces a number that's actually answering a different, broader question. The trap is mistaking 'has real data' for 'is the right methodology' — the strong candidate recognizes that platform-specific paid feature adoption is fundamentally a bottom-up question about THIS subscriber base's behavior, and uses the top-down cooking market data only as a directional sanity check, not as the core calculation.",
         "data_release_sequence": [
-          { "trigger": "asks for the platform's total subscriber base", "reveal": "The platform has 22 million active subscribers in its core markets." },
-          { "trigger": "asks about subscriber engagement with existing cooking content", "reveal": "Roughly 18% of subscribers watch cooking-related content at least monthly. This is the most relevant filtering data point for a bottom-up estimate." },
-          { "trigger": "asks for top-down market research on cooking content or live cooking classes", "reveal": "Third-party research estimates the broader 'paid online cooking education' market (a wider category including non-streaming options like standalone cooking class apps and one-off paid workshops) at roughly $900M annually in the platform's core markets — useful as a sanity check, but this number includes substitutes and adjacent categories outside this platform." },
-          { "trigger": "asks about willingness to pay or conversion rate for premium add-ons generally", "reveal": "The platform's existing premium add-ons (e.g., ad-free tier, offline downloads) convert at 8-12% of the eligible subscriber base when priced at a meaningful premium ($5-8/month additional)." },
-          { "trigger": "asks about price point specifically for the cooking classes feature", "reveal": "No hard data given — candidate should propose and justify a reasonable price (e.g., $10-15/month given it's a higher-touch live interactive feature, priced above the standard add-on range). Accept reasonable, justified assumptions." },
-          { "trigger": "asks about competitor live cooking class platforms", "reveal": "A couple of standalone apps offer similar live cooking classes priced around $20-30/month, but none are integrated into a broader streaming subscription — useful context, not a core data input." }
+          {
+            "trigger": "asks for the platform's total subscriber base",
+            "reveal": "The platform has 22 million active subscribers in its core markets."
+          },
+          {
+            "trigger": "asks about subscriber engagement with existing cooking content",
+            "reveal": "Roughly 18% of subscribers watch cooking-related content at least monthly. This is the most relevant filtering data point for a bottom-up estimate."
+          },
+          {
+            "trigger": "asks for top-down market research on cooking content or live cooking classes",
+            "reveal": "Third-party research estimates the broader 'paid online cooking education' market (a wider category including non-streaming options like standalone cooking class apps and one-off paid workshops) at roughly $900M annually in the platform's core markets — useful as a sanity check, but this number includes substitutes and adjacent categories outside this platform."
+          },
+          {
+            "trigger": "asks about willingness to pay or conversion rate for premium add-ons generally",
+            "reveal": "The platform's existing premium add-ons (e.g., ad-free tier, offline downloads) convert at 8-12% of the eligible subscriber base when priced at a meaningful premium ($5-8/month additional)."
+          },
+          {
+            "trigger": "asks about price point specifically for the cooking classes feature",
+            "reveal": "No hard data given — candidate should propose and justify a reasonable price (e.g., $10-15/month given it's a higher-touch live interactive feature, priced above the standard add-on range). Accept reasonable, justified assumptions."
+          },
+          {
+            "trigger": "asks about competitor live cooking class platforms",
+            "reveal": "A couple of standalone apps offer similar live cooking classes priced around $20-30/month, but none are integrated into a broader streaming subscription — useful context, not a core data input."
+          }
         ],
+        "case_facts": {
+          "platform_total_subscribers_m": 22,
+          "subscriber_cooking_content_engagement_pct": "roughly 18% watch cooking content at least monthly",
+          "top_down_paid_online_cooking_education_market_usd_m": 900,
+          "top_down_scope_caveat": "the $900M figure INCLUDES substitutes and adjacent categories outside this platform — useful as directional sanity check only, not as the primary calculation basis",
+          "premium_addon_conversion_benchmark_pct": "8-12% of eligible subscribers when priced at $5-8/month",
+          "standalone_live_cooking_class_apps_price_usd_per_month": "roughly $20-30",
+          "proposed_cooking_classes_price": "candidate assumption — $10-15/month is reasonable for a higher-touch live interactive feature above the standard add-on range",
+          "right_methodology": "bottom-up anchored on the 22M subscriber base filtered through cooking-content engagement, cross-checked against the $900M top-down as sanity check"
+        },
         "good_recommendation_shape": "Final estimate should be built bottom-up: total subscribers × % engaged with cooking content (the relevant filter) × a stated conversion rate for this premium tier (informed by, but not identical to, the 8-12% benchmark for other add-ons, since this is a higher-commitment live feature) × stated price point. The candidate should explicitly reference the $900M top-down figure as a directional sanity check (e.g., 'our bottom-up number should be a small fraction of this broader category, which it is') rather than using it as the primary basis for the estimate. A recommendation built primarily off the top-down market research number, without a bottom-up subscriber-based calculation, has used the wrong methodology for this specific question even if the final number happens to be reasonable."
       }
     },
@@ -234,13 +474,45 @@
         ],
         "trap": "Because the brief explicitly says 'open to anything,' a weak candidate generates a long list of plausible growth ideas (international expansion, subscription model, influencer partnerships, new product lines, wholesale, etc.) and presents all of them with roughly equal weight, mistaking breadth for rigor. The case explicitly asks for a PRIORITIZED recommendation — a strong candidate recognizes that listing options without ranking them, even a good list, doesn't answer the question asked. The second, subtler trap is treating rising CAC as background noise rather than the actual root cause that should shape which lever gets prioritized (channel diversification matters more here than it would for a company with healthy, stable CAC).",
         "data_release_sequence": [
-          { "trigger": "asks for CAC trend or channel mix data", "reveal": "Paid social represents 78% of all customer acquisition spend. Blended CAC has risen from $42 two years ago to $68 today — a 60%+ increase, while average order value has stayed roughly flat." },
-          { "trigger": "asks about existing customer repeat purchase behavior", "reveal": "Repeat purchase rate within 12 months is 34%, which is healthy for the category, but most repeat purchases are the same core bedding/towel products — customers aren't buying across multiple categories." },
-          { "trigger": "asks about wholesale or retail distribution as an option", "reveal": "Several mid-tier home goods retailers have expressed informal interest in carrying Luma Home products, but the company has never built wholesale operations, pricing, or margin structures for that channel." },
-          { "trigger": "asks about new product category options", "reveal": "Customer surveys show strong interest in expanding into bathroom storage/organization products, an adjacent category to the existing towel/bath business with high brand-fit." },
-          { "trigger": "asks about international expansion", "reveal": "Some organic international orders exist (similar to the PulseFit-style scenario) but international shipping costs are high relative to product margins, making this a lower-priority, longer-payback option compared to wholesale or new categories." },
-          { "trigger": "asks about competitor moves in the space", "reveal": "A few competitors have already expanded into wholesale distribution successfully; none have meaningfully cracked international yet — useful competitive context, reinforces wholesale as a proven, de-risked path relative to international." }
+          {
+            "trigger": "asks for CAC trend or channel mix data",
+            "reveal": "Paid social represents 78% of all customer acquisition spend. Blended CAC has risen from $42 two years ago to $68 today — a 60%+ increase, while average order value has stayed roughly flat."
+          },
+          {
+            "trigger": "asks about existing customer repeat purchase behavior",
+            "reveal": "Repeat purchase rate within 12 months is 34%, which is healthy for the category, but most repeat purchases are the same core bedding/towel products — customers aren't buying across multiple categories."
+          },
+          {
+            "trigger": "asks about wholesale or retail distribution as an option",
+            "reveal": "Several mid-tier home goods retailers have expressed informal interest in carrying Luma Home products, but the company has never built wholesale operations, pricing, or margin structures for that channel."
+          },
+          {
+            "trigger": "asks about new product category options",
+            "reveal": "Customer surveys show strong interest in expanding into bathroom storage/organization products, an adjacent category to the existing towel/bath business with high brand-fit."
+          },
+          {
+            "trigger": "asks about international expansion",
+            "reveal": "Some organic international orders exist (similar to the PulseFit-style scenario) but international shipping costs are high relative to product margins, making this a lower-priority, longer-payback option compared to wholesale or new categories."
+          },
+          {
+            "trigger": "asks about competitor moves in the space",
+            "reveal": "A few competitors have already expanded into wholesale distribution successfully; none have meaningfully cracked international yet — useful competitive context, reinforces wholesale as a proven, de-risked path relative to international."
+          }
         ],
+        "case_facts": {
+          "annual_revenue_usd_m": 85,
+          "paid_social_share_of_acquisition_spend_pct": 78,
+          "cac_two_years_ago_usd": 42,
+          "cac_today_usd": 68,
+          "cac_increase_pct": "60%+ over two years",
+          "aov_trend": "roughly flat",
+          "repeat_purchase_rate_12mo_pct": 34,
+          "repeat_purchase_pattern": "most repeats are same core bedding/towel products; customers are NOT buying across multiple categories",
+          "wholesale_signal": "several mid-tier home goods retailers have expressed informal interest; company has never built wholesale operations, pricing, or margin structures for that channel",
+          "new_category_signal": "customer surveys show strong interest in expanding into bathroom storage/organization — adjacent to existing towel/bath business with high brand fit",
+          "international_signal": "some organic international orders exist but international shipping costs are high relative to product margins — lower-priority, longer-payback option than wholesale or new categories",
+          "competitor_moves": "a few competitors have expanded into wholesale successfully; none have meaningfully cracked international yet"
+        },
         "good_recommendation_shape": "Recommendation should (1) explicitly connect the CAC problem to channel concentration and prioritize wholesale/retail distribution as the top lever specifically because it diversifies acquisition away from paid social, not just because it's a generic good idea, (2) treat new product category expansion (bathroom organization) as a strong secondary lever that leverages existing customer trust, and (3) explicitly de-prioritize international expansion given the margin/shipping cost problem, rather than including it as an equal option. A recommendation that lists 4-5 options without ranking them, or that doesn't connect the prioritization back to the CAC/channel-concentration root cause, should be marked incomplete."
       }
     },
@@ -264,13 +536,47 @@
         ],
         "trap": "The CEO has explicitly pre-empted the 'right' answer by saying he doesn't want to hear 'do less' — a weak candidate, eager to please the client, finds a way to endorse all three initiatives simultaneously without genuinely stress-testing whether the organization can execute them together, essentially telling the client what he wants to hear. A strong candidate recognizes that 'sequencing' is not the same as 'doing less' — they can honor the CEO's ambition for all three while still recommending a smart sequence (e.g., sports vertical first since it's fastest and lowest-risk, telehealth second, new clinics last since it's the most capital and management-intensive) rather than either capitulating to do everything at once or bluntly contradicting the CEO.",
         "data_release_sequence": [
-          { "trigger": "asks about current management team capacity or bandwidth", "reveal": "The current leadership team consists of the CEO, a COO, and a clinical director — no dedicated expansion or new-ventures team. The COO is already operating near capacity managing the existing 30 locations." },
-          { "trigger": "asks about capital available or cost estimates for each initiative", "reveal": "New clinic expansion (10 locations): estimated $6-8M in capital over 18-24 months, plus new hiring and lease commitments. Telehealth platform: estimated $1.5M build cost plus new clinical licensing complexity across states. Sports performance vertical: estimated $400K, largely reusing existing space and cross-training existing PT staff." },
-          { "trigger": "asks about market demand or competitive landscape for each initiative", "reveal": "Demand signal is genuinely strong for all three — this case isn't testing whether the ideas are good, it's testing whether they can be executed together. Telehealth PT demand has grown significantly since the broader shift to virtual healthcare. Sports performance training has a clear, proven demand pattern at PT clinics that have added it elsewhere. Adjacent metro areas show comparable demographics to Carewell's existing successful markets." },
-          { "trigger": "asks about regulatory or licensing complexity for telehealth specifically", "reveal": "Telehealth PT requires the treating therapist to be licensed in the state where the patient is physically located, which complicates cross-state telehealth delivery and requires either licensing therapists in multiple states or limiting the telehealth offering initially to existing service states." },
-          { "trigger": "asks whether existing staff could support the sports performance vertical", "reveal": "Several existing PT staff have relevant certifications or expressed interest in sports performance training; minimal new hiring would be needed to launch in a subset of locations." },
-          { "trigger": "asks about real estate or lease availability for new clinics", "reveal": "Available commercial space in target adjacent metro areas is reasonably accessible but lease negotiation and buildout for 10 locations realistically takes 12-18 months minimum — this is the slowest-moving of the three initiatives." }
+          {
+            "trigger": "asks about current management team capacity or bandwidth",
+            "reveal": "The current leadership team consists of the CEO, a COO, and a clinical director — no dedicated expansion or new-ventures team. The COO is already operating near capacity managing the existing 30 locations."
+          },
+          {
+            "trigger": "asks about capital available or cost estimates for each initiative",
+            "reveal": "New clinic expansion (10 locations): estimated $6-8M in capital over 18-24 months, plus new hiring and lease commitments. Telehealth platform: estimated $1.5M build cost plus new clinical licensing complexity across states. Sports performance vertical: estimated $400K, largely reusing existing space and cross-training existing PT staff."
+          },
+          {
+            "trigger": "asks about market demand or competitive landscape for each initiative",
+            "reveal": "Demand signal is genuinely strong for all three — this case isn't testing whether the ideas are good, it's testing whether they can be executed together. Telehealth PT demand has grown significantly since the broader shift to virtual healthcare. Sports performance training has a clear, proven demand pattern at PT clinics that have added it elsewhere. Adjacent metro areas show comparable demographics to Carewell's existing successful markets."
+          },
+          {
+            "trigger": "asks about regulatory or licensing complexity for telehealth specifically",
+            "reveal": "Telehealth PT requires the treating therapist to be licensed in the state where the patient is physically located, which complicates cross-state telehealth delivery and requires either licensing therapists in multiple states or limiting the telehealth offering initially to existing service states."
+          },
+          {
+            "trigger": "asks whether existing staff could support the sports performance vertical",
+            "reveal": "Several existing PT staff have relevant certifications or expressed interest in sports performance training; minimal new hiring would be needed to launch in a subset of locations."
+          },
+          {
+            "trigger": "asks about real estate or lease availability for new clinics",
+            "reveal": "Available commercial space in target adjacent metro areas is reasonably accessible but lease negotiation and buildout for 10 locations realistically takes 12-18 months minimum — this is the slowest-moving of the three initiatives."
+          }
         ],
+        "case_facts": {
+          "clinic_count": 30,
+          "geography": "single metro region",
+          "revenue_trend": "plateaued over the last two years after a decade of steady growth",
+          "leadership_team": "CEO + COO + clinical director; no dedicated expansion or new-ventures team; COO already near capacity managing existing 30 locations",
+          "initiative_1_new_clinics_count": 10,
+          "initiative_1_new_clinics_capital_usd_m": "6-8",
+          "initiative_1_new_clinics_timeline_months": "18-24",
+          "initiative_2_telehealth_capital_usd_m": 1.5,
+          "initiative_2_telehealth_licensing": "PT must be licensed in the state where the patient is physically located, complicating cross-state delivery",
+          "initiative_3_sports_vertical_capital_usd_k": 400,
+          "initiative_3_sports_vertical_note": "largely reuses existing space and cross-trains existing PT staff; several existing staff have relevant certifications or expressed interest",
+          "real_estate_buildout_timeline_months": "12-18 minimum for the 10 new locations",
+          "demand_signal": "genuinely strong for all three; the case is testing execution capacity, NOT idea quality",
+          "initiative_risk_and_speed": "sports vertical is fastest / cheapest / lowest-risk; telehealth is medium; new clinics are slowest and most capital-intensive"
+        },
         "good_recommendation_shape": "Recommendation should (1) validate that all three initiatives are individually attractive (the CEO's instincts on market opportunity aren't wrong), (2) explicitly flag that the thin leadership bench (just CEO, COO, clinical director) cannot credibly execute all three at full speed simultaneously without serious execution risk, and (3) propose a clear sequence — sports performance vertical first (fastest, cheapest, lowest execution risk, uses existing infrastructure), telehealth second (meaningful but contained complexity), new clinic expansion last or in parallel only once the team has bandwidth freed up — framed as 'sequencing for success' rather than 'doing less.' A recommendation that endorses simultaneous full-scale execution of all three without addressing the bandwidth/capital conflict, or one that bluntly tells the CEO to abandon initiatives without proposing a path to eventually pursue all three, should be marked incomplete."
       }
     },
@@ -294,13 +600,46 @@
         ],
         "trap": "The case presents three options as if they're the complete choice set, and a weak candidate picks among the three without questioning the framing. The data reveals that existing paid subscribers are split — a meaningful minority loves the AI features and would pay significantly more, but a majority is indifferent and only wants reliable storage. This makes option 3 (blanket price increase) risky for the majority segment, while option 1 (free bundle) leaves revenue on the table from the minority who'd pay more. A strong candidate notices the segmentation split is the actual decision-relevant data point and may propose a fourth option — a new premium tier above the current paid tier specifically for AI features — rather than being constrained to picking among the three options leadership listed, since none of the three actually fits the segmentation data well.",
         "data_release_sequence": [
-          { "trigger": "asks for current subscriber base size and tier breakdown", "reveal": "3.2 million paid subscribers at $4.99/month. 11 million free-tier users." },
-          { "trigger": "asks for willingness-to-pay or user research on the AI features", "reveal": "User research segments existing paid subscribers into two groups: roughly 25% rate the AI features as 'extremely valuable' and indicate willingness to pay $3-5/month more for them specifically. The remaining 75% rate the features as 'nice to have' and indicate strong price sensitivity — many say they'd consider switching to a competitor if the base price rose meaningfully." },
-          { "trigger": "asks about free-tier user behavior or interest in the AI features", "reveal": "A notable portion of free-tier users have hit their 5GB storage limit and are already considering upgrading; early testing shows the AI features are a meaningfully stronger upgrade trigger than storage alone for this group." },
-          { "trigger": "asks about competitor pricing for similar AI photo editing features", "reveal": "Two competitor apps offer comparable AI editing as a separate premium tier priced around $6.99-8.99/month total (not as an add-on), suggesting the market supports a higher all-in price for a feature-rich tier, just not necessarily for the EXISTING base tier." },
-          { "trigger": "asks about churn risk modeling or price elasticity data", "reveal": "Historical data from a past price change (when the base tier rose from $3.99 to $4.99) showed roughly 6% churn among subscribers, concentrated among the most price-sensitive segment — useful precedent for estimating risk of option 3." },
-          { "trigger": "asks about the cost of building/maintaining the AI features", "reveal": "Ongoing compute costs for the AI features are real but modest relative to subscription revenue — not a binding constraint on the pricing decision. Dead end by design." }
+          {
+            "trigger": "asks for current subscriber base size and tier breakdown",
+            "reveal": "3.2 million paid subscribers at $4.99/month. 11 million free-tier users."
+          },
+          {
+            "trigger": "asks for willingness-to-pay or user research on the AI features",
+            "reveal": "User research segments existing paid subscribers into two groups: roughly 25% rate the AI features as 'extremely valuable' and indicate willingness to pay $3-5/month more for them specifically. The remaining 75% rate the features as 'nice to have' and indicate strong price sensitivity — many say they'd consider switching to a competitor if the base price rose meaningfully."
+          },
+          {
+            "trigger": "asks about free-tier user behavior or interest in the AI features",
+            "reveal": "A notable portion of free-tier users have hit their 5GB storage limit and are already considering upgrading; early testing shows the AI features are a meaningfully stronger upgrade trigger than storage alone for this group."
+          },
+          {
+            "trigger": "asks about competitor pricing for similar AI photo editing features",
+            "reveal": "Two competitor apps offer comparable AI editing as a separate premium tier priced around $6.99-8.99/month total (not as an add-on), suggesting the market supports a higher all-in price for a feature-rich tier, just not necessarily for the EXISTING base tier."
+          },
+          {
+            "trigger": "asks about churn risk modeling or price elasticity data",
+            "reveal": "Historical data from a past price change (when the base tier rose from $3.99 to $4.99) showed roughly 6% churn among subscribers, concentrated among the most price-sensitive segment — useful precedent for estimating risk of option 3."
+          },
+          {
+            "trigger": "asks about the cost of building/maintaining the AI features",
+            "reveal": "Ongoing compute costs for the AI features are real but modest relative to subscription revenue — not a binding constraint on the pricing decision. Dead end by design."
+          }
         ],
+        "case_facts": {
+          "paid_subscribers_m": 3.2,
+          "paid_tier_price_usd_per_month": 4.99,
+          "free_tier_users_m": 11,
+          "free_tier_storage_limit_gb": 5,
+          "historical_price_change": "prior increase from $3.99 to $4.99 caused roughly 6% churn concentrated in the most price-sensitive segment",
+          "wtp_segment_high_share_pct": 25,
+          "wtp_segment_high_willingness_usd_per_month_extra": "3-5",
+          "wtp_segment_high_stance": "rate AI features as 'extremely valuable'",
+          "wtp_segment_low_share_pct": 75,
+          "wtp_segment_low_stance": "rate AI features as 'nice to have'; strongly price-sensitive; many would consider switching to a competitor on a meaningful base-price rise",
+          "free_tier_upgrade_signal": "a notable portion of free-tier users have hit their 5GB limit; AI features are a meaningfully stronger upgrade trigger than storage alone for this group",
+          "competitor_ai_photo_editing_price_usd_per_month": "6.99-8.99 total (positioned as a separate premium tier, NOT as an add-on)",
+          "ai_features_ongoing_compute_cost": "real but modest relative to subscription revenue; NOT a binding constraint — dead-end line"
+        },
         "good_recommendation_shape": "Recommendation should (1) explicitly use the 25%/75% segmentation as the core evidence, (2) reject a blanket price increase (option 3) as too risky given the 75% price-sensitive majority and the precedent 6% churn data, (3) propose either the add-on model (option 2) for the willing-to-pay 25%, OR — ideally — a new premium tier positioned above the existing tier specifically for AI features, which mirrors competitor positioning and avoids forcing a choice between the three options as originally framed, and (4) note the free-tier upgrade angle as an additional revenue lever the original three options didn't address. A recommendation that picks one of the three original options without engaging with the segmentation split, or that recommends the blanket price increase without addressing churn risk, should be marked incomplete."
       }
     },
@@ -325,14 +664,53 @@
         ],
         "trap": "Because margins 'haven't moved much,' the brief signals there's no cost problem, which invites a weak candidate to focus entirely on the delivery/scheduling side and ignore the COO's explicit hint that a cost problem might be hiding in the same root cause. The reality is that rising rush-shipping costs and unplanned downtime/repair costs ARE growing, but they've been offset by a separate, unrelated raw material cost decrease that's masking the operational cost increase in the aggregate margin number. A strong candidate, prompted by the COO's framing, asks for a cost breakdown specifically rather than accepting 'margins haven't moved' as proof there's no cost issue.",
         "data_release_sequence": [
-          { "trigger": "asks for on-time delivery performance broken out by plant", "reveal": "Plant A (smaller, older facility): on-time delivery dropped from 95% to 68%. Plant B (newer facility): on-time delivery dropped only slightly, from 93% to 89%. The decline is heavily concentrated in Plant A." },
-          { "trigger": "asks about equipment, maintenance, or downtime at Plant A specifically", "reveal": "Plant A's primary CNC machining equipment is older (installed 11 years ago) and has experienced a sharp rise in unplanned downtime over the past year — unscheduled maintenance events are up roughly 40% year over year." },
-          { "trigger": "asks about maintenance practices or scheduling", "reveal": "Plant A has historically used reactive maintenance (fix it when it breaks) rather than a scheduled preventive maintenance program. Plant B, the newer facility, was set up with a preventive maintenance schedule from the start." },
-          { "trigger": "asks for a cost breakdown, specifically around shipping or expediting costs", "reveal": "Rush/expedited shipping costs (used to try to hit deadlines despite production delays) have increased roughly 65% year over year, concentrated almost entirely in Plant A's shipments." },
-          { "trigger": "asks why overall margins haven't reflected this cost increase", "reveal": "Raw material (steel) costs declined significantly over the same period due to unrelated market conditions, which offset the rising downtime and rush-shipping costs in the aggregate margin figure — masking the operational cost problem." },
-          { "trigger": "asks about staffing levels or labor issues", "reveal": "Staffing levels have been stable at both plants; this isn't a labor capacity issue. Dead end by design, included to test whether the candidate chases a plausible but unsupported hypothesis." },
-          { "trigger": "asks about order volume or demand changes", "reveal": "Order volume has grown modestly (about 5%) but isn't large enough to explain a delivery rate drop of this magnitude on its own — a real factor, but not the primary driver." }
+          {
+            "trigger": "asks for on-time delivery performance broken out by plant",
+            "reveal": "Plant A (smaller, older facility): on-time delivery dropped from 95% to 68%. Plant B (newer facility): on-time delivery dropped only slightly, from 93% to 89%. The decline is heavily concentrated in Plant A."
+          },
+          {
+            "trigger": "asks about equipment, maintenance, or downtime at Plant A specifically",
+            "reveal": "Plant A's primary CNC machining equipment is older (installed 11 years ago) and has experienced a sharp rise in unplanned downtime over the past year — unscheduled maintenance events are up roughly 40% year over year."
+          },
+          {
+            "trigger": "asks about maintenance practices or scheduling",
+            "reveal": "Plant A has historically used reactive maintenance (fix it when it breaks) rather than a scheduled preventive maintenance program. Plant B, the newer facility, was set up with a preventive maintenance schedule from the start."
+          },
+          {
+            "trigger": "asks for a cost breakdown, specifically around shipping or expediting costs",
+            "reveal": "Rush/expedited shipping costs (used to try to hit deadlines despite production delays) have increased roughly 65% year over year, concentrated almost entirely in Plant A's shipments."
+          },
+          {
+            "trigger": "asks why overall margins haven't reflected this cost increase",
+            "reveal": "Raw material (steel) costs declined significantly over the same period due to unrelated market conditions, which offset the rising downtime and rush-shipping costs in the aggregate margin figure — masking the operational cost problem."
+          },
+          {
+            "trigger": "asks about staffing levels or labor issues",
+            "reveal": "Staffing levels have been stable at both plants; this isn't a labor capacity issue. Dead end by design, included to test whether the candidate chases a plausible but unsupported hypothesis."
+          },
+          {
+            "trigger": "asks about order volume or demand changes",
+            "reveal": "Order volume has grown modestly (about 5%) but isn't large enough to explain a delivery rate drop of this magnitude on its own — a real factor, but not the primary driver."
+          }
         ],
+        "case_facts": {
+          "plant_count": 2,
+          "time_period": "past year",
+          "company_wide_ontime_delivery_before_pct": 94,
+          "company_wide_ontime_delivery_now_pct": 79,
+          "plant_a_ontime_delivery_before_pct": 95,
+          "plant_a_ontime_delivery_now_pct": 68,
+          "plant_a_description": "smaller, older facility; primary CNC machining equipment installed 11 years ago",
+          "plant_b_ontime_delivery_before_pct": 93,
+          "plant_b_ontime_delivery_now_pct": 89,
+          "plant_b_description": "newer facility; set up with a preventive maintenance schedule from the start",
+          "plant_a_unplanned_downtime_change_pct": "up roughly 40% year over year",
+          "plant_a_maintenance_approach": "reactive (fix when broken); NO preventive maintenance program historically",
+          "rush_shipping_costs_change_pct": "up roughly 65% year over year, concentrated almost entirely in Plant A's shipments",
+          "margin_masking_explanation": "raw material (steel) costs declined significantly over the same period due to unrelated market conditions, offsetting the rising downtime and rush-shipping costs in the aggregate margin figure",
+          "staffing_levels": "stable at both plants — dead-end line",
+          "order_volume_change_pct": "grew about 5% (real but not large enough to explain the delivery drop on its own)"
+        },
         "good_recommendation_shape": "Recommendation should (1) pinpoint Plant A's aging equipment and reactive maintenance approach as the root cause of the delivery decline, (2) recommend implementing a preventive maintenance program at Plant A modeled on Plant B's approach, rather than just a workaround like hiring more expediting staff, (3) explicitly surface that rising rush-shipping and downtime costs are a real, currently-masked cost problem — quantifying that fixing the root cause addresses both the delivery issue and the hidden cost issue simultaneously, and (4) note that the favorable raw material cost trend is temporary and unrelated, so it shouldn't be relied on to keep masking the operational cost growth. A recommendation that only proposes a delivery workaround without addressing the underlying maintenance cause, or that misses the hidden cost angle entirely, should be marked incomplete."
       }
     },
@@ -358,14 +736,55 @@
         ],
         "trap": "The corp dev team's model shows the deal creating significant value, and the CEO is enthusiastic — social and authority cues both point toward 'approve the deal.' A weak candidate, especially one trying to be agreeable, accepts the synergy figure in the model as a given input and spends their time elsewhere (e.g., discussing integration timeline or cultural fit) without ever stress-testing whether the revenue synergy number is realistic. The synergy assumption in the model assumes near-100% successful cross-sell penetration within 18 months, which is aggressive by industry standards. A strong candidate explicitly discounts the synergy assumption based on realistic cross-sell success rates and procurement-concentration pushback risk, and recalculates whether the deal still clears the price bar once synergies are haircut — which it may not, depending on how aggressively the candidate (reasonably) discounts.",
         "data_release_sequence": [
-          { "trigger": "asks for the proposed purchase price and how it was derived", "reveal": "Proposed price: $340M, roughly 3.6x Praxis's $95M revenue. Corp dev's model justifies this multiple partly on Praxis's standalone value and partly on the projected synergy value, blended together rather than shown separately." },
-          { "trigger": "asks for Praxis's standalone financial profile (without synergies)", "reveal": "Praxis has been growing revenue around 8% annually with a 16% operating margin, roughly in line with sector comparables. On a standalone basis without any synergy assumptions, comparable transaction multiples in this sector suggest a value closer to 2.8-3.0x revenue, or roughly $266-285M." },
-          { "trigger": "asks for the specific synergy assumptions in the model", "reveal": "The model assumes $55M in annual run-rate revenue synergies by year 2, driven primarily by cross-selling Praxis products through Vantage's larger sales force, plus $8M in cost synergies (overlapping back-office functions). The revenue synergy figure is the larger and more load-bearing assumption in the model." },
-          { "trigger": "asks how the cross-sell synergy assumption was modeled or what penetration rate it assumes", "reveal": "The model assumes Vantage's sales force successfully cross-sells Praxis products into roughly 70% of Vantage's existing hospital relationships within 18 months — an aggressive assumption, since Vantage's sales reps have no current product knowledge or training on the Praxis line and typical cross-sell penetration rates in comparable medical device mergers run closer to 25-35% over a similar timeframe." },
-          { "trigger": "asks about customer overlap or hospital procurement dynamics", "reveal": "Roughly 60% of Praxis's hospital customers already purchase from Vantage in other product categories. Some hospital procurement teams have policies favoring supplier diversification to maintain negotiating leverage and reduce single-supplier risk — meaning some of these overlapping hospitals may resist further consolidating purchases with Vantage post-acquisition, which works against the cross-sell synergy thesis." },
-          { "trigger": "asks about integration costs or timeline", "reveal": "One-time integration costs (systems, sales force training, rebranding) are estimated at $12M, expected to be incurred in year 1 — a real but secondary factor relative to the synergy realism question." },
-          { "trigger": "asks about Praxis's own sales team and what happens to them post-acquisition", "reveal": "The current plan is to retain most of Praxis's existing sales reps initially while cross-training Vantage's broader sales force — meaning the existing Praxis relationships aren't being abandoned, which is a mitigating factor, but doesn't resolve the core question of whether the incremental 70% cross-sell assumption is realistic." }
+          {
+            "trigger": "asks for the proposed purchase price and how it was derived",
+            "reveal": "Proposed price: $340M, roughly 3.6x Praxis's $95M revenue. Corp dev's model justifies this multiple partly on Praxis's standalone value and partly on the projected synergy value, blended together rather than shown separately."
+          },
+          {
+            "trigger": "asks for Praxis's standalone financial profile (without synergies)",
+            "reveal": "Praxis has been growing revenue around 8% annually with a 16% operating margin, roughly in line with sector comparables. On a standalone basis without any synergy assumptions, comparable transaction multiples in this sector suggest a value closer to 2.8-3.0x revenue, or roughly $266-285M."
+          },
+          {
+            "trigger": "asks for the specific synergy assumptions in the model",
+            "reveal": "The model assumes $55M in annual run-rate revenue synergies by year 2, driven primarily by cross-selling Praxis products through Vantage's larger sales force, plus $8M in cost synergies (overlapping back-office functions). The revenue synergy figure is the larger and more load-bearing assumption in the model."
+          },
+          {
+            "trigger": "asks how the cross-sell synergy assumption was modeled or what penetration rate it assumes",
+            "reveal": "The model assumes Vantage's sales force successfully cross-sells Praxis products into roughly 70% of Vantage's existing hospital relationships within 18 months — an aggressive assumption, since Vantage's sales reps have no current product knowledge or training on the Praxis line and typical cross-sell penetration rates in comparable medical device mergers run closer to 25-35% over a similar timeframe."
+          },
+          {
+            "trigger": "asks about customer overlap or hospital procurement dynamics",
+            "reveal": "Roughly 60% of Praxis's hospital customers already purchase from Vantage in other product categories. Some hospital procurement teams have policies favoring supplier diversification to maintain negotiating leverage and reduce single-supplier risk — meaning some of these overlapping hospitals may resist further consolidating purchases with Vantage post-acquisition, which works against the cross-sell synergy thesis."
+          },
+          {
+            "trigger": "asks about integration costs or timeline",
+            "reveal": "One-time integration costs (systems, sales force training, rebranding) are estimated at $12M, expected to be incurred in year 1 — a real but secondary factor relative to the synergy realism question."
+          },
+          {
+            "trigger": "asks about Praxis's own sales team and what happens to them post-acquisition",
+            "reveal": "The current plan is to retain most of Praxis's existing sales reps initially while cross-training Vantage's broader sales force — meaning the existing Praxis relationships aren't being abandoned, which is a mitigating factor, but doesn't resolve the core question of whether the incremental 70% cross-sell assumption is realistic."
+          }
         ],
+        "case_facts": {
+          "vantage_revenue_usd_m": 600,
+          "praxis_revenue_usd_m": 95,
+          "proposed_price_usd_m": 340,
+          "proposed_price_multiple_of_revenue": 3.6,
+          "praxis_annual_growth_pct": 8,
+          "praxis_operating_margin_pct": 16,
+          "comparable_standalone_multiples": "2.8-3.0x revenue in this sector",
+          "comparable_standalone_value_usd_m": "266-285",
+          "model_revenue_synergy_run_rate_usd_m_by_year_2": 55,
+          "model_cost_synergy_usd_m": 8,
+          "model_cross_sell_penetration_assumption_pct": 70,
+          "model_cross_sell_timeframe_months": 18,
+          "comparable_deal_cross_sell_benchmark_pct": "25-35% over a similar 18-month timeframe",
+          "customer_overlap_pct": "roughly 60% of Praxis's hospital customers already purchase from Vantage in other product categories",
+          "procurement_dynamics": "some hospital procurement teams favor supplier diversification for negotiating leverage and single-supplier risk — works AGAINST the cross-sell synergy thesis for these overlapping hospitals",
+          "integration_costs_usd_m_one_time": 12,
+          "integration_costs_timing": "year 1",
+          "praxis_sales_team_plan": "retain most existing Praxis reps initially while cross-training Vantage's broader sales force — mitigates relationship risk but does not resolve realism of the incremental cross-sell assumption"
+        },
         "good_recommendation_shape": "Recommendation should (1) explicitly separate standalone value (~$266-285M) from the synergy-driven premium being paid (the gap between that and the $340M ask), (2) risk-adjust the revenue synergy assumption down from the model's aggressive 70% cross-sell penetration toward something closer to the 25-35% comparable-deal benchmark, explicitly citing the procurement-diversification risk as a reason realized synergies may land toward the lower end, (3) recalculate whether the deal still creates value at the proposed price once synergies are appropriately haircut, and (4) land on a clear view — either renegotiate price down, structure an earn-out tied to actual synergy realization, or proceed only if a lower price is achievable — rather than a vague 'proceed with caution.' A recommendation that accepts the model's synergy figures at face value and simply endorses the deal, or one that rejects the deal without engaging with what price WOULD make sense, should be marked incomplete."
       }
     }

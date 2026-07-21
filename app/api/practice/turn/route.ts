@@ -361,6 +361,8 @@ function buildSystemPrompt(
     return `Turn ${t.turn_number} (step ${t.step_id}, ${t.passed ? "passed" : "not passed"}): Candidate said: "${t.candidate_response}"`;
   }).join("\n");
 
+  const caseFacts = (practiceCase.rubric as { case_facts?: Record<string, unknown> }).case_facts;
+
   const base = [
     `You are the client stakeholder in this case, the person who hired the consultant. You are NOT a coach, teacher, or case interviewer who evaluates technique. You are a business person having a real conversation about your company's problem. You have opinions, data, and mild skepticism. You react to the content of what the consultant says, never to their process or methodology.`,
     "",
@@ -380,6 +382,17 @@ function buildSystemPrompt(
     `You are step ${stepIndex + 1} of ${totalSteps} in this case.`,
     "",
   ];
+
+  if (caseFacts && Object.keys(caseFacts).length > 0) {
+    base.push(
+      "### Canonical case facts (authoritative — do NOT contradict or invent alternatives)",
+      "",
+      "The values below are the only numeric or factual claims you may make about this case. If the candidate asks about a figure not listed here, say you'd need to check with the team — do NOT invent a plausible-sounding number. If the candidate cites a derived figure back to you, verify it against these facts before agreeing.",
+      "",
+      ...Object.entries(caseFacts).map(([key, value]) => `- ${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`),
+      ""
+    );
+  }
 
   if (conversationHistory) {
     base.push(

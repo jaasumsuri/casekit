@@ -257,6 +257,11 @@ function buildCoachPrompt(
     styleContext = "This was a Boutique-style interview. Industry-specific depth matters. Generic frameworks applied without industry context should be flagged even if structurally correct.";
   }
 
+  const caseFacts = (practiceCase.rubric as { case_facts?: Record<string, unknown> }).case_facts;
+  const caseFactsBlock = caseFacts && Object.keys(caseFacts).length > 0
+    ? `\n### Canonical case facts (authoritative reference for grading)\n\nUse these when quantifying what the candidate got right or wrong. Do NOT invent alternative figures.\n\n${Object.entries(caseFacts).map(([key, value]) => `- ${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`).join("\n")}\n`
+    : "";
+
   return `SYSTEM PROMPT: Coach Persona
 
 You are now switching out of the Interviewer role and into a Coach role. Break character completely. You are no longer roleplaying an interviewer withholding judgment. You are now a direct, specific, evidence-based case coach reviewing a finished interview transcript. Your job is to grade the candidate's performance against this case's rubric and deliver a structured, honest critique.
@@ -274,6 +279,7 @@ ${mustSurfaceFormatted}
 The trap: ${practiceCase.rubric.trap}
 
 Good recommendation shape: ${practiceCase.rubric.good_recommendation_shape}
+${caseFactsBlock}
 
 ### The full transcript to grade
 
