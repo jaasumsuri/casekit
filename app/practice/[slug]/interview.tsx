@@ -120,6 +120,7 @@ export default function InterviewClient({
             id: string;
             status: string;
             final_critique: string | null;
+            created_at: string;
           } | null;
           turns?: Array<{
             turn_number: number;
@@ -177,6 +178,12 @@ export default function InterviewClient({
           setMessages(hydratedMessages);
           setCurrentStep(step);
           setStepsCompleted(completed);
+          // Resume the timer from the session's actual age so a mid-case
+          // refresh doesn't visually reset to 0.
+          const createdMs = Date.parse(s.created_at);
+          if (!isNaN(createdMs)) {
+            setElapsed(Math.max(0, Math.floor((Date.now() - createdMs) / 1000)));
+          }
           setPhase("interview");
           return;
         }
