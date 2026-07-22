@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -255,6 +255,42 @@ export default function Header() {
                   <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
                 </svg>
               </Link>
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/" })}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  background: "transparent",
+                  color: "var(--muted)",
+                  padding: "8px 14px",
+                  borderRadius: "var(--r-pill)",
+                  fontSize: "0.88rem",
+                  fontWeight: 500,
+                  fontFamily: "var(--font-body)",
+                  cursor: "pointer",
+                  border: "1px solid var(--border)",
+                  transition: "color 0.2s ease, border-color 0.2s ease, background 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget;
+                  el.style.color = "var(--ink)";
+                  el.style.borderColor = "var(--ink)";
+                  el.style.background = "rgba(28,61,46,0.05)";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget;
+                  el.style.color = "var(--muted)";
+                  el.style.borderColor = "var(--border)";
+                  el.style.background = "transparent";
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Log out
+              </button>
             </div>
           )}
 
@@ -337,6 +373,20 @@ export default function Header() {
               >
                 Start Practicing
               </Link>
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); signOut({ callbackUrl: "/" }); }}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "transparent", color: "var(--muted)",
+                  padding: "9px 16px", borderRadius: "var(--r-pill)",
+                  fontSize: "0.9rem", fontWeight: 500, fontFamily: "var(--font-body)",
+                  width: "fit-content", cursor: "pointer",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                Log out
+              </button>
             </>
           )}
         </div>

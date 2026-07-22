@@ -458,6 +458,41 @@ a.section-label:hover {
   transition: transform var(--t), box-shadow var(--t), background var(--t);
 }
 .howto-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); background: #244c39; }
+
+.howto-btn-highlight {
+  position: relative;
+  overflow: hidden;
+  padding: 13px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #1f1608;
+  background: linear-gradient(135deg, #E9BC5C 0%, #C4933A 55%, #A97A29 100%);
+  border: 1px solid rgba(196,147,58,0.55);
+  box-shadow: 0 10px 24px -10px rgba(196,147,58,0.7), inset 0 1px 0 rgba(255,255,255,0.35);
+  animation: howto-btn-pulse 2.6s ease-in-out infinite;
+}
+.howto-btn-highlight:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #F0C465 0%, #CE9E42 55%, #B4832E 100%);
+  box-shadow: 0 16px 32px -12px rgba(196,147,58,0.8), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.howto-btn-highlight-shine {
+  position: absolute;
+  top: 0; left: -40%;
+  width: 40%; height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%);
+  pointer-events: none;
+  animation: howto-btn-shine 3.2s ease-in-out infinite;
+}
+@keyframes howto-btn-pulse {
+  0%, 100% { box-shadow: 0 10px 24px -10px rgba(196,147,58,0.7), inset 0 1px 0 rgba(255,255,255,0.35); }
+  50%      { box-shadow: 0 12px 28px -8px rgba(196,147,58,0.95), inset 0 1px 0 rgba(255,255,255,0.4); }
+}
+@keyframes howto-btn-shine {
+  0%       { left: -40%; }
+  60%, 100% { left: 130%; }
+}
 .howto-link {
   margin-top: 22px; align-self: flex-start;
   font-size: 0.88rem; font-weight: 500;

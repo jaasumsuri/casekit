@@ -73,7 +73,7 @@ const PLAYBOOK = [
 ];
 
 const HOWTO_STEPS = [
-  { n: "1", kicker: "Start here", title: "Start with the basics", desc: "Learn what a case interview actually is, what interviewers are looking for, and how CaseKit is structured. No prior knowledge needed.", cta: { label: "What is a case interview?", href: "/learn/basics", type: "btn" as const }, final: false },
+  { n: "1", kicker: "Start here", title: "Start with the basics", desc: "Learn what a case interview actually is, what interviewers are looking for, and how CaseKit is structured. No prior knowledge needed.", cta: { label: "What is a case interview?", href: "/learn/basics", type: "btn-highlight" as const }, final: false },
   { n: "2", kicker: "Learn",      title: "Learn the frameworks",  desc: "Seven core consulting frameworks with worked examples and real numbers. Understand when and why to use each one before you touch a case.", cta: { label: "See the frameworks →", href: "/frameworks", type: "link" as const }, final: false },
   { n: "3", kicker: "Study",      title: "Study solved cases",    desc: "Walk through fully solved cases step by step. Every case ends with a complete report and slide deck, exactly how a Big 4 firm would present it. This is what good looks like.", cta: { label: "Browse the library →", href: "/cases", type: "link" as const }, final: false },
   { n: "4", kicker: "Practice",   title: "Practice with AI",      desc: "Pick a case from the library, work through it yourself, and get instant AI feedback on your thinking. The AI generates a report and slides from your actual responses.", cta: { label: "How practice works →", href: "/practice", type: "btn" as const }, final: true },
@@ -191,7 +191,7 @@ export default function HomePage() {
               )}
               {status === "authenticated" && (
                 <Link
-                  href="/practice"
+                  href="#how-to-use"
                   style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: "var(--r-pill)", fontSize: "0.97rem", fontWeight: 500, background: "var(--forest)", color: "#fff", fontFamily: "var(--font-body)", transition: "transform var(--t), box-shadow var(--t), background var(--t)" }}
                   onMouseEnter={e => { const el = e.currentTarget; el.style.transform = "translateY(-2px)"; el.style.boxShadow = "var(--shadow-hover)"; el.style.background = "#244c39"; }}
                   onMouseLeave={e => { const el = e.currentTarget; el.style.transform = ""; el.style.boxShadow = ""; el.style.background = "var(--forest)"; }}
@@ -407,7 +407,18 @@ export default function HomePage() {
                   </div>
                   <h3>{step.title}</h3>
                   <p>{step.desc}</p>
-                  {step.cta.type === "btn" ? (
+                  {step.cta.type === "btn-highlight" ? (
+                    <Link href={step.cta.href} className="howto-btn howto-btn-highlight">
+                      <span className="howto-btn-highlight-shine" aria-hidden="true" />
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
+                        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                      </svg>
+                      {step.cta.label}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
+                        <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                      </svg>
+                    </Link>
+                  ) : step.cta.type === "btn" ? (
                     <Link href={step.cta.href} className="howto-btn">
                       {step.cta.label}
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
