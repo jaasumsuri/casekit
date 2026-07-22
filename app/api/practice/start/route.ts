@@ -13,9 +13,10 @@ function getSupabase() {
 }
 
 export async function POST(request: NextRequest) {
-  const { caseSlug, userId } = (await request.json()) as {
+  const { caseSlug, userId, forceNew } = (await request.json()) as {
     caseSlug: string;
     userId: string;
+    forceNew?: boolean;
   };
 
   if (!caseSlug || !userId) {
@@ -23,6 +24,29 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = getSupabase();
+
+  // Explicit restart: abandon any existing in_progress session for this
+  // (user, case) so the partial unique index doesn't reject the fresh
+  // insert. Runs before the dedup check on purpose — the dedup guard would
+  // otherwise return the row we're about to abandon.
+  if (forceNew) {
+    try {
+      await supabase
+        .from("practice_sessions")
+        .update({
+          status: "completed",
+          completion_status: "abandoned",
+          ended_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId)
+        .eq("case_slug", caseSlug)
+        .eq("status", "in_progress");
+    } catch (err) {
+      console.error("start route: forceNew abandon failed:", err);
+      // non-fatal — proceed to insert; if a row still blocks it, the 23505
+      // handler will surface the winning row.
+    }
+  }
 
   try {
     const weekStart = new Date();

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { renderInline } from "@/lib/critique";
 import "./interview.css";
 
 interface CaseMeta {
@@ -53,8 +54,10 @@ async function fetchUserId(): Promise<string | null> {
 
 export default function InterviewClient({
   caseMeta,
+  forceNew = false,
 }: {
   caseMeta: CaseMeta;
+  forceNew?: boolean;
 }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -111,10 +114,17 @@ export default function InterviewClient({
       // completed session for this case before creating a new one. This
       // is what makes a page refresh mid-interview or mid-critique
       // rehydrate correctly instead of losing state.
-      const resumeRes = await fetch(
-        `/api/practice/sessions/current?caseSlug=${encodeURIComponent(caseMeta.slug)}`
-      );
-      if (resumeRes.ok) {
+      //
+      // Skipped when forceNew is set (?new=1 in the URL) — that's the
+      // explicit "restart this case fresh" flow from the critique view
+      // or dashboard, and it should bypass resume so the server-side
+      // abandon+insert path runs.
+      const resumeRes = forceNew
+        ? null
+        : await fetch(
+            `/api/practice/sessions/current?caseSlug=${encodeURIComponent(caseMeta.slug)}`
+          );
+      if (resumeRes?.ok) {
         const resumeData = (await resumeRes.json()) as {
           session: {
             id: string;
@@ -202,7 +212,11 @@ export default function InterviewClient({
       const startRes = await fetch("/api/practice/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caseSlug: caseMeta.slug, userId }),
+        body: JSON.stringify({
+          caseSlug: caseMeta.slug,
+          userId,
+          forceNew: forceNew || undefined,
+        }),
       });
       const startData = await startRes.json();
 
@@ -435,35 +449,35 @@ export default function InterviewClient({
                   if (line.startsWith("# ")) {
                     return (
                       <h2 key={i} className="iv-critique-h2">
-                        {line.slice(2)}
+                        {renderInline(line.slice(2))}
                       </h2>
                     );
                   }
                   if (line.startsWith("## ")) {
                     return (
                       <h3 key={i} className="iv-critique-h3">
-                        {line.slice(3)}
+                        {renderInline(line.slice(3))}
                       </h3>
                     );
                   }
                   if (line.startsWith("### ")) {
                     return (
                       <h4 key={i} className="iv-critique-h4">
-                        {line.slice(4)}
+                        {renderInline(line.slice(4))}
                       </h4>
                     );
                   }
                   if (line.startsWith("- ")) {
                     return (
                       <li key={i} className="iv-critique-li">
-                        {line.slice(2)}
+                        {renderInline(line.slice(2))}
                       </li>
                     );
                   }
                   if (line.trim() === "") return <br key={i} />;
                   return (
                     <p key={i} className="iv-critique-p">
-                      {line}
+                      {renderInline(line)}
                     </p>
                   );
                 })}
@@ -475,9 +489,20 @@ export default function InterviewClient({
               </div>
             )}
             {critique && !critiqueError && (
-              <Link href="/practice" className="iv-btn iv-btn-solid iv-btn-back">
-                Back to practice
-              </Link>
+              <div className="iv-critique-actions">
+                {/* Plain <a> — needs a hard reload so InterviewClient
+                    re-mounts with the ?new=1 forceNew prop rather than
+                    just updating search params on the mounted component. */}
+                <a
+                  href={`/practice/${caseMeta.slug}?new=1`}
+                  className="iv-btn iv-btn-solid"
+                >
+                  Start new session
+                </a>
+                <Link href="/practice" className="iv-btn iv-btn-outline">
+                  Back to practice
+                </Link>
+              </div>
             )}
           </div>
         </div>

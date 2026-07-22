@@ -30,12 +30,16 @@ function getCaseMeta(slug: string): CaseMeta | null {
 
 export default async function PracticeInterviewPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ new?: string }>;
 }) {
   const { slug } = await params;
+  const sp = await searchParams;
+  const forceNew = sp.new === "1";
   const caseMeta = getCaseMeta(slug);
   if (!caseMeta) notFound();
 
-  return <InterviewClient caseMeta={caseMeta} />;
+  return <InterviewClient caseMeta={caseMeta} forceNew={forceNew} />;
 }

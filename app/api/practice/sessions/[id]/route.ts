@@ -39,5 +39,32 @@ export async function GET(
     return Response.json({ error: "not_found" }, { status: 404 });
   }
 
-  return Response.json({ session: data });
+  // Turns for the chat-transcript view. .select("*") + explicit projection
+  // keeps this working pre- and post- the interviewer_message migration,
+  // and prevents ai_critique from leaking client-side.
+  const { data: turnRows } = await supabase
+    .from("practice_turns")
+    .select("*")
+    .eq("session_id", id)
+    .order("turn_number", { ascending: true });
+
+  type Turn = {
+    turn_number: number;
+    step_id: string;
+    candidate_response: string;
+    interviewer_message?: string | null;
+    passed: boolean | null;
+  };
+  const turns = (turnRows ?? []).map((t) => {
+    const row = t as Turn;
+    return {
+      turn_number: row.turn_number,
+      step_id: row.step_id,
+      candidate_response: row.candidate_response,
+      interviewer_message: row.interviewer_message ?? null,
+      passed: row.passed,
+    };
+  });
+
+  return Response.json({ session: data, turns });
 }

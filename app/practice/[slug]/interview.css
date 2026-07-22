@@ -466,6 +466,13 @@
   max-width: 420px;
   color: var(--muted);
 }
+.iv-critique-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
 .iv-critique-text {
   color: var(--ink);
   font-size: 0.94rem;
