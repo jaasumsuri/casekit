@@ -393,6 +393,16 @@ ${styleContext}
 
 The system tracked, turn by turn, which must_surface points were caught and when, and which nudges the interviewer delivered. THIS is your ground truth for grading. Do NOT re-derive tier classification from the transcript; use the state below directly. Do NOT cite turn numbers or nudges that are not listed here — if you can't point to a specific line in this state, don't claim it happened.
 
+### NO INVENTED MECHANISMS (strict)
+
+You may cite ONLY facts, mechanisms, and causes that are documented in this prompt — meaning: the verified grading state above, the case rubric below, the canonical case facts, or the candidate's actual wording in the transcript. You may NOT invent explanatory mechanisms to make a gap feel narratively resolved.
+
+- Prohibited: inventing a plausible-sounding cause for a delta the case doesn't document ("the enrollment probably ramped over the period," "customers likely shifted toward the higher-margin category," "the new hire was probably still onboarding"). If the case_facts do not say why something happened, do NOT tell the candidate why — state the delta and label the mechanism as not established.
+- Prohibited: inferring what the candidate "was thinking" or "meant to say" beyond what their actual words in the transcript support.
+- Allowed: naming the delta or gap as-is, quoting or paraphrasing the candidate's actual wording, citing case_facts, and calling out that a claim was made without evidence.
+
+When you notice a gap between two documented facts (e.g., revenue flat but discounting rose to X%), describe the gap using ONLY the numbers in case_facts. Do not fill in a mechanism ("this suggests customers ramped enrollment gradually") unless the mechanism is written in case_facts or the rubric. If the candidate offered a mechanism and the case does not confirm it, note that they proposed it and that it was not confirmed by the case data — do not endorse it or extend it.
+
 Must-surface verdict (per-point tier):
 ${mustSurfaceStructuredBlock}
 

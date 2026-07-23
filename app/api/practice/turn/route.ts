@@ -56,7 +56,7 @@ interface AITurnResult {
   finalRecommendationDelivered: boolean;
   interviewerResponseType: ResponseType;
   mustSurfaceAddressed: string[];
-  nudgeTargetPointId: string | null;
+  steeringTowardPointId: string | null;
 }
 
 // Forced tool_use guarantees the reply shape at the API level: the model
@@ -99,12 +99,12 @@ const INTERVIEWER_TOOL = {
         type: "array",
         items: { type: "string" },
         description:
-          "IDs of any must_surface points that the candidate's response addressed on THIS turn (see the numbered must_surface list in the prompt; ids look like 'msp_0', 'msp_1'). Empty array if none. Only include a point if the candidate genuinely raised or engaged with the substance of that point in this turn — do NOT include points that were addressed on earlier turns.",
+          "IDs of must_surface points that the candidate's response DIRECTLY addressed on THIS turn (see the numbered must_surface list in the prompt; ids look like 'msp_0', 'msp_1'). Empty array if none. Strict evidence bar: only include a point if the candidate's actual wording this turn contains the substance of that point — a specific question, claim, or number that maps to it. Do NOT include a point just because the candidate 'alluded to' it, 'seemed to be heading toward' it, or 'implicitly acknowledged' it. Do NOT include points already addressed on earlier turns. When in doubt, leave it out — the interviewer can always nudge on the next turn if the candidate really missed it.",
       },
-      nudgeTargetPointId: {
+      steeringTowardPointId: {
         type: "string",
         description:
-          "REQUIRED when responseType='nudge'. The must_surface point ID that your nudge is steering the candidate toward (e.g., 'msp_2'). Omit when responseType is not 'nudge'.",
+          "The must_surface point ID (e.g., 'msp_2') your reply is actively steering the candidate toward — set this on ANY turn where you reference, hint at, quote back from the brief, or otherwise point them at a specific unaddressed point they walked past. Empty string if you are not steering toward any unaddressed point. This is SEPARATE from responseType and MUST be set independently: if your reply is doing redirect work, fill this field even if you also classified responseType as 'core' or 'follow_up'. Only leave empty if the candidate is genuinely driving the conversation without your steering. Do NOT set this to a point the candidate has already addressed in a prior turn (see the tracking state).",
       },
       finalRecommendationDelivered: {
         type: "boolean",
@@ -118,6 +118,7 @@ const INTERVIEWER_TOOL = {
       "passed",
       "responseType",
       "mustSurfaceAddressed",
+      "steeringTowardPointId",
     ],
   },
 };
@@ -333,7 +334,7 @@ export async function POST(request: NextRequest) {
       hint?: unknown;
       responseType?: unknown;
       mustSurfaceAddressed?: unknown;
-      nudgeTargetPointId?: unknown;
+      steeringTowardPointId?: unknown;
       finalRecommendationDelivered?: unknown;
     };
 
@@ -369,12 +370,15 @@ export async function POST(request: NextRequest) {
       .filter((id): id is string => typeof id === "string")
       .filter((id) => validPointIds.has(id));
 
-    let nudgeTargetPointId: string | null =
-      typeof input.nudgeTargetPointId === "string"
-        ? input.nudgeTargetPointId
-        : null;
-    if (nudgeTargetPointId && !validPointIds.has(nudgeTargetPointId)) {
-      nudgeTargetPointId = null;
+    const rawSteering =
+      typeof input.steeringTowardPointId === "string"
+        ? input.steeringTowardPointId.trim()
+        : "";
+    // Empty string means "not steering toward anything" — treat as null.
+    let steeringTowardPointId: string | null =
+      rawSteering.length > 0 ? rawSteering : null;
+    if (steeringTowardPointId && !validPointIds.has(steeringTowardPointId)) {
+      steeringTowardPointId = null;
     }
 
     aiResult = {
@@ -388,7 +392,7 @@ export async function POST(request: NextRequest) {
         input.finalRecommendationDelivered === true,
       interviewerResponseType,
       mustSurfaceAddressed,
-      nudgeTargetPointId,
+      steeringTowardPointId,
     };
   } catch (err) {
     console.error("turn route: AI response fallback triggered", {
@@ -407,17 +411,37 @@ export async function POST(request: NextRequest) {
       finalRecommendationDelivered: false,
       interviewerResponseType: "follow_up",
       mustSurfaceAddressed: [],
-      nudgeTargetPointId: null,
+      steeringTowardPointId: null,
     };
   }
 
-  // Update the tracked grading state BEFORE inserting the turn. A point
-  // counts as caught_after_nudge only if a prior nudge on this session
-  // targeted it; otherwise caught_independently. Nudges are appended to
-  // redirects_given so /end and future turns share one source of truth.
+  // Update tracked grading state BEFORE inserting the turn. Order matters:
+  // resolve redirects FIRST, then compute must-surface tier — so that a
+  // same-turn steer + catch on the same point tags as caught_after_nudge,
+  // not caught_independently. Redirect logging is decoupled from
+  // responseType (the earlier gating on responseType==='nudge' was too
+  // soft; the model under-picked 'nudge' as its primary tag, so real
+  // redirects dropped out of redirects_given and downstream tier grading
+  // silently downgraded caught_after_nudge to caught_independently).
   const priorMustSurfaceState: MustSurfaceState =
     session.must_surface_state ?? {};
   const priorRedirects: RedirectEntry[] = session.redirects_given ?? [];
+
+  const nextRedirects: RedirectEntry[] = [...priorRedirects];
+  if (aiResult.steeringTowardPointId) {
+    const target = aiResult.steeringTowardPointId;
+    const priorEntry = priorMustSurfaceState[target];
+    const alreadyCaught =
+      priorEntry &&
+      (priorEntry.status === "caught_independently" ||
+        priorEntry.status === "caught_after_nudge");
+    const alreadyNudged = priorRedirects.some(
+      (r) => r.targetPointId === target
+    );
+    if (!alreadyCaught && !alreadyNudged) {
+      nextRedirects.push({ turnNumber, targetPointId: target });
+    }
+  }
 
   const nextMustSurfaceState: MustSurfaceState = { ...priorMustSurfaceState };
   for (const pointId of aiResult.mustSurfaceAddressed) {
@@ -432,25 +456,16 @@ export async function POST(request: NextRequest) {
     ) {
       continue;
     }
-    const priorNudge = priorRedirects.find((r) => r.targetPointId === pointId);
-    nextMustSurfaceState[pointId] = priorNudge
+    const nudgeForPoint = nextRedirects.find(
+      (r) => r.targetPointId === pointId
+    );
+    nextMustSurfaceState[pointId] = nudgeForPoint
       ? {
           status: "caught_after_nudge",
           turnNumber,
-          priorNudgeTurn: priorNudge.turnNumber,
+          priorNudgeTurn: nudgeForPoint.turnNumber,
         }
       : { status: "caught_independently", turnNumber };
-  }
-
-  const nextRedirects: RedirectEntry[] = [...priorRedirects];
-  if (
-    aiResult.interviewerResponseType === "nudge" &&
-    aiResult.nudgeTargetPointId
-  ) {
-    nextRedirects.push({
-      turnNumber,
-      targetPointId: aiResult.nudgeTargetPointId,
-    });
   }
 
   try {
@@ -677,6 +692,25 @@ function buildSystemPrompt(
     })
     .join("\n");
 
+  const nudgedPointIds = new Set(redirectsGiven.map((r) => r.targetPointId));
+  const unaddressedSteerableLines = mustSurfaceList
+    .map((point, i) => ({ id: mustSurfacePointId(i), point, i }))
+    .filter(({ id }) => {
+      const entry = mustSurfaceState[id];
+      const notCaught =
+        !entry ||
+        (entry.status !== "caught_independently" &&
+          entry.status !== "caught_after_nudge");
+      const notAlreadyNudged = !nudgedPointIds.has(id);
+      return notCaught && notAlreadyNudged;
+    })
+    .map(({ id, point }) => `- ${id}: ${point}`)
+    .join("\n");
+  const unaddressedSteerableBlock =
+    unaddressedSteerableLines.length > 0
+      ? unaddressedSteerableLines
+      : "(none — every point is either caught or already nudged once)";
+
   const redirectsGivenLine = redirectsGiven.length
     ? redirectsGiven
         .map((r) => `- turn ${r.turnNumber} → nudged toward ${r.targetPointId}`)
@@ -755,7 +789,7 @@ function buildSystemPrompt(
     "",
     "### Must-surface points",
     "",
-    "These are the specific things a strong candidate should raise. Each has a stable id — use these ids when reporting mustSurfaceAddressed or nudgeTargetPointId on your tool call:",
+    "These are the specific things a strong candidate should raise. Each has a stable id — use these ids when reporting mustSurfaceAddressed or steeringTowardPointId on your tool call:",
     "",
     mustSurfaceFormatted,
     "",
@@ -767,6 +801,12 @@ function buildSystemPrompt(
     "",
     redirectsGivenLine,
     "",
+    "### Unaddressed points still available to steer toward",
+    "",
+    "These are the must-surface points the candidate has NOT yet caught AND you have NOT yet nudged toward. If your reply is doing any redirect work — referencing something in the brief they walked past, hinting at a cost driver, mentioning a stakeholder concern they haven't asked about — set steeringTowardPointId to the id from this list that matches. If you're not steering toward any of these, leave steeringTowardPointId as an empty string.",
+    "",
+    unaddressedSteerableBlock,
+    "",
     "### Curveballs — hard cap",
     "",
     `You have introduced ${priorCurveballCount} of ${maxCurveballs} allowed curveballs so far in this session. A "curveball" means you actively introduced a new twist, complication, or piece of new information that isn't required by the current step's trigger. Normal in-step data reveals, clarifying questions, and follow-ups on the candidate's prior answer are NOT curveballs — do not overclassify.`,
@@ -776,7 +816,9 @@ function buildSystemPrompt(
     "",
     "### Nudging (redirect once, not twice)",
     "",
-    "If the candidate is walking past an important must-surface point that they need to raise for the case to progress, you may nudge them ONCE toward it — a light reference to something in the brief they didn't pick up on. Do not nudge the same point twice; if the earlier nudge didn't land, let them miss it. When you nudge, set responseType='nudge' and nudgeTargetPointId to the point id you're steering toward.",
+    "If the candidate is walking past an important must-surface point that they need to raise for the case to progress, you may nudge them ONCE toward it — a light reference to something in the brief they didn't pick up on. Do not nudge the same point twice; if the earlier nudge didn't land, let them miss it.",
+    "",
+    "IMPORTANT: The `steeringTowardPointId` field is the ONLY way redirects get logged. It is SEPARATE from `responseType`. Set it whenever your reply is doing any redirect work toward a specific unaddressed point — even if you'd primarily classify the turn as 'core' or 'follow_up'. The prior instruction to only fill this on 'nudge'-typed replies caused real redirects to be silently dropped from the log, which corrupted the end-of-session tier grading. Err toward filling it when in doubt: it's easier for a coach to look at an over-logged nudge and dismiss it than to reconstruct a missing one.",
     "",
   );
 
@@ -813,9 +855,11 @@ function buildSystemPrompt(
     "- 'core' = you asked or answered on the current step's core trigger",
     "- 'follow_up' = you pushed on the candidate's prior answer without introducing new material",
     "- 'curveball' = you actively introduced a new twist, complication, or new piece of information not required by the current step",
-    "- 'nudge' = you explicitly redirected the candidate back toward a must_surface point they walked past (also fill nudgeTargetPointId)",
+    "- 'nudge' = the primary purpose of your reply was to redirect the candidate back toward a must_surface point they walked past",
     "",
-    "And list mustSurfaceAddressed with the ids of any must_surface points the candidate raised or engaged with on THIS turn (empty array if none).",
+    "Note: responseType='nudge' is only the primary flavor. Whether or not the whole reply is a nudge, ALWAYS fill steeringTowardPointId if any part of your reply is doing redirect work toward a specific unaddressed point.",
+    "",
+    "And list mustSurfaceAddressed with the ids of any must_surface points the candidate DIRECTLY raised or engaged with on THIS turn (strict evidence bar per the tool description; empty array if none).",
     "",
   );
 
