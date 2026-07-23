@@ -3,6 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import { createTextStreamResponse } from "ai";
 import cases from "@/data/practice-cases.json";
+import {
+  MustSurfaceState,
+  RedirectEntry,
+  countPriorCurveballs,
+  getMustSurfacePoints,
+} from "@/lib/practice-turn-engine";
 
 
 function getSupabase() {
@@ -24,22 +30,7 @@ interface Turn {
   response_type: string | null;
   ai_critique: string | null;
   passed: boolean | null;
-}
-
-interface MustSurfaceEntry {
-  status: "unaddressed" | "caught_independently" | "caught_after_nudge";
-  turnNumber?: number;
-  priorNudgeTurn?: number;
-}
-type MustSurfaceState = Record<string, MustSurfaceEntry>;
-
-interface RedirectEntry {
-  turnNumber: number;
-  targetPointId: string;
-}
-
-function mustSurfacePointId(index: number): string {
-  return `msp_${index}`;
+  introduced_new_complication?: boolean | null;
 }
 
 export async function POST(request: NextRequest) {
@@ -110,18 +101,36 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from("practice_turns")
       .select(
-        "turn_number, step_id, candidate_response, response_type, ai_critique, passed"
+        "turn_number, step_id, candidate_response, response_type, ai_critique, passed, introduced_new_complication"
       )
       .eq("session_id", sessionId)
       .order("turn_number", { ascending: true });
 
     if (error) {
-      return Response.json(
-        { error: "Failed to load turns" },
-        { status: 500 }
-      );
+      if (error.code === "42703" || error.code === "PGRST204") {
+        const retry = await supabase
+          .from("practice_turns")
+          .select(
+            "turn_number, step_id, candidate_response, response_type, ai_critique, passed"
+          )
+          .eq("session_id", sessionId)
+          .order("turn_number", { ascending: true });
+        if (retry.error) {
+          return Response.json(
+            { error: "Failed to load turns" },
+            { status: 500 }
+          );
+        }
+        turns = retry.data ?? [];
+      } else {
+        return Response.json(
+          { error: "Failed to load turns" },
+          { status: 500 }
+        );
+      }
+    } else {
+      turns = data ?? [];
     }
-    turns = data ?? [];
   } catch {
     return Response.json(
       { error: "Failed to load turns" },
@@ -163,7 +172,7 @@ export async function POST(request: NextRequest) {
   const steps = practiceCase.rubric.data_release_sequence;
   const totalSteps = steps.length;
   const lastStepIndex = totalSteps - 1;
-  const mustSurfaceList = practiceCase.rubric.must_surface as string[];
+  const mustSurfacePoints = getMustSurfacePoints(practiceCase);
   const maxCurveballs =
     (practiceCase.rubric as { max_curveballs?: number }).max_curveballs ?? 3;
 
@@ -185,16 +194,13 @@ export async function POST(request: NextRequest) {
   // hallucinated citations happened.
   const mustSurfaceState: MustSurfaceState = session.must_surface_state ?? {};
   const redirectsGiven: RedirectEntry[] = session.redirects_given ?? [];
-  const curveballCount = turns.filter(
-    (t) => t.response_type === "curveball"
-  ).length;
+  const curveballCount = countPriorCurveballs(turns);
 
-  const mustSurfaceVerdict = mustSurfaceList.map((point, i) => {
-    const id = mustSurfacePointId(i);
-    const entry = mustSurfaceState[id];
+  const mustSurfaceVerdict = mustSurfacePoints.map((p) => {
+    const entry = mustSurfaceState[p.id];
     return {
-      pointId: id,
-      point,
+      pointId: p.id,
+      point: p.text,
       status: entry?.status ?? "unaddressed",
       turnNumber: entry?.turnNumber,
       priorNudgeTurn: entry?.priorNudgeTurn,
