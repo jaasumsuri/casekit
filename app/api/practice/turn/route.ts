@@ -481,6 +481,32 @@ export async function POST(request: NextRequest) {
       insertError = retry.error;
     }
 
+    // Pre-migration fallback: the practice_turns.response_type CHECK
+    // constraint only allowed the legacy request-side values
+    // (mcq/free_write) until 2026-07-23. If it hasn't been widened yet,
+    // Postgres returns 23514 (check_violation) — retry with the legacy
+    // 'free_write' so the turn still lands. The model's real
+    // classification is lost for this row (curveball counting will
+    // under-report until the migration lands), which is the least-bad
+    // outcome vs. a hard failure the candidate sees as a blank bubble.
+    if (insertError?.code === "23514") {
+      console.warn(
+        "turn route: response_type check constraint rejects new values — apply scripts/sql/2026-07-23_practice_turns_response_type_expand.sql."
+      );
+      const legacyPayload = {
+        ...basePayload,
+        response_type: responseType,
+        interviewer_message: aiResult.interviewerMessage,
+      };
+      let retry = await supabase.from("practice_turns").insert(legacyPayload);
+      if (retry.error?.code === "PGRST204") {
+        const { interviewer_message: _drop, ...noMsg } = legacyPayload;
+        void _drop;
+        retry = await supabase.from("practice_turns").insert(noMsg);
+      }
+      insertError = retry.error;
+    }
+
     if (insertError) {
       // Postgres unique-violation from the (session_id, turn_number)
       // constraint: concurrent request beat us to it.
