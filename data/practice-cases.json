@@ -11,6 +11,7 @@
         "correct_framework": "profitability",
         "framework_acceptable_alternates": [],
         "framework_notes": "This is a clean, single-framework case by design (Easy tier). A candidate reaching for market sizing, growth strategy, or M&A here has misread the prompt — flat revenue + falling profit is a profitability signal, not a growth or sizing signal. No partial credit for a different framework at this difficulty.",
+        "max_curveballs": 3,
         "must_surface": [
           "Splits the problem into revenue side vs. cost side before diving in (confirms revenue is flat, so the driver must be on the cost side or margin/mix side)",
           "Asks to break down costs by category (COGS, labor, rent/lease, marketing, other operating) rather than asking for one number at a time",
@@ -83,6 +84,7 @@
           "pricing"
         ],
         "framework_notes": "Pricing is an acceptable alternate entry point since the core issue is reimbursement rate per scan, but the candidate must still build out a full profitability tree (volume x price/reimbursement, cost structure) to reach the right answer — pricing alone without the cost-side check would be incomplete.",
+        "max_curveballs": 5,
         "must_surface": [
           "Separates volume effect from price/reimbursement effect from cost effect before concluding anything",
           "Confirms volume growth is real and positive, ruling out a volume-driven explanation for margin compression",
@@ -154,6 +156,7 @@
         "correct_framework": "market_entry",
         "framework_acceptable_alternates": [],
         "framework_notes": "Single clean framework by design (Easy tier). Candidate should structure around: market attractiveness, competitive landscape, company capability/fit, and entry mode — the standard four-part market entry structure. No partial credit for skipping straight to a sizing exercise without addressing competition and fit first.",
+        "max_curveballs": 3,
         "must_surface": [
           "Asks about market size and growth for fitness apps in Canada before assuming attractiveness",
           "Asks about the competitive landscape — specifically whether incumbents already serve this market well",
@@ -218,6 +221,7 @@
           "growth_strategy"
         ],
         "framework_notes": "Growth strategy is an acceptable alternate framing since this is fundamentally a new-market growth decision for an existing player, but the candidate must still address market attractiveness, competitive intensity, and — critically — capability fit/certification barriers. A candidate who treats this purely as 'where to grow' without addressing the automotive certification barrier has missed the hardest part of the case.",
+        "max_curveballs": 5,
         "must_surface": [
           "Assesses market attractiveness (size, growth, competitive intensity) before assuming entry is automatically good just because the market is growing",
           "Identifies that automotive industry certification (IATF 16949) is a real, costly, multi-year barrier to entry — not a paperwork formality",
@@ -288,6 +292,7 @@
         "correct_framework": "market_entry",
         "framework_acceptable_alternates": [],
         "framework_notes": "This is a market entry case where the entry MODE is the central question, not whether to enter. A candidate who concludes simply 'yes, enter' or 'no, don't enter' without addressing how regulatory structure constrains the feasible entry modes has not solved the case at the level this difficulty requires.",
+        "max_curveballs": 7,
         "must_surface": [
           "Recognizes that the two internal teams disagreeing is itself a signal — treats reconciling the conflict as the actual task, not picking a side",
           "Asks specifically what regulatory framework governs cross-border financial services in the EU (the candidate doesn't need to know MiFID II by name, but should ask what licensing or passporting requirements exist)",
@@ -355,6 +360,7 @@
         "correct_framework": "market_sizing",
         "framework_acceptable_alternates": [],
         "framework_notes": "Clean bottom-up sizing exercise by design (Easy tier). Candidate should build from US households → households that use a dryer → households that would plausibly switch to this kind of product → reasonable price point → replacement/purchase frequency given it's reusable, not consumable.",
+        "max_curveballs": 3,
         "must_surface": [
           "States an explicit, structured approach (bottom-up from households) before doing any math — doesn't just start guessing numbers",
           "Makes a reasonable, stated assumption about the % of US households with a dryer rather than assuming all households have one",
@@ -407,6 +413,7 @@
         "correct_framework": "market_sizing",
         "framework_acceptable_alternates": [],
         "framework_notes": "This case explicitly tests whether the candidate can choose and justify a sizing methodology (top-down vs. bottom-up vs. blended) rather than just defaulting to one. The 'right' answer is a bottom-up approach anchored on the existing subscriber base, cross-checked against top-down market data — not a pure top-down approach, since the question is platform-specific demand, not total market demand.",
+        "max_curveballs": 5,
         "must_surface": [
           "Explicitly chooses and justifies a methodology rather than silently picking one",
           "Recognizes that a pure top-down approach (total cooking content market size) is too broad — it answers a different question than 'how many platform subscribers would pay for THIS specific feature'",
@@ -465,6 +472,7 @@
         "correct_framework": "growth_strategy",
         "framework_acceptable_alternates": [],
         "framework_notes": "Candidate should structure around the standard growth levers — new customers in existing markets/products, new products to existing customers, new channels, new geographies — (an Ansoff-style structure works well here) and then prioritize rather than just listing options, since the brief explicitly asks for prioritization.",
+        "max_curveballs": 5,
         "must_surface": [
           "Diagnoses WHY CAC is climbing before jumping to growth levers — connects rising CAC to over-reliance on a single channel (paid social) rather than treating it as an unrelated fact",
           "Identifies retail/wholesale distribution as a viable new channel given the company has never used it, which directly addresses the channel concentration problem",
@@ -527,6 +535,7 @@
         "correct_framework": "growth_strategy",
         "framework_acceptable_alternates": [],
         "framework_notes": "This case tests whether a candidate will respectfully push back on a client's stated preference when the data doesn't support it. The CEO has explicitly pre-committed to three simultaneous initiatives and said he doesn't want to hear 'do less' — the correct answer, if the data supports it, may still require recommending sequencing or de-prioritization, delivered diplomatically rather than by capitulating to the stated preference.",
+        "max_curveballs": 7,
         "must_surface": [
           "Evaluates each of the three growth levers independently on attractiveness and capability fit, rather than accepting the bundle as a package",
           "Identifies that management bandwidth is a real, finite resource and explicitly tests the CEO's assumption that the team can execute all three simultaneously rather than taking it at face value",
@@ -591,6 +600,7 @@
         "correct_framework": "pricing",
         "framework_acceptable_alternates": [],
         "framework_notes": "Candidate should evaluate each of the three pricing options against willingness-to-pay data, churn risk, and the value the new feature actually unlocks — not just pick intuitively. The case is designed so simple intuition (e.g., 'more features should mean more revenue, raise the price') leads to a worse answer than one grounded in the willingness-to-pay segmentation data.",
+        "max_curveballs": 5,
         "must_surface": [
           "Asks for willingness-to-pay or user research data on the new AI features specifically, rather than assuming all users value them equally",
           "Recognizes that a blanket price increase (option 3) risks churn among existing paid subscribers who don't care about the new AI features and just want storage",
@@ -654,6 +664,7 @@
         "correct_framework": "operations",
         "framework_acceptable_alternates": [],
         "framework_notes": "Candidate should structure around the operations/process flow — order intake, scheduling, production, quality, shipping — to isolate where in the process delivery is slipping, rather than guessing at a cause. The case also has a secondary profitability angle (hidden cost opportunity) that a strong candidate should connect to the same root cause rather than treating as a separate investigation.",
+        "max_curveballs": 5,
         "must_surface": [
           "Maps the production process into discrete stages before hypothesizing a cause, to isolate where the delay is actually occurring",
           "Asks for delivery performance broken out by plant, since the two plants could have different root causes",
@@ -726,6 +737,7 @@
         "correct_framework": "ma",
         "framework_acceptable_alternates": [],
         "framework_notes": "Standalone value + synergies vs. price paid is the core structure. The hard part of this case isn't the framework selection, it's correctly stress-testing the synergy assumptions rather than accepting the corp dev team's model at face value — this is a valuation-discipline case, not a structure case.",
+        "max_curveballs": 7,
         "must_surface": [
           "States the core M&A logic explicitly: deal makes sense if (standalone value of Praxis + realistic synergies) > price paid, and frames the analysis around testing each piece rather than accepting the model's conclusion",
           "Asks for the basis of the revenue synergy assumption specifically, rather than accepting a synergy dollar figure at face value",

@@ -21,9 +21,25 @@ interface Turn {
   turn_number: number;
   step_id: string;
   candidate_response: string;
-  response_type: string;
+  response_type: string | null;
   ai_critique: string | null;
   passed: boolean | null;
+}
+
+interface MustSurfaceEntry {
+  status: "unaddressed" | "caught_independently" | "caught_after_nudge";
+  turnNumber?: number;
+  priorNudgeTurn?: number;
+}
+type MustSurfaceState = Record<string, MustSurfaceEntry>;
+
+interface RedirectEntry {
+  turnNumber: number;
+  targetPointId: string;
+}
+
+function mustSurfacePointId(index: number): string {
+  return `msp_${index}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -35,25 +51,44 @@ export async function POST(request: NextRequest) {
 
   const supabase = getSupabase();
 
-  // Load session
   let session: {
     id: string;
     case_slug: string;
     status: string;
     final_critique: string | null;
     completion_status: string | null;
+    must_surface_state: MustSurfaceState | null;
+    redirects_given: RedirectEntry[] | null;
   };
   try {
+    // .select("*") tolerates pre-migration schemas.
     const { data, error } = await supabase
       .from("practice_sessions")
-      .select("id, case_slug, status, final_critique, completion_status")
+      .select("*")
       .eq("id", sessionId)
       .single();
 
     if (error || !data) {
       return Response.json({ error: "session_not_found" }, { status: 404 });
     }
-    session = data;
+    const raw = data as {
+      id: string;
+      case_slug: string;
+      status: string;
+      final_critique: string | null;
+      completion_status: string | null;
+      must_surface_state?: MustSurfaceState | null;
+      redirects_given?: RedirectEntry[] | null;
+    };
+    session = {
+      id: raw.id,
+      case_slug: raw.case_slug,
+      status: raw.status,
+      final_critique: raw.final_critique,
+      completion_status: raw.completion_status,
+      must_surface_state: raw.must_surface_state ?? null,
+      redirects_given: raw.redirects_given ?? null,
+    };
   } catch {
     return Response.json(
       { error: "Failed to load session" },
@@ -108,7 +143,7 @@ export async function POST(request: NextRequest) {
         })
         .eq("id", sessionId);
     } catch {
-      // non-fatal, client already gets the message below
+      // non-fatal
     }
     return Response.json({
       critique: noTurnsMessage,
@@ -128,6 +163,9 @@ export async function POST(request: NextRequest) {
   const steps = practiceCase.rubric.data_release_sequence;
   const totalSteps = steps.length;
   const lastStepIndex = totalSteps - 1;
+  const mustSurfaceList = practiceCase.rubric.must_surface as string[];
+  const maxCurveballs =
+    (practiceCase.rubric as { max_curveballs?: number }).max_curveballs ?? 3;
 
   // Determine completion status
   const highestPassedStep = turns.reduce<number>((max, turn) => {
@@ -141,7 +179,29 @@ export async function POST(request: NextRequest) {
   const completionStatus =
     highestPassedStep >= lastStepIndex ? "completed" : "abandoned";
 
-  // Build transcript for the coach
+  // Derive verified structured state from persisted session + turns. This
+  // is the ground truth the Coach writes prose around — it does NOT
+  // reconstruct these facts from transcript memory, which is how the
+  // hallucinated citations happened.
+  const mustSurfaceState: MustSurfaceState = session.must_surface_state ?? {};
+  const redirectsGiven: RedirectEntry[] = session.redirects_given ?? [];
+  const curveballCount = turns.filter(
+    (t) => t.response_type === "curveball"
+  ).length;
+
+  const mustSurfaceVerdict = mustSurfaceList.map((point, i) => {
+    const id = mustSurfacePointId(i);
+    const entry = mustSurfaceState[id];
+    return {
+      pointId: id,
+      point,
+      status: entry?.status ?? "unaddressed",
+      turnNumber: entry?.turnNumber,
+      priorNudgeTurn: entry?.priorNudgeTurn,
+    };
+  });
+
+  // Build transcript for the coach (context, not source of grading truth)
   const transcript = turns
     .map((t) => {
       const stepData = steps[parseInt(t.step_id, 10)];
@@ -149,32 +209,38 @@ export async function POST(request: NextRequest) {
         ? `Step ${t.step_id} ("${stepData.trigger}")`
         : `Step ${t.step_id}`;
       return [
-        `--- ${stepLabel} ---`,
-        `Candidate (${t.response_type}): ${t.candidate_response}`,
-        `Interviewer critique: ${t.ai_critique ?? "(none)"}`,
+        `--- Turn ${t.turn_number} · ${stepLabel} · interviewer responseType=${t.response_type ?? "unknown"} ---`,
+        `Candidate: ${t.candidate_response}`,
+        `Interviewer internal note: ${t.ai_critique ?? "(none)"}`,
         `Passed: ${t.passed ?? "unknown"}`,
       ].join("\n");
     })
     .join("\n\n");
 
-  // Build redirect log from interviewer critiques (nudges are embedded in
-  // the per-turn AI critiques stored in practice_turns)
-  const redirectLog = turns
-    .filter((t) => t.ai_critique && !t.passed)
-    .map((t) => `Turn ${t.turn_number} (step ${t.step_id}): ${t.ai_critique}`)
-    .join("\n");
-
   const systemPrompt = buildCoachPrompt(
     practiceCase,
     transcript,
-    redirectLog
+    mustSurfaceVerdict,
+    redirectsGiven,
+    curveballCount,
+    maxCurveballs
   );
 
-  // Stream the critique using the Anthropic SDK
-  const anthropic = new Anthropic();
+  // Structured critique persisted alongside the free-text final_critique.
+  // Report/slides generation in phase 2 consumes this jsonb rather than
+  // re-parsing prose — same anti-fabrication discipline.
+  const structuredCritique = {
+    schema_version: 1,
+    completion_status: completionStatus,
+    highest_passed_step: highestPassedStep,
+    total_steps: totalSteps,
+    must_surface: mustSurfaceVerdict,
+    redirects_given: redirectsGiven,
+    curveballs: { used: curveballCount, cap: maxCurveballs },
+    turn_count: turns.length,
+  };
 
-  // Sentinel the client detects to switch into an error-with-retry state.
-  // Chosen to be unambiguous and unlikely to appear in real critique text.
+  const anthropic = new Anthropic();
   const CRITIQUE_ERROR_SENTINEL = "\n\n[[CRITIQUE_ERROR]]\n";
 
   const textStream = new ReadableStream<string>({
@@ -203,8 +269,6 @@ export async function POST(request: NextRequest) {
 
         await stream.finalMessage();
 
-        // Model returned an empty response — safety refusal, silent
-        // truncation, or upstream oddity. Treat the same as a thrown error.
         if (fullText.trim() === "") {
           generationFailed = true;
           console.error("end route: critique stream produced empty text");
@@ -217,24 +281,37 @@ export async function POST(request: NextRequest) {
       if (generationFailed) {
         controller.enqueue(CRITIQUE_ERROR_SENTINEL);
         controller.close();
-        // final_critique stays NULL so a retry regenerates cleanly.
         return;
       }
 
-      // Persist the critique BEFORE closing the stream. Closing first can
-      // let the request context tear down while the DB call is in flight,
-      // which is how sessions ended up with status='completed' but the
-      // other three completion fields NULL.
       try {
-        const { error: updateError } = await supabase
+        const updatePayload: Record<string, unknown> = {
+          status: "completed",
+          final_critique: fullText,
+          completion_status: completionStatus,
+          ended_at: new Date().toISOString(),
+          critique: structuredCritique,
+        };
+        let { error: updateError } = await supabase
           .from("practice_sessions")
-          .update({
-            status: "completed",
-            final_critique: fullText,
-            completion_status: completionStatus,
-            ended_at: new Date().toISOString(),
-          })
+          .update(updatePayload)
           .eq("id", sessionId);
+
+        // Pre-migration fallback: if the critique jsonb column doesn't
+        // exist yet, retry without it so the free-text critique still
+        // lands and the session closes cleanly.
+        if (updateError?.code === "PGRST204") {
+          console.warn(
+            "end route: critique column missing — apply scripts/sql/2026-07-23_practice_sessions_grading_state.sql."
+          );
+          delete updatePayload.critique;
+          const retry = await supabase
+            .from("practice_sessions")
+            .update(updatePayload)
+            .eq("id", sessionId);
+          updateError = retry.error;
+        }
+
         if (updateError) {
           console.error("end route: completion update failed:", updateError);
           controller.enqueue(CRITIQUE_ERROR_SENTINEL);
@@ -254,12 +331,17 @@ export async function POST(request: NextRequest) {
 function buildCoachPrompt(
   practiceCase: (typeof cases.cases)[number],
   fullTranscript: string,
-  redirectLog: string
+  mustSurfaceVerdict: {
+    pointId: string;
+    point: string;
+    status: "unaddressed" | "caught_independently" | "caught_after_nudge";
+    turnNumber?: number;
+    priorNudgeTurn?: number;
+  }[],
+  redirectsGiven: RedirectEntry[],
+  curveballCount: number,
+  maxCurveballs: number
 ): string {
-  const mustSurfaceFormatted = practiceCase.rubric.must_surface
-    .map((item: string, i: number) => `${i + 1}. ${item}`)
-    .join("\n");
-
   const alternates =
     practiceCase.rubric.framework_acceptable_alternates.length > 0
       ? practiceCase.rubric.framework_acceptable_alternates.join(", ")
@@ -280,59 +362,76 @@ function buildCoachPrompt(
     ? `\n### Canonical case facts (authoritative reference for grading)\n\nUse these when quantifying what the candidate got right or wrong. Do NOT invent alternative figures.\n\n${Object.entries(caseFacts).map(([key, value]) => `- ${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`).join("\n")}\n`
     : "";
 
+  const mustSurfaceStructuredBlock = mustSurfaceVerdict
+    .map((item) => {
+      if (item.status === "caught_independently") {
+        return `- ${item.pointId} · CAUGHT INDEPENDENTLY on turn ${item.turnNumber} · ${item.point}`;
+      }
+      if (item.status === "caught_after_nudge") {
+        return `- ${item.pointId} · CAUGHT AFTER NUDGE (nudged turn ${item.priorNudgeTurn}, caught turn ${item.turnNumber}) · ${item.point}`;
+      }
+      return `- ${item.pointId} · MISSED (never addressed) · ${item.point}`;
+    })
+    .join("\n");
+
+  const redirectLogBlock = redirectsGiven.length
+    ? redirectsGiven
+        .map(
+          (r) =>
+            `- turn ${r.turnNumber} → nudged candidate toward ${r.targetPointId}`
+        )
+        .join("\n")
+    : "(no nudges were delivered this session)";
+
   return `SYSTEM PROMPT: Coach Persona
 
 You are now switching out of the Interviewer role and into a Coach role. Break character completely. You are no longer roleplaying an interviewer withholding judgment. You are now a direct, specific, evidence-based case coach reviewing a finished interview transcript. Your job is to grade the candidate's performance against this case's rubric and deliver a structured, honest critique.
 
 ${styleContext}
 
+### VERIFIED GRADING STATE (source of truth — do NOT contradict, do NOT invent alternative facts)
+
+The system tracked, turn by turn, which must_surface points were caught and when, and which nudges the interviewer delivered. THIS is your ground truth for grading. Do NOT re-derive tier classification from the transcript; use the state below directly. Do NOT cite turn numbers or nudges that are not listed here — if you can't point to a specific line in this state, don't claim it happened.
+
+Must-surface verdict (per-point tier):
+${mustSurfaceStructuredBlock}
+
+Redirect / nudge log:
+${redirectLogBlock}
+
+Curveballs used: ${curveballCount} of ${maxCurveballs} allowed.
+
 ### The case rubric
 
 Correct framework: ${practiceCase.rubric.correct_framework}. Acceptable alternates: ${alternates}.
 ${practiceCase.rubric.framework_notes ? `Framework notes: ${practiceCase.rubric.framework_notes}` : ""}
-
-Must-surface points (the specific things a strong candidate should have identified or done):
-${mustSurfaceFormatted}
 
 The trap: ${practiceCase.rubric.trap}
 
 Good recommendation shape: ${practiceCase.rubric.good_recommendation_shape}
 ${caseFactsBlock}
 
-### The full transcript to grade
+### The full transcript (context, NOT the source of truth for tier classification)
+
+Use the transcript to quote specific candidate wording and add color to your critique. But when you claim a point was "caught independently," "caught after a nudge," or "missed," that claim must match the VERIFIED GRADING STATE above. If the state says a point was missed, do not soften it by saying the candidate "eventually got there"; if the state says a point was caught after a nudge, name the nudge explicitly using the turn number from the redirect log.
 
 ${fullTranscript}
 
-### Severity-tagged grading (read this carefully before grading must_surface)
-
-For each item in must_surface, classify the candidate's performance into exactly one of three tiers, and say which tier applies explicitly in your critique rather than just listing it as surfaced or not:
-
-Caught independently: the candidate asked the precise question or made the connection without needing any redirect from the interviewer. This is full credit and should be named as a strength.
-
-Caught after a nudge: check the redirect log and the transcript itself: if the interviewer had to redirect the candidate back toward this point (e.g., referencing something in the brief they'd walked past), and the candidate then got there, this is partial credit. Name it explicitly as "surfaced, but only after a nudge." Do not describe it with the same language you'd use for an independent catch, since in a real interview there is no nudge and the candidate would not have gotten the credit at all. Be specific about what the nudge was and what a stronger run would have looked like without it.
-
-Redirect log:
-${redirectLog || "(no redirects recorded; all interviewer feedback was on passed steps)"}
-
-Missed entirely: the candidate never asked the question or made the connection, even after any redirect that was offered. This is a real gap and should be named plainly, not softened.
-
-Do this tier classification for every item in must_surface, not just the ones that went well. The point of this system is to give the user an honest signal about what they'd need to do differently with no safety net, not to inflate the score because the conversation eventually arrived somewhere reasonable.
-
 ### Structure your critique in exactly these three sections
 
-Strengths: what the candidate did well, specifically. Reference actual moments in the transcript (e.g., "when you asked for the cost breakdown by category upfront rather than guessing one line at a time") rather than generic praise like "good structure." Only claim something as a strength if it was caught independently or represents genuinely strong reasoning. Don't pad this section with nudged catches.
+Strengths: what the candidate did well, specifically. Reference actual moments in the transcript (e.g., "when you asked for the cost breakdown by category upfront rather than guessing one line at a time") rather than generic praise like "good structure." Only claim something as a strength if the verified state marks it as caught_independently, or if it represents genuinely strong reasoning visible in the transcript. Do NOT pad this section with nudged catches.
 
-Gaps: must_surface points that were missed entirely, or caught only after a nudge (explicitly labeled as such per the tier system above). Also note here if the candidate fell for the trap as described, and whether their final recommendation matched good_recommendation_shape or fell short of it (e.g., vague lever, missing quantification, addressing only one driver when two were required).
+Gaps: must_surface points that are MISSED or CAUGHT_AFTER_NUDGE per the verified state. For nudged catches, name the nudge explicitly with its turn number from the redirect log ("on turn 4 I had to steer you back toward the loyalty program before you engaged with it"). Also note here if the candidate fell for the trap as described, and whether their final recommendation matched good_recommendation_shape or fell short of it — specifically flag any missing quantification (no numbers cited) or missing next-step / owner, since these are the two most common synthesis misses.
 
 What a real interviewer would push on: 1-2 specific follow-up angles a tougher interviewer might have pressed harder on, especially around anything that was nudged rather than caught independently, or around the weakest part of the recommendation. Frame this as "if you'd been in front of a slightly tougher interviewer, here's where you'd have been pushed" rather than as a continuation of the case itself.
 
 ### Tone
 
-Be direct and specific, not harsh and not falsely encouraging. The goal is a coach who respects the candidate enough to tell them exactly what would and wouldn't have worked in a real interview, not a coach trying to make them feel good about a so-so performance. Quantify wherever the rubric gives you something quantifiable to reference (e.g., if the case has a relative-weighting requirement and the candidate got it roughly right or badly wrong, say so specifically).
+Be direct and specific, not harsh and not falsely encouraging. The goal is a coach who respects the candidate enough to tell them exactly what would and wouldn't have worked in a real interview, not a coach trying to make them feel good about a so-so performance. Quantify wherever the rubric gives you something quantifiable to reference.
 
 ### After the critique
 
-Once you've delivered the three-section critique, you remain in Coach persona for any follow-up questions the candidate asks about this specific case. Stay grounded in the case brief, the full transcript, and the critique you just gave. Do not lose track of case specifics across follow-up turns, since this is a stateless API and you need the full case context passed in every time, not just the latest question.
+Once you've delivered the three-section critique, you remain in Coach persona for any follow-up questions the candidate asks about this specific case. Stay grounded in the case brief, the verified grading state, the full transcript, and the critique you just gave.
 
 Case brief: ${practiceCase.brief}`;
 }

@@ -86,7 +86,18 @@
       "Bash(curl -s http://localhost:3000/playbook)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} \" http://localhost:3000/playbook/how-to-open-a-case)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} \" http://localhost:3000/playbook/doing-the-math)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/dashboard)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/dashboard)",
+      "Bash(xargs -I {} sh -c 'echo \"URL: {}\"; host $\\(echo \"{}\" | sed -e \"s|https\\\\?://||\" -e \"s|/.*||\"\\) 2>&1 | head -5')",
+      "Bash(xargs -I {} sh -c 'echo \"URL: {}\"; host $\\(echo \"{}\" | sed -e \"s|https\\\\?://||\" -e \"s|/.*||\"\\) 2>&1 | head -3')",
+      "Bash(node /private/tmp/claude-502/-Users-jaasumsuri-casekit/9f9149f0-a3c2-4dbb-9d2c-b4e0a04c7293/scratchpad/query-meridian.mjs)",
+      "Bash(cp /private/tmp/claude-502/-Users-jaasumsuri-casekit/9f9149f0-a3c2-4dbb-9d2c-b4e0a04c7293/scratchpad/query-meridian.mjs /tmp/query-meridian.mjs)",
+      "Bash(node /tmp/query-meridian.mjs)",
+      "Bash(node scripts/query-meridian.mjs)",
+      "Bash(node scripts/query-turn-4.mjs)",
+      "Bash(node -e \"const c = require\\('/Users/jaasumsuri/casekit/data/practice-cases.json'\\); const m = c.cases.find\\(x=>x.slug==='meridian-diagnostics-profitability-medium'\\); console.log\\(JSON.stringify\\(m, null, 2\\)\\)\")",
+      "Bash(node scripts/repro-turn-4.mjs)",
+      "Bash(node scripts/verify-parser.mjs)",
+      "Bash(node -e \"const c = require\\('/Users/jaasumsuri/casekit/data/practice-cases.json'\\); console.log\\('total cases:', c.cases.length\\); console.log\\('case keys:', Object.keys\\(c.cases[0]\\)\\); console.log\\('rubric keys:', Object.keys\\(c.cases[0].rubric\\)\\);\")"
     ]
   }
 }

@@ -17,6 +17,28 @@ function getSupabase() {
 // the session completion_status='abandoned' rather than 'completed'.
 const SESSION_TURN_CAP = 20;
 
+// Stable identifier for each must_surface rubric point. Derived from array
+// index so the JSON stays a flat list of strings; the id is what the model
+// echoes back when it reports which point a turn addressed.
+function mustSurfacePointId(index: number): string {
+  return `msp_${index}`;
+}
+
+const RESPONSE_TYPES = ["core", "follow_up", "curveball", "nudge"] as const;
+type ResponseType = (typeof RESPONSE_TYPES)[number];
+
+interface MustSurfaceEntry {
+  status: "unaddressed" | "caught_independently" | "caught_after_nudge";
+  turnNumber?: number;
+  priorNudgeTurn?: number;
+}
+type MustSurfaceState = Record<string, MustSurfaceEntry>;
+
+interface RedirectEntry {
+  turnNumber: number;
+  targetPointId: string;
+}
+
 interface TurnRequest {
   sessionId: string;
   stepId: string;
@@ -32,6 +54,9 @@ interface AITurnResult {
     hint?: string;
   };
   finalRecommendationDelivered: boolean;
+  interviewerResponseType: ResponseType;
+  mustSurfaceAddressed: string[];
+  nudgeTargetPointId: string | null;
 }
 
 // Forced tool_use guarantees the reply shape at the API level: the model
@@ -48,7 +73,7 @@ const INTERVIEWER_TOOL = {
       interviewerMessage: {
         type: "string",
         description:
-          "Your in-character reply to the candidate — the ONLY text the candidate will see. Natural dialogue, first person, addressed to them. 1-3 sentences typical, 4 max.",
+          "Your in-character reply to the candidate — the ONLY text the candidate will see. Natural dialogue, first person, addressed to them. 1-3 sentences typical, 4 max. Must be non-empty.",
       },
       critique: {
         type: "string",
@@ -64,13 +89,36 @@ const INTERVIEWER_TOOL = {
         type: "string",
         description: "Optional internal note if failed; omit if passed.",
       },
+      responseType: {
+        type: "string",
+        enum: [...RESPONSE_TYPES],
+        description:
+          "Classify your own reply honestly: 'core' = you asked/answered on the current step's core trigger; 'follow_up' = you pushed on their prior answer without introducing new material; 'curveball' = you introduced a new twist, complication, or piece of new information not directly tied to the current step trigger; 'nudge' = you explicitly redirected the candidate back toward a must_surface point they walked past. Do not classify a normal in-step reply as a curveball just because you added color — curveball means you actively introduced a new complication.",
+      },
+      mustSurfaceAddressed: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "IDs of any must_surface points that the candidate's response addressed on THIS turn (see the numbered must_surface list in the prompt; ids look like 'msp_0', 'msp_1'). Empty array if none. Only include a point if the candidate genuinely raised or engaged with the substance of that point in this turn — do NOT include points that were addressed on earlier turns.",
+      },
+      nudgeTargetPointId: {
+        type: "string",
+        description:
+          "REQUIRED when responseType='nudge'. The must_surface point ID that your nudge is steering the candidate toward (e.g., 'msp_2'). Omit when responseType is not 'nudge'.",
+      },
       finalRecommendationDelivered: {
         type: "boolean",
         description:
-          "Set to true ONLY when the candidate has delivered a complete final recommendation covering the case — a specific diagnosis, a specific lever, and acknowledgment of tradeoffs where the case rubric calls for them. Setting this true ends the interview and transitions to the coach critique, regardless of which step you're on. Do NOT set true just because they've done good analysis or asked good questions — only when they've actually delivered a recommendation.",
+          "Set to true ONLY when the candidate has delivered a COMPLETE final recommendation with all four synthesis elements per the Interview Playbook: (1) a direct answer / diagnosis, (2) 2-3 quantified evidence points — MUST include at least one specific number, (3) an explicit risk or condition acknowledged, and (4) a concrete next step (not just 'do X' but a specific action with a timeframe or owner). Setting this true ends the interview. Do NOT set true for a partial recommendation — if any of the four pieces is missing (e.g., no number in the evidence, or no concrete next step), keep this false and push the candidate on the missing piece in your interviewerMessage.",
       },
     },
-    required: ["interviewerMessage", "critique", "passed"],
+    required: [
+      "interviewerMessage",
+      "critique",
+      "passed",
+      "responseType",
+      "mustSurfaceAddressed",
+    ],
   },
 };
 
@@ -88,18 +136,40 @@ export async function POST(request: NextRequest) {
 
   const supabase = getSupabase();
 
-  let session: { id: string; case_slug: string; status: string };
+  let session: {
+    id: string;
+    case_slug: string;
+    status: string;
+    must_surface_state: MustSurfaceState | null;
+    redirects_given: RedirectEntry[] | null;
+  };
   try {
+    // .select("*") tolerates pre-migration schemas where must_surface_state
+    // / redirects_given don't exist yet — Supabase returns whatever columns
+    // are present and we treat missing ones as null.
     const { data, error } = await supabase
       .from("practice_sessions")
-      .select("id, case_slug, status")
+      .select("*")
       .eq("id", sessionId)
       .single();
 
     if (error || !data) {
       return Response.json({ error: "session_not_found" }, { status: 404 });
     }
-    session = data;
+    const raw = data as {
+      id: string;
+      case_slug: string;
+      status: string;
+      must_surface_state?: MustSurfaceState | null;
+      redirects_given?: RedirectEntry[] | null;
+    };
+    session = {
+      id: raw.id,
+      case_slug: raw.case_slug,
+      status: raw.status,
+      must_surface_state: raw.must_surface_state ?? null,
+      redirects_given: raw.redirects_given ?? null,
+    };
   } catch {
     return Response.json(
       { error: "Failed to load session" },
@@ -132,11 +202,21 @@ export async function POST(request: NextRequest) {
   const currentStep = steps[stepIndex];
 
   let turnNumber: number;
-  let priorTurns: { turn_number: number; step_id: string; candidate_response: string; ai_critique: string | null; passed: boolean | null }[] = [];
+  let priorTurns: {
+    turn_number: number;
+    step_id: string;
+    candidate_response: string;
+    ai_critique: string | null;
+    passed: boolean | null;
+    response_type: string | null;
+  }[] = [];
   try {
     const { data: turnData, count, error } = await supabase
       .from("practice_turns")
-      .select("turn_number, step_id, candidate_response, ai_critique, passed", { count: "exact" })
+      .select(
+        "turn_number, step_id, candidate_response, ai_critique, passed, response_type",
+        { count: "exact" }
+      )
       .eq("session_id", sessionId)
       .order("turn_number", { ascending: true });
 
@@ -155,12 +235,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Curveball count is derived from persisted response_type rather than
+  // maintained inline — if a turn insert fails or a session resumes across
+  // restarts, the DB is still the source of truth.
+  const priorCurveballCount = priorTurns.filter(
+    (t) => t.response_type === "curveball"
+  ).length;
+  const maxCurveballs =
+    (practiceCase.rubric as { max_curveballs?: number }).max_curveballs ?? 3;
+
   // Dedupe guard: if a turn with this (session_id, turn_number) already exists
   // (double-fire, retry after network hiccup), don't insert again — return
   // the stored interviewer_message instead of re-running the model.
-  // Uses .select("*") so the query works both pre- and post- the
-  // interviewer_message column migration (the field is missing entirely if
-  // the migration hasn't run, and .select("*") tolerates that).
   try {
     const { data: existingTurnRaw } = await supabase
       .from("practice_turns")
@@ -185,10 +271,6 @@ export async function POST(request: NextRequest) {
       const nextStepId =
         nextIndex < steps.length ? String(nextIndex) : String(stepIndex);
       return Response.json({
-        // Prior code returned ai_critique here — that's the internal grading
-        // note, not the interviewer's visible reply. Fixed: return the
-        // stored interviewer_message. Pre-migration turns have NULL, so
-        // fall back to a neutral prompt.
         interviewerMessage:
           existingTurn.interviewer_message ??
           "Could you walk me through your thinking on that again?",
@@ -201,7 +283,18 @@ export async function POST(request: NextRequest) {
     // non-fatal; fall through
   }
 
-  const systemPrompt = buildSystemPrompt(practiceCase, currentStep, stepIndex, steps, responseType, priorTurns);
+  const systemPrompt = buildSystemPrompt(
+    practiceCase,
+    currentStep,
+    stepIndex,
+    steps,
+    responseType,
+    priorTurns,
+    priorCurveballCount,
+    maxCurveballs,
+    session.must_surface_state ?? {},
+    session.redirects_given ?? []
+  );
 
   let aiResult: AITurnResult;
   let stopReason: string | null = null;
@@ -238,15 +331,50 @@ export async function POST(request: NextRequest) {
       critique?: unknown;
       passed?: unknown;
       hint?: unknown;
+      responseType?: unknown;
+      mustSurfaceAddressed?: unknown;
+      nudgeTargetPointId?: unknown;
       finalRecommendationDelivered?: unknown;
     };
 
     if (
       typeof input.interviewerMessage !== "string" ||
+      input.interviewerMessage.trim().length === 0 ||
       typeof input.critique !== "string" ||
       typeof input.passed !== "boolean"
     ) {
+      // Empty-string interviewerMessage was the "blank textbox" bug: the
+      // shape check passed on typeof but the candidate saw no text. Fold
+      // it into the same fallback path as a malformed response.
       throw new Error("tool_use input failed shape check");
+    }
+
+    const rawResponseType =
+      typeof input.responseType === "string" ? input.responseType : "core";
+    const interviewerResponseType: ResponseType = (
+      RESPONSE_TYPES as readonly string[]
+    ).includes(rawResponseType)
+      ? (rawResponseType as ResponseType)
+      : "core";
+
+    const rawAddressed = Array.isArray(input.mustSurfaceAddressed)
+      ? input.mustSurfaceAddressed
+      : [];
+    const validPointIds = new Set(
+      practiceCase.rubric.must_surface.map((_: string, i: number) =>
+        mustSurfacePointId(i)
+      )
+    );
+    const mustSurfaceAddressed = rawAddressed
+      .filter((id): id is string => typeof id === "string")
+      .filter((id) => validPointIds.has(id));
+
+    let nudgeTargetPointId: string | null =
+      typeof input.nudgeTargetPointId === "string"
+        ? input.nudgeTargetPointId
+        : null;
+    if (nudgeTargetPointId && !validPointIds.has(nudgeTargetPointId)) {
+      nudgeTargetPointId = null;
     }
 
     aiResult = {
@@ -258,6 +386,9 @@ export async function POST(request: NextRequest) {
       },
       finalRecommendationDelivered:
         input.finalRecommendationDelivered === true,
+      interviewerResponseType,
+      mustSurfaceAddressed,
+      nudgeTargetPointId,
     };
   } catch (err) {
     console.error("turn route: AI response fallback triggered", {
@@ -274,7 +405,52 @@ export async function POST(request: NextRequest) {
         hint: "Retry — this is a system fallback, not a real interviewer reply.",
       },
       finalRecommendationDelivered: false,
+      interviewerResponseType: "follow_up",
+      mustSurfaceAddressed: [],
+      nudgeTargetPointId: null,
     };
+  }
+
+  // Update the tracked grading state BEFORE inserting the turn. A point
+  // counts as caught_after_nudge only if a prior nudge on this session
+  // targeted it; otherwise caught_independently. Nudges are appended to
+  // redirects_given so /end and future turns share one source of truth.
+  const priorMustSurfaceState: MustSurfaceState =
+    session.must_surface_state ?? {};
+  const priorRedirects: RedirectEntry[] = session.redirects_given ?? [];
+
+  const nextMustSurfaceState: MustSurfaceState = { ...priorMustSurfaceState };
+  for (const pointId of aiResult.mustSurfaceAddressed) {
+    const existing = nextMustSurfaceState[pointId];
+    // Once a point is marked caught (either tier), don't downgrade or
+    // overwrite — the first turn it was addressed on is the one that
+    // matters for grading.
+    if (
+      existing &&
+      (existing.status === "caught_independently" ||
+        existing.status === "caught_after_nudge")
+    ) {
+      continue;
+    }
+    const priorNudge = priorRedirects.find((r) => r.targetPointId === pointId);
+    nextMustSurfaceState[pointId] = priorNudge
+      ? {
+          status: "caught_after_nudge",
+          turnNumber,
+          priorNudgeTurn: priorNudge.turnNumber,
+        }
+      : { status: "caught_independently", turnNumber };
+  }
+
+  const nextRedirects: RedirectEntry[] = [...priorRedirects];
+  if (
+    aiResult.interviewerResponseType === "nudge" &&
+    aiResult.nudgeTargetPointId
+  ) {
+    nextRedirects.push({
+      turnNumber,
+      targetPointId: aiResult.nudgeTargetPointId,
+    });
   }
 
   try {
@@ -283,7 +459,7 @@ export async function POST(request: NextRequest) {
       turn_number: turnNumber,
       step_id: stepId,
       candidate_response: candidateResponse,
-      response_type: responseType,
+      response_type: aiResult.interviewerResponseType,
       ai_critique: aiResult.internalGrade.critique,
       passed: aiResult.internalGrade.passed,
     };
@@ -296,8 +472,7 @@ export async function POST(request: NextRequest) {
 
     // Pre-migration fallback: if the interviewer_message column hasn't been
     // added yet (PGRST204 from PostgREST's schema cache), retry the insert
-    // without it so /turn keeps working. Log a loud warning so this doesn't
-    // get missed. Once the migration lands, this branch stops firing.
+    // without it so /turn keeps working.
     if (insertError?.code === "PGRST204") {
       console.warn(
         "turn route: interviewer_message column missing — resume will show placeholders for these turns. Apply scripts/sql/2026-07-21_practice_turns_interviewer_message.sql."
@@ -307,10 +482,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (insertError) {
-      // Postgres unique-violation from the (session_id, turn_number) constraint:
-      // a concurrent request beat us to it. Treat as a duplicate submit — return
-      // success with our freshly-generated interviewer reply so the client doesn't
-      // see an error, and the stored (winning) row remains authoritative.
+      // Postgres unique-violation from the (session_id, turn_number)
+      // constraint: concurrent request beat us to it.
       if (insertError.code === "23505") {
         return Response.json({
           interviewerMessage: aiResult.interviewerMessage,
@@ -332,10 +505,31 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Persist grading-state deltas. Pre-migration this errors with PGRST204;
+  // swallow that so the rest of the flow (which doesn't need these columns
+  // to function) keeps working — /end tolerates missing state.
+  try {
+    const { error: stateError } = await supabase
+      .from("practice_sessions")
+      .update({
+        must_surface_state: nextMustSurfaceState,
+        redirects_given: nextRedirects,
+      })
+      .eq("id", sessionId);
+    if (stateError && stateError.code !== "PGRST204") {
+      console.error("turn route: grading state update failed:", stateError);
+    } else if (stateError?.code === "PGRST204") {
+      console.warn(
+        "turn route: must_surface_state/redirects_given columns missing — apply scripts/sql/2026-07-23_practice_sessions_grading_state.sql."
+      );
+    }
+  } catch (err) {
+    console.error("turn route: grading state update threw:", err);
+  }
+
   // Determine advancement + whether the session is complete. Three ways to end:
   //   1. Last step passed (candidate hit every step trigger)
-  //   2. Model marked finalRecommendationDelivered=true (candidate delivered
-  //      a recommendation regardless of which step's trigger they hit)
+  //   2. Model marked finalRecommendationDelivered=true
   //   3. Turn cap reached (safety net for stuck sessions)
   const passedLastStep =
     aiResult.internalGrade.passed && stepIndex === steps.length - 1;
@@ -353,10 +547,6 @@ export async function POST(request: NextRequest) {
   }
 
   if (sessionComplete) {
-    // Set every completion field together so the row is never internally
-    // inconsistent — if the client fails to POST /end, the row still has
-    // completion_status + ended_at + status matching. final_critique stays
-    // NULL until /end fills it in.
     const completionStatus =
       turnCapReached && !passedLastStep && !finalRecommendationDelivered
         ? "abandoned"
@@ -401,7 +591,18 @@ function buildSystemPrompt(
   stepIndex: number,
   allSteps: { trigger: string; reveal: string }[],
   responseType: string,
-  priorTurns: { turn_number: number; step_id: string; candidate_response: string; ai_critique: string | null; passed: boolean | null }[]
+  priorTurns: {
+    turn_number: number;
+    step_id: string;
+    candidate_response: string;
+    ai_critique: string | null;
+    passed: boolean | null;
+    response_type: string | null;
+  }[],
+  priorCurveballCount: number,
+  maxCurveballs: number,
+  mustSurfaceState: MustSurfaceState,
+  redirectsGiven: RedirectEntry[]
 ): string {
   const totalSteps = allSteps.length;
   const isLastStep = stepIndex === totalSteps - 1;
@@ -430,6 +631,31 @@ function buildSystemPrompt(
   }).join("\n");
 
   const caseFacts = (practiceCase.rubric as { case_facts?: Record<string, unknown> }).case_facts;
+
+  const mustSurfaceList = practiceCase.rubric.must_surface as string[];
+  const mustSurfaceFormatted = mustSurfaceList
+    .map((point, i) => `- ${mustSurfacePointId(i)}: ${point}`)
+    .join("\n");
+
+  const mustSurfaceStatusLines = mustSurfaceList
+    .map((_, i) => {
+      const id = mustSurfacePointId(i);
+      const entry = mustSurfaceState[id];
+      if (!entry || entry.status === "unaddressed") {
+        return `- ${id}: not yet addressed`;
+      }
+      if (entry.status === "caught_independently") {
+        return `- ${id}: caught independently on turn ${entry.turnNumber}`;
+      }
+      return `- ${id}: caught after nudge (nudged on turn ${entry.priorNudgeTurn}, caught on turn ${entry.turnNumber})`;
+    })
+    .join("\n");
+
+  const redirectsGivenLine = redirectsGiven.length
+    ? redirectsGiven
+        .map((r) => `- turn ${r.turnNumber} → nudged toward ${r.targetPointId}`)
+        .join("\n")
+    : "(none so far)";
 
   const base = [
     `You are the client stakeholder in this case, the person who hired the consultant. You are NOT a coach, teacher, or case interviewer who evaluates technique. You are a business person having a real conversation about your company's problem. You have opinions, data, and mild skepticism. You react to the content of what the consultant says, never to their process or methodology.`,
@@ -501,7 +727,30 @@ function buildSystemPrompt(
     "",
     "If the candidate is falling for the trap, do NOT warn them or point it out. Instead, reinforce the misleading framing naturally, because a real stakeholder would. For example, if the trap is that the client dismisses something as irrelevant, double down on that dismissal in character ('Yeah, I really don't think the loyalty program is the issue here'). Let the candidate either see through it or not. This is how real interviews work: the interviewer doesn't rescue you from traps.",
     "",
-    `Must-surface insights: ${practiceCase.rubric.must_surface.join("; ")}`,
+    "### Must-surface points",
+    "",
+    "These are the specific things a strong candidate should raise. Each has a stable id — use these ids when reporting mustSurfaceAddressed or nudgeTargetPointId on your tool call:",
+    "",
+    mustSurfaceFormatted,
+    "",
+    "Current tracking state (updated by the system, ground truth for grading):",
+    "",
+    mustSurfaceStatusLines,
+    "",
+    "Nudges you have already delivered this session:",
+    "",
+    redirectsGivenLine,
+    "",
+    "### Curveballs — hard cap",
+    "",
+    `You have introduced ${priorCurveballCount} of ${maxCurveballs} allowed curveballs so far in this session. A "curveball" means you actively introduced a new twist, complication, or piece of new information that isn't required by the current step's trigger. Normal in-step data reveals, clarifying questions, and follow-ups on the candidate's prior answer are NOT curveballs — do not overclassify.`,
+    priorCurveballCount >= maxCurveballs
+      ? "You are AT the curveball cap. Do NOT introduce any new curveballs or complications this turn. Push the candidate toward synthesis and their final recommendation. If you would have thrown a curveball, ask a synthesis question instead."
+      : `You have ${maxCurveballs - priorCurveballCount} curveball(s) remaining. Use them sparingly.`,
+    "",
+    "### Nudging (redirect once, not twice)",
+    "",
+    "If the candidate is walking past an important must-surface point that they need to raise for the case to progress, you may nudge them ONCE toward it — a light reference to something in the brief they didn't pick up on. Do not nudge the same point twice; if the earlier nudge didn't land, let them miss it. When you nudge, set responseType='nudge' and nudgeTargetPointId to the point id you're steering toward.",
     "",
   );
 
@@ -513,7 +762,14 @@ function buildSystemPrompt(
       "",
       "If the candidate is nearing their final recommendation or delivering one, react to its content as a stakeholder would: ask follow-up questions about specifics, express skepticism about parts that are vague, or ask 'what would that actually cost us' / 'how long would that take.' Do NOT grade or evaluate the recommendation quality out loud.",
       "",
-      "When the candidate has delivered a COMPLETE final recommendation — meaning they've covered the diagnosis, named a specific lever, and addressed the tradeoffs the case rubric calls for (see good_recommendation_shape above) — set finalRecommendationDelivered: true on your reply. This ends the interview and transitions to the coach critique. Do NOT set it true just because they've asked good questions or done thorough analysis, only when they've actually delivered the recommendation. If they've delivered a partial recommendation (e.g., a diagnosis without a lever, or a lever without acknowledging tradeoffs), keep finalRecommendationDelivered: false and push them on the missing piece in your interviewerMessage.",
+      "A COMPLETE final recommendation, per the Interview Playbook's synthesis module, must contain ALL FOUR of these parts:",
+      "",
+      "1. A direct answer / diagnosis (what's going on).",
+      "2. 2-3 quantified evidence points — MUST include at least one specific number (%, dollar figure, ratio, count). Qualitative reasoning alone is not enough.",
+      "3. An explicit risk or condition acknowledged (what could go wrong, what this depends on).",
+      "4. A concrete next step — a specific action with a timeframe or owner, not just 'consider X' or 'evaluate Y'.",
+      "",
+      "Only set finalRecommendationDelivered: true when ALL FOUR parts are present. If the candidate delivers diagnosis + lever but skips quantification or the next step, keep finalRecommendationDelivered: false and push in-character on the missing piece — e.g., 'What sort of number are we talking about?' for missing quantification, 'What would you actually have me do on Monday morning?' for a missing next step. Do NOT set true just because the diagnosis and lever are correct.",
       ""
     );
   }
@@ -524,6 +780,16 @@ function buildSystemPrompt(
     "If the consultant's response triggers the data release for this step (they asked the right question or made the right connection), share the data naturally, as a stakeholder would pull up a number or recall a fact from your team. Mark passed: true.",
     "",
     "If the consultant's response does NOT trigger the data release (wrong question, too vague, or off track), respond as a skeptical stakeholder: offer a business-fact counterpoint, mention something contradictory your team found, or ask a pointed follow-up rooted in the case, never a process critique. Mark passed: false.",
+    "",
+    "### Self-classification of your reply (required)",
+    "",
+    "On every tool call, honestly classify your OWN reply via responseType:",
+    "- 'core' = you asked or answered on the current step's core trigger",
+    "- 'follow_up' = you pushed on the candidate's prior answer without introducing new material",
+    "- 'curveball' = you actively introduced a new twist, complication, or new piece of information not required by the current step",
+    "- 'nudge' = you explicitly redirected the candidate back toward a must_surface point they walked past (also fill nudgeTargetPointId)",
+    "",
+    "And list mustSurfaceAddressed with the ids of any must_surface points the candidate raised or engaged with on THIS turn (empty array if none).",
     "",
   );
 
@@ -539,7 +805,6 @@ function buildSystemPrompt(
 
   // Response shape is enforced via the submit_interviewer_response tool
   // (forced tool_choice), so no JSON schema instruction is included here.
-  // The tool's parameter descriptions carry the same guidance.
 
   return base.filter((line) => line !== undefined).join("\n");
 }
