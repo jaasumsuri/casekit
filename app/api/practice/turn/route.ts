@@ -370,12 +370,26 @@ export async function POST(request: NextRequest) {
     console.error("turn route: grading state update threw:", err);
   }
 
+  // Session termination requires BOTH sides of the gate:
+  //   (a) the candidate has passed the final data-release step, AND
+  //   (b) the recommendation checklist is complete
+  // OR the turn cap fires.
+  //
+  // The prior logic (passedLastStep || finalRecommendationDelivered ||
+  // turnCap) allowed either side to end the interview on its own, which
+  // meant a candidate could hit every data reveal and still get an
+  // auto-close with a partial recommendation, even after the checklist
+  // was tightened — because passedLastStep bypassed the checklist entirely.
+  // The case's last data-release step is not a "delivered a
+  // recommendation" step; it's just "asked the last case question."
+  // Requiring both gates aligns the auto-close with what a real
+  // interviewer would recognize as a finished interview.
   const passedLastStep =
     aiResult.internalGrade.passed && stepIndex === steps.length - 1;
-  const finalRecommendationDelivered = aiResult.finalRecommendationDelivered;
+  const recommendationComplete = aiResult.finalRecommendationDelivered;
+  const naturalCompletion = passedLastStep && recommendationComplete;
   const turnCapReached = turnNumber >= SESSION_TURN_CAP;
-  const sessionComplete =
-    passedLastStep || finalRecommendationDelivered || turnCapReached;
+  const sessionComplete = naturalCompletion || turnCapReached;
 
   let nextStepId: string | null = stepId;
   if (!sessionComplete && aiResult.internalGrade.passed) {
@@ -387,9 +401,7 @@ export async function POST(request: NextRequest) {
 
   if (sessionComplete) {
     const completionStatus =
-      turnCapReached && !passedLastStep && !finalRecommendationDelivered
-        ? "abandoned"
-        : "completed";
+      turnCapReached && !naturalCompletion ? "abandoned" : "completed";
     try {
       const { error: updateError } = await supabase
         .from("practice_sessions")
