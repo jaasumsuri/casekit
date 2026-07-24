@@ -548,3 +548,18 @@
   .iv-loading-spinner { animation: none; }
   .iv-typing span { animation: none; opacity: 0.5; }
 }
+
+/* ─── Partner follow-up (interview-questions phase) ─── */
+.iv-iq-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.iv-iq-list li {
+  color: var(--ink);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+

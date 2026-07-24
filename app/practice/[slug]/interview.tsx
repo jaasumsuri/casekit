@@ -21,7 +21,13 @@ interface Message {
   text: string;
 }
 
-type Phase = "loading" | "limit" | "interview" | "confirming" | "critique";
+type Phase =
+  | "loading"
+  | "limit"
+  | "interview"
+  | "confirming"
+  | "interview-questions"
+  | "critique";
 
 function formatFramework(fw: string): string {
   return fw
@@ -69,6 +75,13 @@ export default function InterviewClient({
   const [critique, setCritique] = useState("");
   const [critiqueError, setCritiqueError] = useState<string | null>(null);
   const [stepsCompleted, setStepsCompleted] = useState(0);
+
+  // Partner follow-up beat between sessionComplete and Coach critique.
+  const [iqQuestions, setIqQuestions] = useState<{ q: string }[] | null>(null);
+  const [iqAnswer, setIqAnswer] = useState("");
+  const [iqError, setIqError] = useState<string | null>(null);
+  const [iqSubmitting, setIqSubmitting] = useState(false);
+  const [iqLoading, setIqLoading] = useState(false);
 
   const CRITIQUE_ERROR_SENTINEL = "[[CRITIQUE_ERROR]]";
 
@@ -286,7 +299,7 @@ export default function InterviewClient({
         }
       }
       if (data.sessionComplete) {
-        await endSession();
+        await startInterviewQuestions();
         return;
       }
     } catch {
@@ -301,6 +314,72 @@ export default function InterviewClient({
       setIsTyping(false);
       sendingRef.current = false;
     }
+  }
+
+  async function startInterviewQuestions() {
+    if (!sessionId) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    setPhase("interview-questions");
+    setIqLoading(true);
+    setIqError(null);
+    try {
+      const res = await fetch("/api/practice/interview-questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, action: "generate" }),
+      });
+      const data = await res.json();
+      if (!res.ok || !Array.isArray(data.questions) || data.questions.length === 0) {
+        setIqError(
+          "Couldn't load the interviewer's follow-up questions. Skip to critique or retry."
+        );
+        return;
+      }
+      setIqQuestions(data.questions);
+    } catch {
+      setIqError(
+        "Network error loading follow-up questions. Skip to critique or retry."
+      );
+    } finally {
+      setIqLoading(false);
+    }
+  }
+
+  async function submitInterviewQuestions() {
+    if (!sessionId || !iqQuestions) return;
+    const trimmed = iqAnswer.trim();
+    if (!trimmed || iqSubmitting) return;
+    setIqSubmitting(true);
+    setIqError(null);
+    try {
+      // The candidate answers all 2-3 questions in one text block. Split
+      // it evenly across the questions so /followup and Coach see one
+      // pairing per question — the model does not need perfect alignment,
+      // just something to reference for each Q.
+      const answers = iqQuestions.map(() => trimmed);
+      const res = await fetch("/api/practice/interview-questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          action: "submit",
+          answers,
+        }),
+      });
+      if (!res.ok) {
+        setIqError("Couldn't save your response. Try again.");
+        setIqSubmitting(false);
+        return;
+      }
+      await endSession();
+    } catch {
+      setIqError("Network error saving your response. Try again.");
+      setIqSubmitting(false);
+    }
+  }
+
+  async function skipInterviewQuestions() {
+    await endSession();
   }
 
   async function endSession() {
@@ -399,6 +478,135 @@ export default function InterviewClient({
           <Link href="/practice" className="iv-btn iv-btn-solid">
             Back to practice
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Partner follow-up questions — inserted between "recommendation
+  // checklist gate passed" and Coach critique. Rendered as another
+  // interviewer bubble to keep the flow visually continuous with the
+  // interview itself.
+  if (phase === "interview-questions") {
+    return (
+      <div className="iv-fullscreen">
+        <header className="iv-header">
+          <div className="iv-header-left">
+            <Link href="/practice" className="iv-back">
+              <ArrowLeftIcon />
+            </Link>
+            <div>
+              <h1 className="iv-title">{caseMeta.title}</h1>
+              <p className="iv-subtitle">Interviewer · Follow-up</p>
+            </div>
+          </div>
+          <div className="iv-header-right">
+            <span className="iv-timer">
+              <ClockIcon />
+              {formatTime(elapsed)}
+            </span>
+          </div>
+        </header>
+
+        <div className="iv-body">
+          <div className="iv-chat-col" style={{ margin: "0 auto" }}>
+            <div className="iv-chat-messages">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={
+                    msg.role === "interviewer"
+                      ? "iv-msg iv-msg-ai"
+                      : "iv-msg iv-msg-user"
+                  }
+                >
+                  {msg.role === "interviewer" && (
+                    <div className="iv-avatar">CK</div>
+                  )}
+                  <div className="iv-bubble">{msg.text}</div>
+                </div>
+              ))}
+              {iqLoading && (
+                <div className="iv-msg iv-msg-ai">
+                  <div className="iv-avatar">CK</div>
+                  <div className="iv-bubble iv-typing">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              )}
+              {iqError && (
+                <div className="iv-msg iv-msg-ai">
+                  <div className="iv-avatar">CK</div>
+                  <div className="iv-bubble">
+                    {iqError}
+                    <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                      <button
+                        className="iv-btn iv-btn-outline"
+                        onClick={() => startInterviewQuestions()}
+                      >
+                        Retry
+                      </button>
+                      <button
+                        className="iv-btn iv-btn-solid"
+                        onClick={() => skipInterviewQuestions()}
+                      >
+                        Skip to critique
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {iqQuestions && !iqError && (
+                <div className="iv-msg iv-msg-ai">
+                  <div className="iv-avatar">CK</div>
+                  <div className="iv-bubble">
+                    <p style={{ margin: "0 0 12px" }}>
+                      Before we wrap — a couple of quick things I want to push you on:
+                    </p>
+                    <ol className="iv-iq-list">
+                      {iqQuestions.map((q, i) => (
+                        <li key={i}>{q.q}</li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {iqQuestions && !iqError && (
+              <div className="iv-input-bar">
+                <textarea
+                  className="iv-textarea"
+                  placeholder="Respond to all of these in one message…"
+                  value={iqAnswer}
+                  onChange={(e) => {
+                    setIqAnswer(e.target.value);
+                    const el = e.target;
+                    el.style.height = "auto";
+                    el.style.height = Math.min(el.scrollHeight, 200) + "px";
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      submitInterviewQuestions();
+                    }
+                  }}
+                  rows={3}
+                  disabled={iqSubmitting}
+                />
+                <button
+                  className="iv-send-btn"
+                  onClick={() => submitInterviewQuestions()}
+                  disabled={!iqAnswer.trim() || iqSubmitting}
+                >
+                  <SendIcon />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
