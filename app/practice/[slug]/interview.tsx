@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { renderInline } from "@/lib/critique";
 import "./interview.css";
+import "./reveal.css";
 
 interface CaseMeta {
   slug: string;
@@ -20,6 +21,55 @@ interface Message {
   role: "interviewer" | "candidate";
   text: string;
 }
+
+type ReportSection =
+  | { label: string; type: "exec" | "p"; body: string }
+  | { label: string; type: "ul" | "steps"; items: string[] };
+interface Report {
+  title: string;
+  meta: string;
+  sections: ReportSection[];
+}
+
+type Slide =
+  | {
+      n: number;
+      title: string;
+      so_what: string;
+      layout: "title_bullets";
+      bullets: string[];
+    }
+  | {
+      n: number;
+      title: string;
+      so_what: string;
+      layout: "two_column";
+      left: { head: string; items: string[]; cls?: string };
+      right: { head: string; items: string[]; cls?: string };
+    }
+  | {
+      n: number;
+      title: string;
+      so_what: string;
+      layout: "single_insight";
+      headline: string;
+      detail: string;
+    }
+  | {
+      n: number;
+      title: string;
+      so_what: string;
+      layout: "data_table";
+      headers: string[];
+      rows: string[][];
+    }
+  | {
+      n: number;
+      title: string;
+      so_what: string;
+      layout: "recommendation";
+      rows: { tag: string; text: string }[];
+    };
 
 type Phase =
   | "loading"
@@ -82,6 +132,14 @@ export default function InterviewClient({
   const [iqError, setIqError] = useState<string | null>(null);
   const [iqSubmitting, setIqSubmitting] = useState(false);
   const [iqLoading, setIqLoading] = useState(false);
+
+  // Reveal (report + slides) — generated on-demand after critique.
+  const [revealOpen, setRevealOpen] = useState(false);
+  const [revealTab, setRevealTab] = useState<"report" | "slides">("report");
+  const [revealLoading, setRevealLoading] = useState(false);
+  const [revealError, setRevealError] = useState<string | null>(null);
+  const [reportData, setReportData] = useState<Report | null>(null);
+  const [slidesData, setSlidesData] = useState<Slide[] | null>(null);
 
   const CRITIQUE_ERROR_SENTINEL = "[[CRITIQUE_ERROR]]";
 
@@ -434,6 +492,52 @@ export default function InterviewClient({
     }
   }
 
+  async function generateReveal() {
+    if (!sessionId || revealLoading) return;
+    setRevealLoading(true);
+    setRevealError(null);
+    setRevealOpen(true);
+    try {
+      // Fire report + slides in parallel — both routes are idempotent on
+      // the server side and neither depends on the other.
+      const [reportRes, slidesRes] = await Promise.all([
+        fetch("/api/practice/report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        }),
+        fetch("/api/practice/slides", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        }),
+      ]);
+      const reportJson = await reportRes.json();
+      const slidesJson = await slidesRes.json();
+      if (!reportRes.ok || !reportJson.report) {
+        setRevealError(
+          "Couldn't build the report. Retry — this is a system fallback, not a real failure."
+        );
+      } else {
+        setReportData(reportJson.report as Report);
+      }
+      if (!slidesRes.ok || !Array.isArray(slidesJson.slides)) {
+        // Report already surfaced its own error; append if slides also failed.
+        setRevealError((prev) =>
+          prev
+            ? `${prev} Slides also failed — retry.`
+            : "Couldn't build the slide deck. Retry."
+        );
+      } else {
+        setSlidesData(slidesJson.slides as Slide[]);
+      }
+    } catch {
+      setRevealError("Network error generating deliverables. Retry.");
+    } finally {
+      setRevealLoading(false);
+    }
+  }
+
   function handleTextareaInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setInput(e.target.value);
     const el = e.target;
@@ -697,20 +801,55 @@ export default function InterviewClient({
               </div>
             )}
             {critique && !critiqueError && (
-              <div className="iv-critique-actions">
-                {/* Plain <a> — needs a hard reload so InterviewClient
-                    re-mounts with the ?new=1 forceNew prop rather than
-                    just updating search params on the mounted component. */}
-                <a
-                  href={`/practice/${caseMeta.slug}?new=1`}
-                  className="iv-btn iv-btn-solid"
-                >
-                  Start new session
-                </a>
-                <Link href="/practice" className="iv-btn iv-btn-outline">
-                  Back to practice
-                </Link>
-              </div>
+              <>
+                {!revealOpen && (
+                  <div className="iv-reveal-cta">
+                    <div>
+                      <div className="iv-reveal-cta-text">
+                        <b>See the consultant output.</b> Turn what you did in
+                        this session into a one-page report and a 5-slide deck —
+                        grounded in your actual transcript and this case&apos;s data.
+                      </div>
+                      <div className="iv-reveal-cta-sub">
+                        On-demand. Idempotent — reloading the tab doesn&apos;t regenerate.
+                      </div>
+                    </div>
+                    <button
+                      className="iv-btn iv-btn-solid"
+                      onClick={() => generateReveal()}
+                    >
+                      Generate deliverables
+                    </button>
+                  </div>
+                )}
+
+                {revealOpen && (
+                  <RevealPanel
+                    loading={revealLoading}
+                    error={revealError}
+                    report={reportData}
+                    slides={slidesData}
+                    tab={revealTab}
+                    setTab={setRevealTab}
+                    onRetry={() => generateReveal()}
+                  />
+                )}
+
+                <div className="iv-critique-actions">
+                  {/* Plain <a> — needs a hard reload so InterviewClient
+                      re-mounts with the ?new=1 forceNew prop rather than
+                      just updating search params on the mounted component. */}
+                  <a
+                    href={`/practice/${caseMeta.slug}?new=1`}
+                    className="iv-btn iv-btn-solid"
+                  >
+                    Start new session
+                  </a>
+                  <Link href="/practice" className="iv-btn iv-btn-outline">
+                    Back to practice
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -910,5 +1049,256 @@ function SparkleIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" />
     </svg>
+  );
+}
+
+/* ─── Reveal panel: Report + Deck tabs ─── */
+
+function RevealPanel({
+  loading,
+  error,
+  report,
+  slides,
+  tab,
+  setTab,
+  onRetry,
+}: {
+  loading: boolean;
+  error: string | null;
+  report: Report | null;
+  slides: Slide[] | null;
+  tab: "report" | "slides";
+  setTab: (t: "report" | "slides") => void;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="iv-reveal-wrap">
+      <div className="iv-reveal-head">
+        <div className="rh-kick">Consultant output</div>
+        <h3>What you&apos;d ship after this session.</h3>
+        <p className="rh-sub">
+          Both are generated from your actual transcript, the case&apos;s
+          canonical facts, and the verified must-surface grading state — not a
+          template. Gaps in your work show up as gaps here, not as a polished
+          model answer.
+        </p>
+      </div>
+
+      <div className="deliver-tabs">
+        {(
+          [
+            ["report", "The report"],
+            ["slides", "The slides"],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={`dtab${tab === key ? " active" : ""}`}
+            onClick={() => setTab(key)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {loading && !report && !slides && (
+        <div className="iv-critique-streaming">
+          <div className="iv-loading-spinner" />
+          <p>Building the report and deck…</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="iv-critique-error">
+          <p>{error}</p>
+          <button className="iv-btn iv-btn-solid" onClick={onRetry}>
+            Retry
+          </button>
+        </div>
+      )}
+
+      {tab === "report" && report && <ReportPanel report={report} />}
+      {tab === "slides" && slides && slides.length > 0 && (
+        <DeckPanel slides={slides} />
+      )}
+    </div>
+  );
+}
+
+function ReportPanel({ report }: { report: Report }) {
+  return (
+    <div className="report-doc">
+      <div className="report-banner">
+        <span className="rb-title">{report.title}</span>
+        <span className="rb-meta">{report.meta}</span>
+      </div>
+      {report.sections.map((s, i) => (
+        <div
+          key={i}
+          className={`rsection${s.type === "exec" ? " exec" : ""}`}
+        >
+          <div className="rs-label">{s.label}</div>
+          {(s.type === "exec" || s.type === "p") && (
+            <p dangerouslySetInnerHTML={{ __html: s.body }} />
+          )}
+          {s.type === "ul" && (
+            <ul>
+              {s.items.map((item, j) => (
+                <li key={j} dangerouslySetInnerHTML={{ __html: item }} />
+              ))}
+            </ul>
+          )}
+          {s.type === "steps" && (
+            <ul className="steps">
+              {s.items.map((item, j) => (
+                <li key={j} dangerouslySetInnerHTML={{ __html: item }} />
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DeckPanel({ slides }: { slides: Slide[] }) {
+  const [idx, setIdx] = useState(0);
+  const safeIdx = Math.max(0, Math.min(slides.length - 1, idx));
+  const sl = slides[safeIdx];
+  const go = (i: number) =>
+    setIdx(Math.max(0, Math.min(slides.length - 1, i)));
+
+  return (
+    <div className="deck-wrap">
+      <div className="deck-stage">
+        <div className="slide-top" />
+        <div className="slide active">
+          <div className="slide-inner">
+            <div className="slide-head">
+              <div className="slide-title">{sl.title}</div>
+              <div className="slide-no">
+                {String(sl.n).padStart(2, "0")} /{" "}
+                {String(slides.length).padStart(2, "0")}
+              </div>
+            </div>
+            <div className="slide-body">
+              {sl.layout === "title_bullets" && (
+                <ul className="sl-bullets">
+                  {sl.bullets.map((b, i) => (
+                    <li key={i}>{b}</li>
+                  ))}
+                </ul>
+              )}
+              {sl.layout === "two_column" && (
+                <div className="sl-two">
+                  <div className={`sl-col ${sl.left.cls || "rev"}`}>
+                    <div className="sc-head">{sl.left.head}</div>
+                    <ul>
+                      {sl.left.items.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className={`sl-col ${sl.right.cls || "cost"}`}>
+                    <div className="sc-head">{sl.right.head}</div>
+                    <ul>
+                      {sl.right.items.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+              {sl.layout === "single_insight" && (
+                <div className="sl-insight">
+                  <div className="si-headline">{sl.headline}</div>
+                  <p className="si-detail">{sl.detail}</p>
+                </div>
+              )}
+              {sl.layout === "data_table" && (
+                <table className="wx-table exh">
+                  <thead>
+                    <tr>
+                      {sl.headers.map((h, i) => (
+                        <th
+                          key={i}
+                          style={i > 0 ? { textAlign: "right" } : undefined}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sl.rows.map((r, ri) => (
+                      <tr key={ri}>
+                        {r.map((c, ci) => (
+                          <td
+                            key={ci}
+                            style={ci > 0 ? { textAlign: "right" } : undefined}
+                          >
+                            {c}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {sl.layout === "recommendation" && (
+                <div className="sl-rec">
+                  {sl.rows.map((r, i) => (
+                    <div className="rec-row" key={i}>
+                      <span className="rec-tag">{r.tag}</span>
+                      <p dangerouslySetInnerHTML={{ __html: r.text }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="slide-so">
+            <span className="so-lbl">So what</span>
+            <p>{sl.so_what}</p>
+          </div>
+        </div>
+      </div>
+      <div className="deck-nav">
+        <div className="deck-dots">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`deck-dot${i === safeIdx ? " active" : ""}`}
+              onClick={() => go(i)}
+            />
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <span className="deck-counter">
+            <b>{safeIdx + 1}</b> / {slides.length}
+          </span>
+          <div className="deck-arrows">
+            <button
+              type="button"
+              className="deck-btn"
+              disabled={safeIdx === 0}
+              onClick={() => go(safeIdx - 1)}
+            >
+              Prev
+            </button>
+            <button
+              type="button"
+              className="deck-btn"
+              disabled={safeIdx === slides.length - 1}
+              onClick={() => go(safeIdx + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

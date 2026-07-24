@@ -1,0 +1,196 @@
+/* ============================================================
+   PRACTICE — REPORT / DECK REVEAL
+   Mirrors the guided-case (Harken/Novacast/etc.) reveal styles
+   so the AI-generated Report + Deck render identically to the
+   hand-authored ones. Kept in its own file so the interview
+   shell stays clean.
+   ============================================================ */
+
+/* ─── Generate CTA ─── */
+.iv-reveal-cta {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.iv-reveal-cta .iv-reveal-cta-text {
+  color: var(--ink);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  max-width: 54ch;
+}
+.iv-reveal-cta .iv-reveal-cta-text b { color: var(--forest); font-weight: 600; }
+.iv-reveal-cta .iv-reveal-cta-sub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+/* ─── Reveal panel wrapper ─── */
+.iv-reveal-wrap {
+  margin-top: 32px;
+}
+.iv-reveal-head {
+  position: relative; background: var(--forest); color: #fff;
+  border-radius: 20px; padding: 30px 34px; overflow: hidden; margin-bottom: 22px;
+}
+.iv-reveal-head::before {
+  content: ""; position: absolute; top: -110px; right: -80px; width: 320px; height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(196,147,58,0.42), rgba(196,147,58,0.08) 60%, transparent 70%);
+}
+.iv-reveal-head .rh-kick {
+  font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--gold);
+}
+.iv-reveal-head h3 {
+  margin-top: 10px; color: #fff; font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1.2;
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+}
+.iv-reveal-head .rh-sub {
+  margin-top: 12px; color: rgba(255,255,255,0.78);
+  font-size: 0.96rem; line-height: 1.6; max-width: 56ch;
+}
+
+/* ─── Tabs ─── */
+.deliver-tabs {
+  display: inline-flex; gap: 5px; background: var(--forest-light); padding: 5px;
+  border-radius: 999px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.dtab {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 999px; border: none; cursor: pointer;
+  font-size: 0.92rem; font-weight: 600; color: var(--forest); opacity: 0.62;
+  background: none; font-family: inherit;
+  transition: opacity 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.dtab:hover { opacity: 1; }
+.dtab.active {
+  background: var(--forest); color: #fff; opacity: 1;
+  box-shadow: 0 6px 14px -8px rgba(28,61,46,0.7);
+}
+
+/* ─── Report ─── */
+.report-doc {
+  background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+  padding: 12px 0; overflow: hidden;
+}
+.report-banner {
+  background: linear-gradient(180deg, #EEF3EE 0%, #E7EEE8 100%);
+  margin: -12px 0 0; padding: 24px 40px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.report-banner .rb-title { font-family: var(--font-display), "Instrument Serif", Georgia, serif; font-size: 1.5rem; color: var(--forest); }
+.report-banner .rb-meta { font-size: 0.82rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; font-weight: 600; }
+.rsection { padding: 26px 40px; border-bottom: 1px solid var(--border); }
+.rsection:last-child { border-bottom: none; }
+.rsection .rs-label {
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+  color: var(--gold); margin-bottom: 12px;
+}
+.rsection p { color: var(--ink); font-size: 1.0rem; line-height: 1.72; max-width: 70ch; }
+.rsection.exec p { font-size: 1.08rem; }
+.rsection ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.rsection ul li { position: relative; padding-left: 24px; color: var(--ink); font-size: 0.98rem; line-height: 1.6; max-width: 72ch; }
+.rsection ul li::before { content: ""; position: absolute; left: 3px; top: 0.6em; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+.rsection ul.steps { counter-reset: ns; }
+.rsection ul.steps li { padding-left: 40px; }
+.rsection ul.steps li::before {
+  counter-increment: ns; content: counter(ns); top: -1px; left: 0;
+  width: 25px; height: 25px; border-radius: 50%; background: var(--forest); color: #fff;
+  font-family: var(--font-body), sans-serif; font-size: 0.8rem; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.rsection b, .rsection strong { color: var(--forest); font-weight: 700; }
+@media (max-width: 560px) { .report-banner, .rsection { padding-left: 24px; padding-right: 24px; } }
+
+/* ─── Deck ─── */
+.deck-wrap { display: flex; flex-direction: column; gap: 14px; }
+.deck-stage {
+  background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+  overflow: hidden; position: relative;
+}
+.slide { min-height: 430px; display: flex; flex-direction: column; }
+.slide-top { height: 5px; background: linear-gradient(90deg, var(--forest) 0%, var(--forest) 60%, var(--gold) 100%); }
+.slide-inner { padding: 34px 40px 0; flex: 1; display: flex; flex-direction: column; }
+.slide-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+.slide-title {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif; font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+  line-height: 1.16; color: var(--ink); letter-spacing: -0.01em; max-width: 30ch;
+}
+.slide-no {
+  flex-shrink: 0; font-family: var(--font-display), "Instrument Serif", Georgia, serif;
+  font-size: 1.1rem; color: var(--gold);
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px 12px; white-space: nowrap;
+}
+.slide-body { flex: 1; padding-bottom: 20px; }
+.slide-so {
+  margin: 24px 0 0; background: var(--forest); border-radius: 0 0 18px 18px; padding: 16px 20px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.slide-so .so-lbl {
+  flex-shrink: 0; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+  color: var(--gold); padding-top: 2px; white-space: nowrap;
+}
+.slide-so p { color: rgba(255,255,255,0.92); font-size: 0.94rem; line-height: 1.55; }
+
+/* slide layouts */
+.sl-bullets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.sl-bullets li { position: relative; padding-left: 30px; color: var(--ink); font-size: 1.04rem; line-height: 1.55; }
+.sl-bullets li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 14px; height: 2px; background: var(--gold); }
+.sl-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .sl-two { grid-template-columns: 1fr; } }
+.sl-col { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+.sl-col.rev { background: #FBE7E3; border-color: rgba(192,57,43,0.25); }
+.sl-col.cost { background: #FBF3E3; border-color: rgba(196,147,58,0.3); }
+.sl-col.pass { background: #E4F2EA; border-color: rgba(31,138,91,0.28); }
+.sl-col.pass .sc-head { color: #155f3f; }
+.sl-col.pass li::before { background: #1F8A5B; }
+.sl-col.concern { background: #FBF3E3; border-color: rgba(196,147,58,0.3); }
+.sl-col .sc-head { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--forest); margin-bottom: 12px; }
+.sl-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.sl-col li { position: relative; padding-left: 18px; font-size: 0.92rem; line-height: 1.5; color: var(--ink); }
+.sl-col li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+.sl-insight .si-headline {
+  font-family: var(--font-display), "Instrument Serif", Georgia, serif; font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.22; color: var(--forest); letter-spacing: -0.01em; max-width: 24ch;
+}
+.sl-insight .si-detail { margin-top: 18px; color: var(--ink); font-size: 0.98rem; line-height: 1.7; max-width: 68ch; }
+.sl-rec { display: flex; flex-direction: column; gap: 12px; }
+.sl-rec .rec-row { display: flex; gap: 16px; align-items: flex-start; padding: 16px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
+.sl-rec .rec-tag {
+  flex-shrink: 0; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700;
+  color: #fff; background: var(--forest); padding: 5px 12px; border-radius: 999px; min-width: 78px; text-align: center;
+}
+.sl-rec .rec-row:nth-child(3) .rec-tag { background: var(--gold); }
+.sl-rec .rec-row p { color: var(--ink); font-size: 0.94rem; line-height: 1.55; }
+
+/* deck nav */
+.deck-nav {
+  margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.deck-dots { display: flex; gap: 8px; }
+.deck-dot {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--forest-light);
+  border: 1px solid var(--border); transition: background 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.deck-dot.active { background: var(--gold); border-color: var(--gold); transform: scale(1.25); }
+.deck-arrows { display: flex; gap: 10px; }
+.deck-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1px solid var(--border); color: var(--forest);
+  padding: 10px 16px; border-radius: 999px; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.deck-btn:hover:not(:disabled) { border-color: var(--forest); background: var(--forest-light); transform: translateY(-1px); }
+.deck-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.deck-counter { font-size: 0.86rem; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.wx-table.exh td:not(:first-child) { font-variant-numeric: tabular-nums; }
