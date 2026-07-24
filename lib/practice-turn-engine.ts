@@ -763,6 +763,100 @@ export function parseToolOutput(
   };
 }
 
+// Cumulative version of RecommendationChecklist that accumulates across
+// turns spent on the final data-release step. Same four boolean/quote
+// pairs; downgrades from the per-turn shape are intentionally dropped
+// here — they explain WHY a single turn's claim was rejected, and once
+// that turn is history, keeping the downgrade note on the merged state
+// is misleading (the field may have flipped true on a later turn).
+export type CumulativeRecommendationChecklist = Omit<
+  RecommendationChecklist,
+  "downgrades"
+>;
+
+export const EMPTY_CUMULATIVE_CHECKLIST: CumulativeRecommendationChecklist = {
+  hasDirectAnswer: false,
+  directAnswerQuote: "",
+  hasQuantifiedEvidence: false,
+  quantifiedEvidenceQuote: "",
+  hasRiskOrCondition: false,
+  riskOrConditionQuote: "",
+  hasConcreteNextStep: false,
+  concreteNextStepQuote: "",
+};
+
+// Merge a per-turn (validated) checklist into the accumulated state.
+// Once a boolean is true in the cumulative state, it stays true — and
+// the quote that first established it is FROZEN, so a later false turn
+// can't erase the evidence that was already validated. This mirrors the
+// must_surface_state pattern (findings are append-only, not per-turn
+// resets) and is the whole point of moving the gate off single-turn
+// evaluation.
+export function mergeRecommendationChecklist(
+  prior: CumulativeRecommendationChecklist | null,
+  perTurn: RecommendationChecklist
+): CumulativeRecommendationChecklist {
+  const base = prior ?? EMPTY_CUMULATIVE_CHECKLIST;
+
+  const merge = (
+    priorFlag: boolean,
+    priorQuote: string,
+    turnFlag: boolean,
+    turnQuote: string
+  ): [boolean, string] => {
+    if (priorFlag) return [true, priorQuote];
+    if (turnFlag) return [true, turnQuote];
+    return [false, ""];
+  };
+
+  const [hasDirectAnswer, directAnswerQuote] = merge(
+    base.hasDirectAnswer,
+    base.directAnswerQuote,
+    perTurn.hasDirectAnswer,
+    perTurn.directAnswerQuote
+  );
+  const [hasQuantifiedEvidence, quantifiedEvidenceQuote] = merge(
+    base.hasQuantifiedEvidence,
+    base.quantifiedEvidenceQuote,
+    perTurn.hasQuantifiedEvidence,
+    perTurn.quantifiedEvidenceQuote
+  );
+  const [hasRiskOrCondition, riskOrConditionQuote] = merge(
+    base.hasRiskOrCondition,
+    base.riskOrConditionQuote,
+    perTurn.hasRiskOrCondition,
+    perTurn.riskOrConditionQuote
+  );
+  const [hasConcreteNextStep, concreteNextStepQuote] = merge(
+    base.hasConcreteNextStep,
+    base.concreteNextStepQuote,
+    perTurn.hasConcreteNextStep,
+    perTurn.concreteNextStepQuote
+  );
+
+  return {
+    hasDirectAnswer,
+    directAnswerQuote,
+    hasQuantifiedEvidence,
+    quantifiedEvidenceQuote,
+    hasRiskOrCondition,
+    riskOrConditionQuote,
+    hasConcreteNextStep,
+    concreteNextStepQuote,
+  };
+}
+
+export function isChecklistComplete(
+  c: CumulativeRecommendationChecklist
+): boolean {
+  return (
+    c.hasDirectAnswer &&
+    c.hasQuantifiedEvidence &&
+    c.hasRiskOrCondition &&
+    c.hasConcreteNextStep
+  );
+}
+
 export interface ResolvedState {
   nextMustSurfaceState: MustSurfaceState;
   nextRedirects: RedirectEntry[];

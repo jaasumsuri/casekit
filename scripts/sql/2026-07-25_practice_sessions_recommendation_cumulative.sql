@@ -1,0 +1,35 @@
+-- Cumulative recommendation checklist on practice_sessions.
+--
+-- Motivation: the per-turn recommendation_checklist on practice_turns is
+-- evaluated fresh from that turn's text alone, with no memory of what
+-- earlier turns established. A real interviewer presses on one facet at
+-- a time — risk in one turn, next steps in another — so no single turn
+-- naturally contains all four synthesis pieces even when the candidate
+-- has actually said all of them. That made the sessionComplete gate
+-- effectively unreachable except by the 20-turn cap.
+--
+-- This column accumulates the four booleans + first-established evidence
+-- quotes across turns while the candidate is on the final data-release
+-- step, and is what drives the "recommendation complete" side of the
+-- sessionComplete gate going forward. The per-turn raw checklist on
+-- practice_turns is unchanged — it's still useful for diagnosis and for
+-- the Coach/report to see how the recommendation built up over time.
+--
+-- Shape:
+--   {
+--     "hasDirectAnswer": true,        "directAnswerQuote":       "the driver is...",
+--     "hasQuantifiedEvidence": true,  "quantifiedEvidenceQuote": "42% of...",
+--     "hasRiskOrCondition": false,    "riskOrConditionQuote":    "",
+--     "hasConcreteNextStep": true,    "concreteNextStepQuote":   "have finance run..."
+--   }
+--
+-- Once a boolean flips true, its paired quote is FROZEN — a later turn
+-- where the same field validates false does not erase the earlier
+-- established quote. This matches how must_surface_state (Phase 1) is
+-- accumulated: append-only findings, not per-turn resets.
+--
+-- Nullable — pre-migration sessions read as NULL, code treats NULL as
+-- "no cumulative state yet, seed from all-false."
+
+ALTER TABLE practice_sessions
+  ADD COLUMN IF NOT EXISTS recommendation_checklist_cumulative jsonb;

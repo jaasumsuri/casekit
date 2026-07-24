@@ -4,6 +4,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import cases from "@/data/practice-cases.json";
 import {
   AITurnResult,
+  CumulativeRecommendationChecklist,
+  EMPTY_CUMULATIVE_CHECKLIST,
   MustSurfaceState,
   RedirectEntry,
   SESSION_TURN_CAP,
@@ -11,6 +13,8 @@ import {
   callInterviewer,
   countPriorCurveballs,
   getMustSurfacePoints,
+  isChecklistComplete,
+  mergeRecommendationChecklist,
   resolveTurnState,
 } from "@/lib/practice-turn-engine";
 
@@ -50,6 +54,7 @@ export async function POST(request: NextRequest) {
     status: string;
     must_surface_state: MustSurfaceState | null;
     redirects_given: RedirectEntry[] | null;
+    recommendation_checklist_cumulative: CumulativeRecommendationChecklist | null;
   };
   try {
     const { data, error } = await supabase
@@ -67,6 +72,7 @@ export async function POST(request: NextRequest) {
       status: string;
       must_surface_state?: MustSurfaceState | null;
       redirects_given?: RedirectEntry[] | null;
+      recommendation_checklist_cumulative?: CumulativeRecommendationChecklist | null;
     };
     session = {
       id: raw.id,
@@ -74,6 +80,8 @@ export async function POST(request: NextRequest) {
       status: raw.status,
       must_surface_state: raw.must_surface_state ?? null,
       redirects_given: raw.redirects_given ?? null,
+      recommendation_checklist_cumulative:
+        raw.recommendation_checklist_cumulative ?? null,
     };
   } catch {
     return Response.json(
@@ -351,14 +359,52 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Merge this turn's per-turn checklist into the cumulative session
+  // state — but ONLY while the candidate is on the final data-release
+  // step. Earlier steps have their own scored triggers; letting them
+  // seed the synthesis checklist would let, say, a well-quantified
+  // intermediate answer masquerade as a full recommendation.
+  //
+  // The per-turn recommendation_checklist on practice_turns is written
+  // unchanged above — it's the raw signal, still useful for the
+  // Coach/report and for diagnosing why the gate opened when it did.
+  const lastStepIdx = steps.length - 1;
+  const onLastStep = stepIndex === lastStepIdx;
+  const priorCumulative =
+    session.recommendation_checklist_cumulative ?? EMPTY_CUMULATIVE_CHECKLIST;
+  const nextCumulative: CumulativeRecommendationChecklist = onLastStep
+    ? mergeRecommendationChecklist(
+        priorCumulative,
+        aiResult.recommendationChecklist
+      )
+    : priorCumulative;
+
   try {
-    const { error: stateError } = await supabase
+    const updatePayload: Record<string, unknown> = {
+      must_surface_state: nextMustSurfaceState,
+      redirects_given: nextRedirects,
+    };
+    if (onLastStep) {
+      updatePayload.recommendation_checklist_cumulative = nextCumulative;
+    }
+    let { error: stateError } = await supabase
       .from("practice_sessions")
-      .update({
-        must_surface_state: nextMustSurfaceState,
-        redirects_given: nextRedirects,
-      })
+      .update(updatePayload)
       .eq("id", sessionId);
+    // Pre-migration fallback: if recommendation_checklist_cumulative is
+    // missing, peel it off and retry so the phase-1 columns still land.
+    if (stateError?.code === "PGRST204") {
+      console.warn(
+        "turn route: grading-state column missing — apply scripts/sql/2026-07-25_practice_sessions_recommendation_cumulative.sql (and prior).",
+        stateError.message
+      );
+      delete updatePayload.recommendation_checklist_cumulative;
+      const retry = await supabase
+        .from("practice_sessions")
+        .update(updatePayload)
+        .eq("id", sessionId);
+      stateError = retry.error;
+    }
     if (stateError && stateError.code !== "PGRST204") {
       console.error("turn route: grading state update failed:", stateError);
     } else if (stateError?.code === "PGRST204") {
@@ -371,22 +417,27 @@ export async function POST(request: NextRequest) {
   }
 
   // Session termination requires BOTH sides of the gate:
-  //   (a) the candidate has passed the final data-release step, AND
-  //   (b) the recommendation checklist is complete
+  //   (a) the candidate has reached the final data-release step (this
+  //       turn or any prior turn), AND
+  //   (b) the CUMULATIVE recommendation checklist across turns on that
+  //       last step is complete
   // OR the turn cap fires.
   //
-  // The prior logic (passedLastStep || finalRecommendationDelivered ||
-  // turnCap) allowed either side to end the interview on its own, which
-  // meant a candidate could hit every data reveal and still get an
-  // auto-close with a partial recommendation, even after the checklist
-  // was tightened — because passedLastStep bypassed the checklist entirely.
-  // The case's last data-release step is not a "delivered a
-  // recommendation" step; it's just "asked the last case question."
-  // Requiring both gates aligns the auto-close with what a real
-  // interviewer would recognize as a finished interview.
-  const passedLastStep =
-    aiResult.internalGrade.passed && stepIndex === steps.length - 1;
-  const recommendationComplete = aiResult.finalRecommendationDelivered;
+  // Historical shape (pre-cumulative): passed evaluated only on the
+  // single turn where the last-step reveal happened, and the checklist
+  // was evaluated fresh from that one turn's text. Real interviewers
+  // press on one facet at a time (risk in one turn, next steps in
+  // another), so no single turn ever naturally contained all four
+  // synthesis pieces — the gate could only close by accident. Now:
+  // last-step-reached is derived from prior-turn history + this turn,
+  // and the checklist is the merged cumulative across all last-step
+  // turns.
+  const hasReachedLastStepBefore = priorTurns.some(
+    (t) => t.passed && parseInt(t.step_id, 10) === lastStepIdx
+  );
+  const passingNow = aiResult.internalGrade.passed && onLastStep;
+  const passedLastStep = hasReachedLastStepBefore || passingNow;
+  const recommendationComplete = isChecklistComplete(nextCumulative);
   const naturalCompletion = passedLastStep && recommendationComplete;
   const turnCapReached = turnNumber >= SESSION_TURN_CAP;
   const sessionComplete = naturalCompletion || turnCapReached;
