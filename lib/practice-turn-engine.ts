@@ -41,11 +41,27 @@ export interface MustSurfacePoint {
   text: string;
 }
 
+// Each boolean is paired with an evidence quote — the exact substring
+// from the candidate's latest response that the model believes satisfies
+// the criterion. Empty string when the boolean is false. The server
+// validates: (a) if true, quote must be non-empty; (b) quote must appear
+// as a substring in the candidate response (case-insensitive, whitespace-
+// normalized); (c) for hasConcreteNextStep, the quote must not be a
+// pure "consider X / evaluate Y / see if we can" hedge with no concrete
+// action marker. If any validation fails, the server force-downgrades
+// the boolean to false and records a downgrade note.
 export interface RecommendationChecklist {
   hasDirectAnswer: boolean;
+  directAnswerQuote: string;
   hasQuantifiedEvidence: boolean;
+  quantifiedEvidenceQuote: string;
   hasRiskOrCondition: boolean;
+  riskOrConditionQuote: string;
   hasConcreteNextStep: boolean;
+  concreteNextStepQuote: string;
+  // Populated server-side. Empty when every claimed-true criterion passed
+  // validation; otherwise one line per downgrade explaining why.
+  downgrades?: string[];
 }
 
 export interface AITurnResult {
@@ -147,34 +163,58 @@ export const INTERVIEWER_TOOL = {
       recommendationChecklist: {
         type: "object",
         description:
-          "For each of the four synthesis pieces, was that piece present in the candidate's LATEST response (this turn only)? Answer each independently as a yes/no fact. Whether the interview ends is derived server-side from ALL four being true — you do NOT decide, you just report each field honestly. If the candidate hasn't attempted a recommendation yet, all four are false.",
+          "For each of the four synthesis pieces, was that piece present in the candidate's LATEST response (this turn only)? Every boolean is paired with an evidence quote: the EXACT substring from the candidate's response that satisfies the criterion. If the boolean is true, the quote must be non-empty and must appear verbatim in the candidate's message; if false, the quote must be an empty string. The server validates every quote (substring check + heuristic bans) and will force-downgrade a boolean to false if its quote is missing, hallucinated, or too vague. Whether the interview ends is derived server-side from ALL four validated booleans being true — you do NOT decide, and you cannot game the checklist by claiming true without valid evidence. If the candidate hasn't attempted a recommendation yet, all four are false and all four quotes are empty strings.",
         properties: {
           hasDirectAnswer: {
             type: "boolean",
             description:
               "Did the candidate this turn state a specific direct answer or diagnosis (e.g., 'the driver is X'), not just analysis or questions?",
           },
+          directAnswerQuote: {
+            type: "string",
+            description:
+              "Exact substring from the candidate's LATEST response that constitutes the direct answer. Empty string if hasDirectAnswer is false.",
+          },
           hasQuantifiedEvidence: {
             type: "boolean",
             description:
               "Did the candidate this turn cite AT LEAST ONE specific number (%, dollar figure, ratio, count) as evidence for their answer? Qualitative reasoning alone is NOT quantified.",
           },
+          quantifiedEvidenceQuote: {
+            type: "string",
+            description:
+              "Exact substring from the candidate's LATEST response containing at least one specific number cited as evidence. Empty string if hasQuantifiedEvidence is false. Must contain at least one digit.",
+          },
           hasRiskOrCondition: {
             type: "boolean",
             description:
-              "Did the candidate this turn explicitly acknowledge a risk, dependency, tradeoff, or condition on their recommendation (something that could go wrong, or something the recommendation depends on)?",
+              "Did the candidate this turn explicitly acknowledge a risk, dependency, tradeoff, or condition on their recommendation? Must be specific ('churn among price-sensitive members', 'assuming redemption stays above 40%', 'this depends on Q1 headcount'). Vague 'there are tradeoffs' or 'we'll need to be careful' does NOT count.",
+          },
+          riskOrConditionQuote: {
+            type: "string",
+            description:
+              "Exact substring from the candidate's LATEST response naming the specific risk/dependency/tradeoff. Empty string if hasRiskOrCondition is false.",
           },
           hasConcreteNextStep: {
             type: "boolean",
             description:
-              "Did the candidate this turn name a concrete next step — a specific action with either a timeframe or an owner (e.g., 'cap the loyalty rate at 5% starting next quarter', 'have finance model the impact by end of month')? Vague 'consider X' or 'evaluate Y' does NOT count.",
+              "Did the candidate this turn name a concrete next step — a specific action paired with either a specific timeframe (by end of Q1, next month, this week) OR a specific owner (finance, marketing, the ops team, [named person])? These do NOT count: 'consider X', 'evaluate Y', 'look into Z', 'review Z', 'assess Z', 'explore Z', 'revisit Z', 'examine Z', 'investigate Z', 'see if we can X', 'see if there's any way to X', 'somehow X', 'maybe X', 'a bit X'. If the candidate's action language is any of these hedge forms without a timeframe or owner attached, this MUST be false.",
+          },
+          concreteNextStepQuote: {
+            type: "string",
+            description:
+              "Exact substring from the candidate's LATEST response naming the concrete action, including its owner or timeframe. Empty string if hasConcreteNextStep is false.",
           },
         },
         required: [
           "hasDirectAnswer",
+          "directAnswerQuote",
           "hasQuantifiedEvidence",
+          "quantifiedEvidenceQuote",
           "hasRiskOrCondition",
+          "riskOrConditionQuote",
           "hasConcreteNextStep",
+          "concreteNextStepQuote",
         ],
         additionalProperties: false,
       },
@@ -412,14 +452,14 @@ export function buildSystemPrompt(
       "",
       "If the candidate is nearing their final recommendation or delivering one, react to its content as a stakeholder would: ask follow-up questions about specifics, express skepticism about parts that are vague, or ask 'what would that actually cost us' / 'how long would that take.' Do NOT grade or evaluate the recommendation quality out loud.",
       "",
-      "A COMPLETE final recommendation, per the Interview Playbook's synthesis module, must contain ALL FOUR of these parts. Fill recommendationChecklist honestly, one field at a time:",
+      "A COMPLETE final recommendation, per the Interview Playbook's synthesis module, must contain ALL FOUR of these parts. Fill recommendationChecklist honestly, one field at a time. EVERY claim of true MUST be paired with a specific quote from the candidate's latest response — the server validates that the quote actually appears in their text and will force-downgrade any boolean whose quote is missing, hallucinated, or (for hasConcreteNextStep) is a vague hedge with no owner or timeframe. Do not claim true without pointing to the exact wording:",
       "",
-      "1. hasDirectAnswer — did the candidate name a specific answer / diagnosis this turn, not just questions or analysis?",
-      "2. hasQuantifiedEvidence — did the candidate cite at least one specific number (%, dollar figure, ratio, count) as evidence THIS turn? Qualitative reasoning alone is false here.",
-      "3. hasRiskOrCondition — did the candidate explicitly acknowledge a risk, tradeoff, or condition on their recommendation this turn?",
-      "4. hasConcreteNextStep — did the candidate name a specific action with a timeframe or owner (not 'consider X' / 'evaluate Y') this turn?",
+      "1. hasDirectAnswer / directAnswerQuote — did the candidate name a specific answer / diagnosis this turn, not just questions or analysis? Quote the specific claim.",
+      "2. hasQuantifiedEvidence / quantifiedEvidenceQuote — did the candidate cite at least one specific number as evidence THIS turn? Quote must contain at least one digit.",
+      "3. hasRiskOrCondition / riskOrConditionQuote — did the candidate SPECIFICALLY name a risk, tradeoff, or dependency this turn? Vague 'there are tradeoffs' or general acknowledgment does NOT count — quote the specific risk. If no specific risk is named, this is FALSE.",
+      "4. hasConcreteNextStep / concreteNextStepQuote — the candidate must have named an action AND either a timeframe OR an owner. These do NOT count as concrete next steps: 'consider X', 'evaluate Y', 'look into Z', 'review Z', 'assess Z', 'explore Z', 'revisit Z', 'examine Z', 'investigate Z', 'see if we can X', 'see if there's any way to X', 'somehow X', 'maybe X', 'a bit X'. If the candidate's action language is any of these hedge forms with no owner or timeframe attached, this MUST be false — the server will downgrade it anyway.",
       "",
-      "The system decides whether to end the interview based on ALL FOUR being true — you do NOT decide. Just report each field. If any is missing, push in-character on the missing piece in your interviewerMessage (e.g., 'What sort of number are we talking about?' for missing quantification, 'What would you actually have me do on Monday morning?' for a missing next step).",
+      "The system decides whether to end the interview based on ALL FOUR post-validation booleans being true — you do NOT decide. If any piece is missing, push in-character on the missing piece in your interviewerMessage: 'What sort of number are we talking about?' for missing quantification, 'What could go wrong with that?' for missing risk, 'What would you actually have me do on Monday morning?' for a vague next step.",
       ""
     );
   }
@@ -461,11 +501,122 @@ export function buildSystemPrompt(
   return base.filter((line) => line !== undefined).join("\n");
 }
 
+// Whitespace-normalized, case-insensitive substring lookup so a model
+// quote can differ from the candidate text only in surrounding spacing
+// and still validate.
+function normalizeForQuoteMatch(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function quoteAppearsIn(quote: string, candidateResponse: string): boolean {
+  const q = normalizeForQuoteMatch(quote);
+  if (q.length === 0) return false;
+  return normalizeForQuoteMatch(candidateResponse).includes(q);
+}
+
+// Verb phrases that, on their own, describe an intention to look at
+// something rather than a concrete action with an owner or timeframe.
+// A concreteNextStepQuote consisting entirely of these hedge forms
+// counts as vague and gets downgraded. Keep this list conservative —
+// false positives here mean the interview drags on longer than needed.
+const CONCRETE_NEXT_STEP_HEDGE_MARKERS = [
+  "see if we can",
+  "see if there is any way",
+  "see if there's any way",
+  "any way to",
+  "consider ",
+  "evaluate ",
+  "look into",
+  "review ",
+  "assess ",
+  "explore ",
+  "revisit ",
+  "reexamine",
+  "reevaluate",
+  "examine ",
+  "investigate ",
+  "think about",
+  "somehow",
+  "maybe ",
+  "a bit ",
+];
+
+// Markers that make a next-step quote concrete enough to override the
+// hedge check (owner named, or timeframe named). Cheap heuristic — the
+// server errs toward downgrading, and the model can always resubmit
+// with a proper action on the next turn.
+const CONCRETE_NEXT_STEP_OWNER_MARKERS = [
+  "finance",
+  "marketing",
+  "ops ",
+  "operations",
+  "the team",
+  "our team",
+  "engineering",
+  "product ",
+  "sales ",
+  "cfo",
+  "ceo",
+  "coo",
+  "board",
+  "have finance",
+  "have marketing",
+  "have the team",
+  "assign ",
+  "task ",
+];
+const CONCRETE_NEXT_STEP_TIMEFRAME_MARKERS = [
+  "by end of",
+  "by monday",
+  "by tuesday",
+  "by wednesday",
+  "by thursday",
+  "by friday",
+  "next week",
+  "this week",
+  "next month",
+  "this month",
+  "next quarter",
+  "this quarter",
+  "next year",
+  "within ",
+  " q1",
+  " q2",
+  " q3",
+  " q4",
+  "by q",
+  "by end of q",
+  "in 30 days",
+  "in 60 days",
+  "in 90 days",
+  "by end of month",
+  "by end of quarter",
+  "starting ",
+];
+
+function quoteHasConcreteMarker(quote: string): boolean {
+  const q = quote.toLowerCase();
+  const hasOwner = CONCRETE_NEXT_STEP_OWNER_MARKERS.some((m) => q.includes(m));
+  const hasTimeframe = CONCRETE_NEXT_STEP_TIMEFRAME_MARKERS.some((m) =>
+    q.includes(m)
+  );
+  return hasOwner || hasTimeframe;
+}
+
+function quoteIsPurelyHedged(quote: string): boolean {
+  const q = quote.toLowerCase();
+  return CONCRETE_NEXT_STEP_HEDGE_MARKERS.some((m) => q.includes(m));
+}
+
 // Extracted so the repro and the route share exactly the same parsing +
 // validation. Throws on malformed input so the caller can fall back.
+//
+// candidateResponse is required for evidence-quote substring validation.
+// Passing an empty string skips substring validation (used by tests only).
 export function parseToolOutput(
   input: Record<string, unknown>,
-  validPointIds: Set<string>
+  validPointIds: Set<string>,
+  candidateResponse: string
 ): AITurnResult {
   if (
     typeof input.interviewerMessage !== "string" ||
@@ -508,22 +659,93 @@ export function parseToolOutput(
     typeof input.recommendationChecklist === "object"
       ? (input.recommendationChecklist as Record<string, unknown>)
       : {};
-  const recommendationChecklist: RecommendationChecklist = {
-    hasDirectAnswer: rawChecklist.hasDirectAnswer === true,
-    hasQuantifiedEvidence: rawChecklist.hasQuantifiedEvidence === true,
-    hasRiskOrCondition: rawChecklist.hasRiskOrCondition === true,
-    hasConcreteNextStep: rawChecklist.hasConcreteNextStep === true,
+
+  const readBool = (k: string) => rawChecklist[k] === true;
+  const readQuote = (k: string) =>
+    typeof rawChecklist[k] === "string" ? (rawChecklist[k] as string) : "";
+
+  // Trust the model's booleans as an upper bound; then validate each
+  // claimed-true field against its paired quote and downgrade if the
+  // quote is missing, hallucinated, or (for hasConcreteNextStep) purely
+  // hedged. The downgrade rationale is preserved on the checklist so
+  // the persisted per-turn record explains why the interview didn't end.
+  const downgrades: string[] = [];
+
+  const validateQuote = (
+    fieldName: string,
+    claimed: boolean,
+    quote: string,
+    extraChecks?: (q: string) => string | null
+  ): boolean => {
+    if (!claimed) return false;
+    if (quote.trim().length === 0) {
+      downgrades.push(`${fieldName}: claimed true but evidence quote empty`);
+      return false;
+    }
+    if (candidateResponse && !quoteAppearsIn(quote, candidateResponse)) {
+      downgrades.push(
+        `${fieldName}: quote not found in candidate response (hallucinated)`
+      );
+      return false;
+    }
+    if (extraChecks) {
+      const failReason = extraChecks(quote);
+      if (failReason) {
+        downgrades.push(`${fieldName}: ${failReason}`);
+        return false;
+      }
+    }
+    return true;
   };
 
-  // Server-computed, ignoring any top-level bool the model may still send.
-  // ALL four synthesis pieces must be present in the candidate's latest
-  // response, per the Interview Playbook. Anything less means the
-  // recommendation is partial and the interview keeps going.
+  const hasDirectAnswer = validateQuote(
+    "hasDirectAnswer",
+    readBool("hasDirectAnswer"),
+    readQuote("directAnswerQuote")
+  );
+
+  const hasQuantifiedEvidence = validateQuote(
+    "hasQuantifiedEvidence",
+    readBool("hasQuantifiedEvidence"),
+    readQuote("quantifiedEvidenceQuote"),
+    (q) => (/\d/.test(q) ? null : "quote contains no digits")
+  );
+
+  const hasRiskOrCondition = validateQuote(
+    "hasRiskOrCondition",
+    readBool("hasRiskOrCondition"),
+    readQuote("riskOrConditionQuote")
+  );
+
+  const hasConcreteNextStep = validateQuote(
+    "hasConcreteNextStep",
+    readBool("hasConcreteNextStep"),
+    readQuote("concreteNextStepQuote"),
+    (q) =>
+      quoteIsPurelyHedged(q) && !quoteHasConcreteMarker(q)
+        ? "quote is a vague/hedged action ('consider X', 'see if we can', 'somehow') with no owner or timeframe"
+        : null
+  );
+
+  const recommendationChecklist: RecommendationChecklist = {
+    hasDirectAnswer,
+    directAnswerQuote: readQuote("directAnswerQuote"),
+    hasQuantifiedEvidence,
+    quantifiedEvidenceQuote: readQuote("quantifiedEvidenceQuote"),
+    hasRiskOrCondition,
+    riskOrConditionQuote: readQuote("riskOrConditionQuote"),
+    hasConcreteNextStep,
+    concreteNextStepQuote: readQuote("concreteNextStepQuote"),
+    downgrades: downgrades.length > 0 ? downgrades : undefined,
+  };
+
+  // Server-computed final answer, using the validated (post-downgrade)
+  // booleans. Everything about interview termination flows through here.
   const finalRecommendationDelivered =
-    recommendationChecklist.hasDirectAnswer &&
-    recommendationChecklist.hasQuantifiedEvidence &&
-    recommendationChecklist.hasRiskOrCondition &&
-    recommendationChecklist.hasConcreteNextStep;
+    hasDirectAnswer &&
+    hasQuantifiedEvidence &&
+    hasRiskOrCondition &&
+    hasConcreteNextStep;
 
   return {
     interviewerMessage: input.interviewerMessage,
@@ -632,7 +854,8 @@ export async function callInterviewer(
 
   const aiResult = parseToolOutput(
     toolUseBlock.input as Record<string, unknown>,
-    validPointIds
+    validPointIds,
+    candidateResponse
   );
   return { aiResult, stopReason };
 }

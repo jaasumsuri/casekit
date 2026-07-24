@@ -253,9 +253,13 @@ export async function POST(request: NextRequest) {
       introducedNewComplication: false,
       recommendationChecklist: {
         hasDirectAnswer: false,
+        directAnswerQuote: "",
         hasQuantifiedEvidence: false,
+        quantifiedEvidenceQuote: "",
         hasRiskOrCondition: false,
+        riskOrConditionQuote: "",
         hasConcreteNextStep: false,
+        concreteNextStepQuote: "",
       },
       finalRecommendationDelivered: false,
     };
@@ -291,16 +295,21 @@ export async function POST(request: NextRequest) {
       ...basePayload,
       interviewer_message: aiResult.interviewerMessage,
       introduced_new_complication: aiResult.introducedNewComplication,
+      recommendation_checklist: aiResult.recommendationChecklist,
     };
     let { error: insertError } = await supabase
       .from("practice_turns")
       .insert(withExtras);
 
-    // Pre-migration: introduced_new_complication or interviewer_message
-    // column missing. Drop whichever is complained about and retry.
+    // Pre-migration: any of the newer columns
+    // (interviewer_message / introduced_new_complication /
+    // recommendation_checklist) may be missing. PostgREST returns
+    // PGRST204 with the offending column name; peel them off in the
+    // reverse order they were added and retry until the insert lands
+    // (worst case: fall all the way back to basePayload).
     if (insertError?.code === "PGRST204") {
       console.warn(
-        "turn route: extra column missing — applying pre-migration fallback. Apply scripts/sql/2026-07-23_practice_turns_introduced_new_complication.sql (and prior).",
+        "turn route: extra column missing — applying pre-migration fallback. Apply scripts/sql/2026-07-24_practice_turns_recommendation_checklist.sql (and prior).",
         insertError.message
       );
       const retry = await supabase.from("practice_turns").insert(basePayload);

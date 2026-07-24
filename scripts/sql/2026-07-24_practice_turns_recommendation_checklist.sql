@@ -1,0 +1,32 @@
+-- Persist the full recommendationChecklist object per turn so a false
+-- positive (or false negative) on finalRecommendationDelivered is
+-- debuggable after the fact instead of only inferable from behavior.
+--
+-- Motivation: session b8eb0042 auto-terminated on a turn where the
+-- candidate's "next step" was "see if there's any way to revisit the
+-- lease terms" — exactly the vague-verb pattern the tool description
+-- said should score false. Without the checklist persisted, there was
+-- no way to tell whether the model overscored hasConcreteNextStep, or
+-- hasRiskOrCondition, or both, or whether the server's derivation was
+-- wrong. Store the object and the answer becomes obvious.
+--
+-- Shape (server-side authoritative, post-validation):
+--   {
+--     "hasDirectAnswer": bool,
+--     "directAnswerQuote": string,
+--     "hasQuantifiedEvidence": bool,
+--     "quantifiedEvidenceQuote": string,
+--     "hasRiskOrCondition": bool,
+--     "riskOrConditionQuote": string,
+--     "hasConcreteNextStep": bool,
+--     "concreteNextStepQuote": string,
+--     "downgrades": [string, ...]   -- present only when server force-
+--                                   -- downgraded a claimed-true boolean
+--   }
+--
+-- Nullable + no default: pre-migration rows read as NULL. Turns written
+-- before this column existed simply won't have per-turn checklist data
+-- to look at when auditing — the go-forward behavior is what matters.
+
+ALTER TABLE practice_turns
+  ADD COLUMN IF NOT EXISTS recommendation_checklist jsonb;
