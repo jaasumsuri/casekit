@@ -33,6 +33,11 @@ interface Turn {
   introduced_new_complication?: boolean | null;
 }
 
+interface InterviewQuestionsBlock {
+  questions: { q: string }[];
+  answers?: { q: string; a: string }[];
+}
+
 export async function POST(request: NextRequest) {
   const { sessionId } = (await request.json()) as { sessionId: string };
 
@@ -50,6 +55,7 @@ export async function POST(request: NextRequest) {
     completion_status: string | null;
     must_surface_state: MustSurfaceState | null;
     redirects_given: RedirectEntry[] | null;
+    interview_questions: InterviewQuestionsBlock | null;
   };
   try {
     // .select("*") tolerates pre-migration schemas.
@@ -70,6 +76,7 @@ export async function POST(request: NextRequest) {
       completion_status: string | null;
       must_surface_state?: MustSurfaceState | null;
       redirects_given?: RedirectEntry[] | null;
+      interview_questions?: InterviewQuestionsBlock | null;
     };
     session = {
       id: raw.id,
@@ -79,6 +86,7 @@ export async function POST(request: NextRequest) {
       completion_status: raw.completion_status,
       must_surface_state: raw.must_surface_state ?? null,
       redirects_given: raw.redirects_given ?? null,
+      interview_questions: raw.interview_questions ?? null,
     };
   } catch {
     return Response.json(
@@ -245,7 +253,8 @@ export async function POST(request: NextRequest) {
     mustSurfaceVerdict,
     redirectsGiven,
     curveballCount,
-    maxCurveballs
+    maxCurveballs,
+    session.interview_questions
   );
 
   // Structured critique persisted alongside the free-text final_critique.
@@ -362,7 +371,8 @@ function buildCoachPrompt(
   }[],
   redirectsGiven: RedirectEntry[],
   curveballCount: number,
-  maxCurveballs: number
+  maxCurveballs: number,
+  interviewQuestions: InterviewQuestionsBlock | null
 ): string {
   const alternates =
     practiceCase.rubric.framework_acceptable_alternates.length > 0
@@ -404,6 +414,19 @@ function buildCoachPrompt(
         )
         .join("\n")
     : "(no nudges were delivered this session)";
+
+  const answered =
+    interviewQuestions?.answers?.filter(
+      (p) => typeof p.a === "string" && p.a.trim().length > 0
+    ) ?? [];
+  const interviewQuestionsBlock = answered.length
+    ? answered
+        .map(
+          (p, i) =>
+            `Q${i + 1}: ${p.q}\nA${i + 1} (candidate): ${p.a}`
+        )
+        .join("\n\n")
+    : "(no partner follow-up exchange recorded this session)";
 
   return `SYSTEM PROMPT: Coach Persona
 
@@ -448,6 +471,12 @@ ${caseFactsBlock}
 Use the transcript to quote specific candidate wording and add color to your critique. But when you claim a point was "caught independently," "caught after a nudge," or "missed," that claim must match the VERIFIED GRADING STATE above. If the state says a point was missed, do not soften it by saying the candidate "eventually got there"; if the state says a point was caught after a nudge, name the nudge explicitly using the turn number from the redirect log.
 
 ${fullTranscript}
+
+### Partner follow-up exchange (after the recommendation, before this critique)
+
+Right after the recommendation gate passed, the interviewer pressed the candidate with 2-3 short partner-style follow-ups tied to what they'd just said, and the candidate responded to all of them in a single reply. Below are the questions and the candidate's actual answers. Treat this as legitimate context you may reference in your critique when relevant (e.g., "when I pressed you on Q2, you conceded X, which reinforces the gap on…"), but apply the same anti-fabrication rule: quote or paraphrase only what's actually written here. Do NOT invent an answer the candidate didn't give, and do NOT grade this exchange as if it were a separate scored section — the must-surface tier and recommendation-checklist verdicts above already decided the grade.
+
+${interviewQuestionsBlock}
 
 ### Structure your critique in exactly these three sections
 
