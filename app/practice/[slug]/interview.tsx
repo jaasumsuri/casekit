@@ -141,6 +141,13 @@ export default function InterviewClient({
   const [reportData, setReportData] = useState<Report | null>(null);
   const [slidesData, setSlidesData] = useState<Slide[] | null>(null);
 
+  // Post-critique follow-up chat with the Coach.
+  const [followupHistory, setFollowupHistory] = useState<
+    { role: "candidate" | "coach"; text: string }[]
+  >([]);
+  const [followupInput, setFollowupInput] = useState("");
+  const [followupSending, setFollowupSending] = useState(false);
+
   const CRITIQUE_ERROR_SENTINEL = "[[CRITIQUE_ERROR]]";
 
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -538,6 +545,76 @@ export default function InterviewClient({
     }
   }
 
+  async function sendFollowup() {
+    if (!sessionId || followupSending) return;
+    const text = followupInput.trim();
+    if (!text) return;
+    setFollowupSending(true);
+    const historyForRequest = followupHistory;
+    setFollowupHistory((prev) => [
+      ...prev,
+      { role: "candidate", text },
+      { role: "coach", text: "" },
+    ]);
+    setFollowupInput("");
+    try {
+      const res = await fetch("/api/practice/followup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          message: text,
+          history: historyForRequest,
+        }),
+      });
+      if (!res.ok || !res.body) {
+        setFollowupHistory((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = {
+            role: "coach",
+            text: "Coach reply failed — try again.",
+          };
+          return next;
+        });
+        return;
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setFollowupHistory((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = { role: "coach", text: acc };
+          return next;
+        });
+      }
+      if (acc.trim().length === 0) {
+        setFollowupHistory((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = {
+            role: "coach",
+            text: "Coach reply came back empty — try rephrasing.",
+          };
+          return next;
+        });
+      }
+    } catch {
+      setFollowupHistory((prev) => {
+        const next = [...prev];
+        next[next.length - 1] = {
+          role: "coach",
+          text: "Network error — try again.",
+        };
+        return next;
+      });
+    } finally {
+      setFollowupSending(false);
+    }
+  }
+
   function handleTextareaInput(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setInput(e.target.value);
     const el = e.target;
@@ -835,6 +912,14 @@ export default function InterviewClient({
                   />
                 )}
 
+                <FollowupPanel
+                  history={followupHistory}
+                  input={followupInput}
+                  setInput={setFollowupInput}
+                  sending={followupSending}
+                  onSend={sendFollowup}
+                />
+
                 <div className="iv-critique-actions">
                   {/* Plain <a> — needs a hard reload so InterviewClient
                       re-mounts with the ?new=1 forceNew prop rather than
@@ -1049,6 +1134,92 @@ function SparkleIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" />
     </svg>
+  );
+}
+
+/* ─── Follow-up chat with the Coach ─── */
+
+function FollowupPanel({
+  history,
+  input,
+  setInput,
+  sending,
+  onSend,
+}: {
+  history: { role: "candidate" | "coach"; text: string }[];
+  input: string;
+  setInput: (v: string) => void;
+  sending: boolean;
+  onSend: () => void;
+}) {
+  return (
+    <div className="iv-followup-wrap">
+      <div className="iv-followup-head">
+        <StarIcon />
+        <span>Ask the Coach</span>
+      </div>
+      <p className="iv-followup-sub">
+        Follow-up questions about this specific case, your recommendation, or
+        anything from the critique. The Coach has your full session in
+        context.
+      </p>
+
+      {history.length > 0 && (
+        <div className="iv-followup-thread">
+          {history.map((turn, i) => (
+            <div
+              key={i}
+              className={
+                turn.role === "candidate"
+                  ? "iv-msg iv-msg-user"
+                  : "iv-msg iv-msg-ai"
+              }
+            >
+              {turn.role === "coach" && <div className="iv-avatar">CK</div>}
+              <div className="iv-bubble">
+                {turn.text === "" ? (
+                  <span className="iv-typing">
+                    <span />
+                    <span />
+                    <span />
+                  </span>
+                ) : (
+                  turn.text.split("\n").map((line, j) => (
+                    <p key={j} style={{ margin: j === 0 ? 0 : "8px 0 0" }}>
+                      {line}
+                    </p>
+                  ))
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="iv-input-bar">
+        <textarea
+          className="iv-textarea"
+          placeholder="Ask a follow-up…"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              onSend();
+            }
+          }}
+          rows={1}
+          disabled={sending}
+        />
+        <button
+          className="iv-send-btn"
+          onClick={onSend}
+          disabled={!input.trim() || sending}
+        >
+          <SendIcon />
+        </button>
+      </div>
+    </div>
   );
 }
 
