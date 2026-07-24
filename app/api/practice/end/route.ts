@@ -176,7 +176,22 @@ export async function POST(request: NextRequest) {
   const maxCurveballs =
     (practiceCase.rubric as { max_curveballs?: number }).max_curveballs ?? 3;
 
-  // Determine completion status
+  // Determine completion status.
+  //
+  // /turn already writes completion_status when it detects a session end:
+  // "completed" for a passed-last-step OR finalRecommendationDelivered
+  // termination, "abandoned" for turn-cap. The finalRecommendationDelivered
+  // path is the important one — the model can legitimately terminate the
+  // session on an intermediate step when the candidate delivers a full
+  // recommendation early, so highestPassedStep can be < lastStepIndex on
+  // a real completion.
+  //
+  // Previously, /end recomputed completionStatus purely from
+  // highestPassedStep and clobbered the "completed" that /turn set,
+  // marking every auto-completed session as "abandoned" even with a
+  // real critique. Preserve any non-null status /turn wrote; only
+  // compute fresh on the manual-end path (button click on an
+  // in_progress session, no prior /turn write to trust).
   const highestPassedStep = turns.reduce<number>((max, turn) => {
     if (turn.passed) {
       const idx = parseInt(turn.step_id, 10);
@@ -186,7 +201,8 @@ export async function POST(request: NextRequest) {
   }, -1);
 
   const completionStatus =
-    highestPassedStep >= lastStepIndex ? "completed" : "abandoned";
+    session.completion_status ??
+    (highestPassedStep >= lastStepIndex ? "completed" : "abandoned");
 
   // Derive verified structured state from persisted session + turns. This
   // is the ground truth the Coach writes prose around — it does NOT
