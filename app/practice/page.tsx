@@ -1,8 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import "./practice.css";
+
+type SessionCount = {
+  count: number;
+  cap: number;
+  remaining: number;
+  windowDays: number;
+  nextSlotAt: string | null;
+};
+
+function formatTimeUntil(iso: string | null): string {
+  if (!iso) return "soon";
+  const diffMs = Date.parse(iso) - Date.now();
+  if (isNaN(diffMs) || diffMs <= 0) return "soon";
+  const hours = diffMs / (60 * 60 * 1000);
+  if (hours < 1) {
+    const mins = Math.max(1, Math.round(diffMs / (60 * 1000)));
+    return mins === 1 ? "in 1 minute" : `in ${mins} minutes`;
+  }
+  if (hours < 24) {
+    const h = Math.round(hours);
+    return h === 1 ? "in about 1 hour" : `in about ${h} hours`;
+  }
+  const days = Math.round(hours / 24);
+  return days === 1 ? "in about 1 day" : `in about ${days} days`;
+}
 
 const CASES = [
   {
@@ -121,6 +146,84 @@ const SearchSvg = () => (
 export default function PracticeModePage() {
   const [activeInd, setActiveInd] = useState("all");
   const [activeDiff, setActiveDiff] = useState("all");
+  const [countData, setCountData] = useState<SessionCount | null>(null);
+  const [countLoading, setCountLoading] = useState(true);
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistState, setWaitlistState] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
+  const [waitlistError, setWaitlistError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const fallback: SessionCount = {
+        count: 0,
+        cap: 5,
+        remaining: 5,
+        windowDays: 7,
+        nextSlotAt: null,
+      };
+      try {
+        const res = await fetch("/api/practice/session-count");
+        if (!res.ok) {
+          // 401 (logged out) or a transient failure: show the fresh-user
+          // default so the picker doesn't strand a skeleton on the page.
+          if (!cancelled) {
+            setCountData(fallback);
+            setCountLoading(false);
+          }
+          return;
+        }
+        const data = (await res.json()) as SessionCount;
+        if (!cancelled) {
+          setCountData(data);
+          setCountLoading(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setCountData(fallback);
+          setCountLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function submitWaitlist(e: React.FormEvent) {
+    e.preventDefault();
+    const email = waitlistEmail.trim();
+    if (!email) {
+      setWaitlistState("error");
+      setWaitlistError("Enter an email address.");
+      return;
+    }
+    setWaitlistState("submitting");
+    setWaitlistError("");
+    try {
+      const res = await fetch("/api/practice/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, reason: "cap_reached" }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setWaitlistState("error");
+        setWaitlistError(
+          data.error === "invalid_email"
+            ? "That doesn't look like a valid email."
+            : "Something went wrong. Try again in a moment."
+        );
+        return;
+      }
+      setWaitlistState("success");
+    } catch {
+      setWaitlistState("error");
+      setWaitlistError("Something went wrong. Try again in a moment.");
+    }
+  }
 
   const filtered = CASES.filter((c) => {
     const indOk = activeInd === "all" || c.industryKey === activeInd;
@@ -283,15 +386,26 @@ export default function PracticeModePage() {
               <div className="pm-sessions-top">
                 <span className="pm-sessions-label">Practice sessions</span>
                 <span className="pm-sessions-count">
-                  <strong>3</strong> of 5 remaining
+                  {countLoading || !countData ? (
+                    <span className="pm-count-skeleton" aria-label="Loading session count" />
+                  ) : (
+                    <>
+                      <strong>{countData.remaining}</strong> of {countData.cap} remaining
+                    </>
+                  )}
                 </span>
               </div>
               <div className="pm-session-dots">
-                <span className="dot dot-used" />
-                <span className="dot dot-used" />
-                <span className="dot dot-available" />
-                <span className="dot dot-available" />
-                <span className="dot dot-available" />
+                {countLoading || !countData
+                  ? Array.from({ length: 5 }).map((_, i) => (
+                      <span key={i} className="dot dot-skeleton" />
+                    ))
+                  : Array.from({ length: countData.cap }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`dot ${i < countData.count ? "dot-filled" : "dot-empty"}`}
+                      />
+                    ))}
               </div>
               <p className="pm-sessions-note">
                 5 free sessions per week. More cases coming soon.
@@ -301,6 +415,49 @@ export default function PracticeModePage() {
         </div>
       </section>
 
+      {countData && countData.remaining === 0 ? (
+        <section className="pm-cap-section">
+          <div className="pm-cap-card">
+            <div className="pm-cap-eyebrow">Session cap reached</div>
+            <h2>You&apos;ve hit your 5 sessions for this week.</h2>
+            <p>
+              Your next session unlocks{" "}
+              <strong>{formatTimeUntil(countData.nextSlotAt)}</strong> — that&apos;s
+              when your oldest completed session ages off the 7-day window. Drop
+              your email if you&apos;d like a nudge when it opens, or want to
+              hear when we raise the cap.
+            </p>
+            {waitlistState === "success" ? (
+              <p className="pm-cap-status is-success">
+                Got it — we&apos;ll be in touch.
+              </p>
+            ) : (
+              <form className="pm-cap-form" onSubmit={submitWaitlist}>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={waitlistEmail}
+                  onChange={(e) => setWaitlistEmail(e.target.value)}
+                  disabled={waitlistState === "submitting"}
+                  required
+                />
+                <button type="submit" disabled={waitlistState === "submitting"}>
+                  {waitlistState === "submitting" ? "Saving…" : "Notify me"}
+                </button>
+              </form>
+            )}
+            {waitlistState === "error" && (
+              <p className="pm-cap-status is-error">{waitlistError}</p>
+            )}
+            <p className="pm-cap-review">
+              Your completed sessions are still on your{" "}
+              <Link href="/dashboard">dashboard</Link> — you can review any of
+              them while you wait.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <>
       {/* FILTER BAR */}
       <div className="pm-filter-bar">
         <div className="pm-filter-inner">
@@ -387,6 +544,8 @@ export default function PracticeModePage() {
           )}
         </div>
       </section>
+        </>
+      )}
     </>
   );
 }

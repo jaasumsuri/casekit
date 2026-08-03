@@ -1,8 +1,12 @@
 import { NextRequest } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { createClient } from "@supabase/supabase-js";
 import cases from "@/data/practice-cases.json";
 
 const SESSION_CAP = 5;
+const WINDOW_DAYS = 7;
+const WINDOW_MS = WINDOW_DAYS * 24 * 60 * 60 * 1000;
 
 function getSupabase() {
   return createClient(
@@ -13,11 +17,18 @@ function getSupabase() {
 }
 
 export async function POST(request: NextRequest) {
-  const { caseSlug, userId, forceNew } = (await request.json()) as {
+  const { caseSlug, userId: clientUserId, forceNew } = (await request.json()) as {
     caseSlug: string;
-    userId: string;
+    userId?: string;
     forceNew?: boolean;
   };
+
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return Response.json({ error: "unauthorized" }, { status: 401 });
+  }
+  const userId =
+    (session.user as { id?: string }).id ?? session.user.email ?? clientUserId;
 
   if (!caseSlug || !userId) {
     return Response.json({ error: "missing_fields" }, { status: 400 });
@@ -49,15 +60,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const weekStart = new Date();
-    weekStart.setDate(weekStart.getDate() - 7);
-    weekStart.setHours(0, 0, 0, 0);
+    const windowStart = new Date(Date.now() - WINDOW_MS).toISOString();
 
     const { count, error: countError } = await supabase
       .from("practice_sessions")
       .select("*", { count: "exact", head: true })
       .eq("user_id", userId)
-      .gte("created_at", weekStart.toISOString());
+      .eq("status", "completed")
+      .gte("created_at", windowStart);
 
     if (countError) {
       return Response.json(
@@ -68,7 +78,12 @@ export async function POST(request: NextRequest) {
 
     if ((count ?? 0) >= SESSION_CAP) {
       return Response.json(
-        { error: "session_cap_reached", count },
+        {
+          error: "SESSION_CAP_REACHED",
+          remaining: 0,
+          cap: SESSION_CAP,
+          windowDays: WINDOW_DAYS,
+        },
         { status: 403 }
       );
     }

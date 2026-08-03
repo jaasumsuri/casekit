@@ -278,9 +278,7 @@ export default function InterviewClient({
       }
 
       // No resumable session — check cap, then start a new one
-      const countRes = await fetch(
-        `/api/practice/session-count?userId=${userId}`
-      );
+      const countRes = await fetch("/api/practice/session-count");
       const countData = await countRes.json();
       if (countData.remaining === 0) {
         setPhase("limit");
@@ -298,7 +296,7 @@ export default function InterviewClient({
       });
       const startData = await startRes.json();
 
-      if (startData.error === "session_cap_reached") {
+      if (startData.error === "SESSION_CAP_REACHED") {
         setPhase("limit");
         return;
       }
