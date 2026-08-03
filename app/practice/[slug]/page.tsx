@@ -1,4 +1,6 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import cases from "@/data/practice-cases.json";
 import InterviewClient from "./interview";
 
@@ -36,6 +38,10 @@ export default async function PracticeInterviewPage({
   searchParams: Promise<{ new?: string }>;
 }) {
   const { slug } = await params;
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent(`/practice/${slug}`)}`);
+  }
   const sp = await searchParams;
   const forceNew = sp.new === "1";
   const caseMeta = getCaseMeta(slug);
