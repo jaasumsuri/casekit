@@ -194,8 +194,22 @@ export async function POST(request: NextRequest) {
       | null;
 
     if (existingTurn) {
-      const passedLastStep =
-        !!existingTurn.passed && stepIndex === steps.length - 1;
+      // Re-read the persisted session status. In the in-flight race
+      // where a duplicate request lands after the original has already
+      // completed the session, our locally-cached session.status is
+      // stale ("in_progress") but the row now says "completed". Trust
+      // the persisted value rather than recomputing sessionComplete
+      // from this single turn's per-turn checklist, which was the
+      // pre-cumulative logic and would miss natural completions that
+      // depended on merged state across multiple last-step turns.
+      const { data: currentSessionRow } = await supabase
+        .from("practice_sessions")
+        .select("status")
+        .eq("id", sessionId)
+        .single();
+      const sessionComplete =
+        (currentSessionRow as { status?: string } | null)?.status ===
+        "completed";
       const nextIndex = existingTurn.passed ? stepIndex + 1 : stepIndex;
       const nextStepId =
         nextIndex < steps.length ? String(nextIndex) : String(stepIndex);
@@ -205,7 +219,7 @@ export async function POST(request: NextRequest) {
           "Could you walk me through your thinking on that again?",
         passed: existingTurn.passed ?? false,
         nextStepId,
-        sessionComplete: passedLastStep,
+        sessionComplete,
       });
     }
   } catch {
