@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { FIELDCAST } from "@/data/cases/fieldcast";
+import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
 import "./fieldcast.css";
 
 const D = FIELDCAST;
@@ -786,9 +787,9 @@ function RevealSection({ score, onRestart }: { score: number; onRestart: () => v
         ))}
       </div>
 
-      {activeTab === "report" && <ReportPanel />}
-      {activeTab === "deck" && <DeckPanel />}
-      {activeTab === "iq" && <IqPanel />}
+      {activeTab === "report" && <ReportPanel report={D.report} />}
+      {activeTab === "deck" && <DeckPanel slides={D.slides} />}
+      {activeTab === "iq" && <IqPanel questions={D.questions} />}
 
       <nav className="detail-nav" style={{ paddingTop: 40 }}>
         <Link className="dn-link prev" href="/cases">
@@ -805,143 +806,7 @@ function RevealSection({ score, onRestart }: { score: number; onRestart: () => v
 }
 
 /* ─── Report Panel ─── */
-function ReportPanel() {
-  const r = D.report;
-  return (
-    <div className="report-doc">
-      <div className="report-banner">
-        <span className="rb-title">{r.title}</span>
-        <span className="rb-meta">{r.meta}</span>
-      </div>
-      {r.sections.map((s, i) => (
-        <div key={i} className={`rsection${s.type === "exec" ? " exec" : ""}`}>
-          <div className="rs-label">{s.label}</div>
-          {(s.type === "exec" || s.type === "p") && "body" in s && (
-            <p dangerouslySetInnerHTML={{ __html: s.body }} />
-          )}
-          {s.type === "ul" && "items" in s && (
-            <ul>{s.items.map((item, j) => <li key={j} dangerouslySetInnerHTML={{ __html: item }} />)}</ul>
-          )}
-          {s.type === "steps" && "items" in s && (
-            <ul className="steps">{s.items.map((item, j) => <li key={j} dangerouslySetInnerHTML={{ __html: item }} />)}</ul>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 /* ─── Deck Panel ─── */
-function DeckPanel() {
-  const [idx, setIdx] = useState(0);
-  const slides = D.slides;
-  const sl = slides[idx];
-  const go = (i: number) => setIdx(Math.max(0, Math.min(slides.length - 1, i)));
-
-  return (
-    <div className="deck-wrap">
-      <div className="deck-stage">
-        <div className="slide-top" />
-        <div className="slide active">
-          <div className="slide-inner">
-            <div className="slide-head">
-              <div className="slide-title">{sl.title}</div>
-              <div className="slide-no">{String(sl.n).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}</div>
-            </div>
-            <div className="slide-body">
-              {sl.layout === "title_bullets" && "bullets" in sl && (
-                <ul className="sl-bullets">{sl.bullets.map((b, i) => <li key={i}>{b}</li>)}</ul>
-              )}
-              {sl.layout === "two_column" && "left" in sl && (
-                <div className="sl-two">
-                  <div className={`sl-col ${sl.left.cls || "rev"}`}>
-                    <div className="sc-head">{sl.left.head}</div>
-                    <ul>{sl.left.items.map((item, i) => <li key={i}>{item}</li>)}</ul>
-                  </div>
-                  <div className={`sl-col ${sl.right.cls || "cost"}`}>
-                    <div className="sc-head">{sl.right.head}</div>
-                    <ul>{sl.right.items.map((item, i) => <li key={i}>{item}</li>)}</ul>
-                  </div>
-                </div>
-              )}
-              {sl.layout === "single_insight" && "headline" in sl && (
-                <div className="sl-insight">
-                  <div className="si-headline">{sl.headline}</div>
-                  <p className="si-detail">{sl.detail}</p>
-                </div>
-              )}
-              {sl.layout === "data_table" && "headers" in sl && (
-                <table className="wx-table exh">
-                  <thead><tr>{sl.headers.map((h, i) => <th key={i} style={i > 0 ? { textAlign: "right" } : undefined}>{h}</th>)}</tr></thead>
-                  <tbody>{sl.rows.map((r, ri) => <tr key={ri}>{r.map((c, ci) => <td key={ci} style={ci > 0 ? { textAlign: "right" } : undefined}>{c}</td>)}</tr>)}</tbody>
-                </table>
-              )}
-              {sl.layout === "recommendation" && "rows" in sl && (
-                <div className="sl-rec">
-                  {sl.rows.map((r, i) => (
-                    <div className="rec-row" key={i}>
-                      <span className="rec-tag">{r.tag}</span>
-                      <p dangerouslySetInnerHTML={{ __html: r.text }} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="slide-so">
-            <span className="so-lbl">So what</span>
-            <p>{sl.so_what}</p>
-          </div>
-        </div>
-      </div>
-      <div className="deck-nav">
-        <div className="deck-dots">
-          {slides.map((_, i) => (
-            <button key={i} className={`deck-dot${i === idx ? " active" : ""}`} type="button" onClick={() => go(i)} />
-          ))}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <span className="deck-counter"><b>{idx + 1}</b> / {slides.length}</span>
-          <div className="deck-arrows">
-            <button className="deck-btn" type="button" disabled={idx === 0} onClick={() => go(idx - 1)}>
-              <BackSvg /> Prev
-            </button>
-            <button className="deck-btn" type="button" disabled={idx === slides.length - 1} onClick={() => go(idx + 1)}>
-              Next <ArrowSvg />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ─── IQ Panel ─── */
-function IqPanel() {
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
-
-  return (
-    <div className="iq-list">
-      {D.questions.map((q, i) => {
-        const isOpen = openIdx === i;
-        return (
-          <div key={i} className={`iq-card${isOpen ? " open" : ""}`}>
-            <div className="iq-top">
-              <span className="iq-num">{String(i + 1).padStart(2, "0")}</span>
-              <div className="iq-main">
-                <span className="iq-skill">{q.skill}</span>
-                <div className="iq-q">{q.q}</div>
-                <button className="iq-hint-btn" type="button" onClick={() => setOpenIdx(isOpen ? null : i)}>
-                  {isOpen ? "Hide hint" : "Show hint"} <ChevronSvg />
-                </button>
-                <div className="iq-hint">
-                  <div className="iq-hint-inner" dangerouslySetInnerHTML={{ __html: q.hint }} />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
