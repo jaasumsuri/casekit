@@ -89,6 +89,17 @@ type Slide =
       so_what: string;
       layout: "recommendation";
       rows: { tag: string; text: string }[];
+    }
+  | {
+      n: number;
+      title: string;
+      so_what: string;
+      layout: "bar_chart";
+      chart: {
+        unit: string;
+        categories: string[];
+        series: { name: string; values: number[]; cls?: string }[];
+      };
     };
 
 const LAYOUT_ENUM = [
@@ -97,6 +108,7 @@ const LAYOUT_ENUM = [
   "single_insight",
   "data_table",
   "recommendation",
+  "bar_chart",
 ] as const;
 
 const SLIDES_TOOL = {
@@ -131,7 +143,7 @@ const SLIDES_TOOL = {
               type: "string",
               enum: [...LAYOUT_ENUM],
               description:
-                "Rendering layout: 'title_bullets' | 'two_column' | 'single_insight' | 'data_table' | 'recommendation'. Match layout to content: use 'data_table' when comparing numbers side by side, 'two_column' for parallel lists (e.g. revenue vs cost), 'single_insight' for one headline claim + supporting paragraph, 'recommendation' for the final action/target/outcome slide, 'title_bullets' otherwise.",
+                "Rendering layout. Match layout to content: 'bar_chart' when a trend or a gap between two quantities over 3-5 periods is the point — prefer it over 'data_table' whenever the shape of the movement carries the insight; 'data_table' when the precise figures matter or there are more than two measures; 'two_column' for parallel lists (e.g. revenue vs cost); 'single_insight' for one headline claim + supporting paragraph; 'recommendation' for the final action/target/outcome slide; 'title_bullets' otherwise. A strong 5-slide deck usually contains at least one 'bar_chart'.",
             },
             bullets: {
               type: "array",
@@ -191,6 +203,51 @@ const SLIDES_TOOL = {
               description:
                 "For layout='data_table': array of rows, each row an array of cell strings matching headers length. Empty array otherwise.",
             },
+            chart: {
+              type: "object",
+              description:
+                "For layout='bar_chart': a grouped bar exhibit. Empty structure otherwise. Use 1-2 series and 3-5 categories. Every series' `values` array MUST have exactly the same length as `categories`. Use real figures from the case, not invented ones.",
+              properties: {
+                unit: {
+                  type: "string",
+                  description:
+                    "Unit label shown under the plot, e.g. '$M per quarter' or '% margin'. State the time basis explicitly.",
+                },
+                categories: {
+                  type: "array",
+                  items: { type: "string" },
+                  description:
+                    "3-5 x-axis labels, e.g. ['Q1', 'Q2', 'Q3', 'Q4'] or ['2022', '2023', '2024'].",
+                },
+                series: {
+                  type: "array",
+                  minItems: 1,
+                  maxItems: 2,
+                  items: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string", description: "Series name for the legend." },
+                      values: {
+                        type: "array",
+                        items: { type: "number" },
+                        description:
+                          "Numeric values, one per category, in the same order. Length must equal categories length.",
+                      },
+                      cls: {
+                        type: "string",
+                        enum: ["rev", "cost", "pass", "concern"],
+                        description:
+                          "Colour tag: 'rev'/'pass' render green, 'cost'/'concern' render amber.",
+                      },
+                    },
+                    required: ["name", "values"],
+                    additionalProperties: false,
+                  },
+                },
+              },
+              required: ["unit", "categories", "series"],
+              additionalProperties: false,
+            },
             rec_rows: {
               type: "array",
               items: {
@@ -227,6 +284,7 @@ const SLIDES_TOOL = {
             "headers",
             "table_rows",
             "rec_rows",
+            "chart",
           ],
           additionalProperties: false,
         },
@@ -361,6 +419,49 @@ export async function POST(request: NextRequest) {
   return Response.json({ slides, cached: false });
 }
 
+// Charts are dropped unless every series lines up with the categories —
+// a ragged series would render bars against the wrong periods, which is
+// worse than no exhibit.
+type BarChart = {
+  unit: string;
+  categories: string[];
+  series: { name: string; values: number[]; cls?: string }[];
+};
+
+function normalizeChart(input: unknown): BarChart | null {
+  if (!input || typeof input !== "object") return null;
+  const c = input as Record<string, unknown>;
+  const unit = typeof c.unit === "string" ? c.unit.trim() : "";
+  const categories = Array.isArray(c.categories)
+    ? (c.categories as unknown[]).filter(
+        (x): x is string => typeof x === "string" && x.trim().length > 0
+      )
+    : [];
+  if (!unit || categories.length < 2) return null;
+
+  const rawSeries = Array.isArray(c.series) ? c.series : [];
+  const series: { name: string; values: number[]; cls?: string }[] = [];
+  for (const rs of rawSeries) {
+    if (!rs || typeof rs !== "object") continue;
+    const o = rs as Record<string, unknown>;
+    const name = typeof o.name === "string" ? o.name.trim() : "";
+    const values = Array.isArray(o.values)
+      ? (o.values as unknown[]).filter(
+          (v): v is number => typeof v === "number" && Number.isFinite(v)
+        )
+      : [];
+    if (!name || values.length !== categories.length) continue;
+    const cls =
+      typeof o.cls === "string" &&
+      ["rev", "cost", "pass", "concern"].includes(o.cls)
+        ? o.cls
+        : undefined;
+    series.push({ name, values, ...(cls ? { cls } : {}) });
+  }
+  if (series.length === 0) return null;
+  return { unit, categories, series: series.slice(0, 2) };
+}
+
 // The tool schema uses flat keys (`table_rows`, `rec_rows`, `headers`,
 // etc.) so a strict input_schema can require all of them on every slide.
 // Reshape into the layout-specific discriminated union the frontend
@@ -381,7 +482,8 @@ function normalizeSlides(input: Record<string, unknown>): Slide[] {
       layout !== "two_column" &&
       layout !== "single_insight" &&
       layout !== "data_table" &&
-      layout !== "recommendation"
+      layout !== "recommendation" &&
+      layout !== "bar_chart"
     ) {
       return;
     }
@@ -427,6 +529,14 @@ function normalizeSlides(input: Record<string, unknown>): Slide[] {
       }
       if (headers.length === 0 || rows.length === 0) return;
       out.push({ ...base, layout, headers, rows });
+      return;
+    }
+    if (layout === "bar_chart") {
+      const chart = normalizeChart(s.chart);
+      // A malformed chart would render an empty exhibit, so drop the slide
+      // rather than ship a blank one.
+      if (!chart) return;
+      out.push({ ...base, layout, chart });
       return;
     }
     if (layout === "recommendation") {

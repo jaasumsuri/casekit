@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { ChartExhibit } from "@/components/case/RevealPanels";
 import Link from "next/link";
 import { renderInline } from "@/lib/critique";
 import "./interview.css";
@@ -69,6 +70,17 @@ type Slide =
       so_what: string;
       layout: "recommendation";
       rows: { tag: string; text: string }[];
+    }
+  | {
+      n: number;
+      title: string;
+      so_what: string;
+      layout: "bar_chart";
+      chart: {
+        unit: string;
+        categories: string[];
+        series: { name: string; values: number[]; cls?: "rev" | "cost" | "pass" | "concern" }[];
+      };
     };
 
 type Phase =
@@ -1513,6 +1525,7 @@ function DeckPanel({ slides }: { slides: Slide[] }) {
                   </div>
                 </div>
               )}
+              {sl.layout === "bar_chart" && <ChartExhibit chart={sl.chart} />}
               {sl.layout === "single_insight" && (
                 <div className="sl-insight">
                   <div className="si-headline">{sl.headline}</div>

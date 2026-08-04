@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { CaseReport, InterviewQuestion, Slide } from "./types";
+import type { BarChart, CaseReport, InterviewQuestion, Slide } from "./types";
 
 /* ─────────────────── icons ─────────────────── */
 
@@ -45,6 +45,63 @@ export function ReportPanel({ report }: { report: CaseReport }) {
         </div>
       ))}
     </div>
+  );
+}
+
+/* ─────────────────── chart exhibit ─────────────────── */
+
+/**
+ * Grouped bar exhibit, drawn with CSS heights rather than a chart library —
+ * it has to survive being inlined in a deck slide with no external assets.
+ * Bars are scaled against the largest value across every series so the two
+ * series stay comparable.
+ */
+export function ChartExhibit({ chart }: { chart: BarChart }) {
+  const all = chart.series.flatMap((s) => s.values);
+  const max = Math.max(...all.map((v) => Math.abs(v)), 0);
+  const pct = (v: number) => (max === 0 ? 0 : (Math.abs(v) / max) * 100);
+  const multi = chart.series.length > 1;
+  // If any value carries a decimal, show them all to 1dp so the labels line
+  // up as a column of figures rather than a ragged mix of 77 and 75.6.
+  const dp = all.some((v) => !Number.isInteger(v)) ? 1 : 0;
+  const fmt = (v: number) => v.toFixed(dp);
+
+  return (
+    <figure className="sl-chart">
+      {multi && (
+        <div className="slc-legend">
+          {chart.series.map((s, i) => (
+            <span key={s.name} className={`slc-key s${i} ${s.cls || ""}`}>
+              <i aria-hidden="true" />
+              {s.name}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="slc-plot" role="img" aria-label={`${chart.series.map((s) => s.name).join(" and ")} by ${chart.categories.join(", ")}, in ${chart.unit}`}>
+        {chart.categories.map((cat, ci) => (
+          <div className="slc-group" key={cat}>
+            <div className="slc-bars">
+              {chart.series.map((s, si) => {
+                const v = s.values[ci];
+                const neg = v < 0;
+                return (
+                  <div
+                    key={s.name}
+                    className={`slc-bar s${si} ${s.cls || ""}${neg ? " neg" : ""}`}
+                    style={{ height: `${pct(v)}%` }}
+                  >
+                    <span className="slc-val">{fmt(v)}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="slc-cat">{cat}</div>
+          </div>
+        ))}
+      </div>
+      <figcaption className="slc-unit">{chart.unit}</figcaption>
+    </figure>
   );
 }
 
@@ -101,6 +158,7 @@ export function DeckPanel({ slides }: { slides: readonly Slide[] }) {
                   </tbody>
                 </table>
               )}
+              {sl.layout === "bar_chart" && <ChartExhibit chart={sl.chart} />}
               {sl.layout === "recommendation" && (
                 <div className="sl-rec">
                   {sl.rows.map((r, i) => (

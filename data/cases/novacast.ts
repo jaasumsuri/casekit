@@ -185,6 +185,20 @@ export const NOVACAST = {
     },
     {
       n: 4,
+      title: "Revenue is flat while licensing climbs every quarter",
+      layout: "bar_chart" as const,
+      chart: {
+        unit: "$M per quarter",
+        categories: ["Q3 2023", "Q4 2023", "Q1 2024", "Q2 2024"],
+        series: [
+          { name: "Total revenue", values: [75.6, 77.0, 78.3, 75.6], cls: "rev" as const },
+          { name: "Content licensing", values: [44.0, 47.9, 52.0, 56.1], cls: "cost" as const },
+        ],
+      },
+      so_what: "The gap between the two bars is the margin. It closes every quarter, and only one of the bars is moving.",
+    },
+    {
+      n: 5,
       title: "Every dollar of lost margin maps to licensing",
       layout: "data_table" as const,
       headers: ["Quarter", "Revenue ($M)", "Licensing ($M)", "Other ($M)", "Op. Profit ($M)", "Op. Margin"],
@@ -194,10 +208,10 @@ export const NOVACAST = {
         ["Q1 2024", "78.3", "52.0", "22.4", "3.9", "5%"],
         ["Q2 2024", "75.6", "56.1", "22.6", "−3.1", "−4%"],
       ],
-      so_what: "Revenue ends the period exactly where it started ($75.6M) while licensing climbs every quarter — the margin loss tracks one column.",
+      so_what: "The same picture in numbers: revenue ends where it started ($75.6M), and the entire margin loss tracks a single column.",
     },
     {
-      n: 5,
+      n: 6,
       title: "Cutting licensing 15% returns NovaCast to profit in 12 months",
       layout: "recommendation" as const,
       rows: [

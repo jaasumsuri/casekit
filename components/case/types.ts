@@ -23,7 +23,22 @@ export type Slide =
     }
   | { n: number; title: string; so_what: string; layout: "single_insight"; headline: string; detail: string }
   | { n: number; title: string; so_what: string; layout: "data_table"; headers: readonly string[]; rows: readonly (readonly string[])[] }
-  | { n: number; title: string; so_what: string; layout: "recommendation"; rows: readonly { tag: string; text: string }[] };
+  | { n: number; title: string; so_what: string; layout: "recommendation"; rows: readonly { tag: string; text: string }[] }
+  | { n: number; title: string; so_what: string; layout: "bar_chart"; chart: BarChart };
+
+/** A grouped bar exhibit. Rendered with CSS bars — no chart library, no external assets. */
+export interface BarChart {
+  /** Axis unit, e.g. "$M, quarterly". Shown under the plot. */
+  unit: string;
+  /** X-axis categories, e.g. ["Q3 2023", "Q4 2023", …]. */
+  categories: readonly string[];
+  /** One or two series. Each `values` array must match `categories` length. */
+  series: readonly {
+    name: string;
+    values: readonly number[];
+    cls?: "rev" | "cost" | "pass" | "concern";
+  }[];
+}
 
 export interface InterviewQuestion {
   q: string;
