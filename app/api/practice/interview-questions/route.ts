@@ -31,6 +31,7 @@ function getSupabase() {
 interface StoredInterviewQuestions {
   questions: { q: string }[];
   answers?: { q: string; a: string }[];
+  close?: string;
 }
 
 interface Turn {
@@ -72,7 +73,7 @@ const INTERVIEW_QUESTIONS_TOOL = {
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
     sessionId?: string;
-    action?: "generate" | "submit";
+    action?: "generate" | "submit" | "close";
     answers?: string[];
   };
   const { sessionId, action } = body;
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
   if (!sessionId || !action) {
     return Response.json({ error: "missing_fields" }, { status: 400 });
   }
-  if (action !== "generate" && action !== "submit") {
+  if (action !== "generate" && action !== "submit" && action !== "close") {
     return Response.json({ error: "invalid_action" }, { status: 400 });
   }
 
@@ -149,6 +150,98 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "update_failed" }, { status: 500 });
     }
     return Response.json({ ok: true, questions: pairs });
+  }
+
+  if (action === "close") {
+    // Idempotent: if a close line was already generated for this session
+    // (e.g. the client refetches after a network hiccup), return it as-is
+    // rather than paying for another model call.
+    if (stored?.close && stored.close.trim().length > 0) {
+      return Response.json({ close: stored.close, cached: true });
+    }
+
+    const practiceCase = cases.cases.find(
+      (c: { slug: string }) => c.slug === sessionRaw.case_slug
+    );
+    if (!practiceCase) {
+      return Response.json({ error: "case_not_found" }, { status: 404 });
+    }
+
+    const style = practiceCase.company_style;
+    let styleGuidance: string;
+    if (style === "MBB") {
+      styleGuidance =
+        "MBB partner voice: brisk, structured, non-committal. Signal that you have what you need without editorializing.";
+    } else if (style === "Big4") {
+      styleGuidance =
+        "Big4 partner voice: professional, appreciative, focused on next steps. Warmer than MBB but still measured.";
+    } else {
+      styleGuidance =
+        "Boutique partner voice: relational, thoughtful, indicates the team will discuss internally before responding.";
+    }
+
+    const systemPrompt = `You are still in the Interviewer role from a case interview. The candidate has just finished answering your 2-3 partner follow-up questions and the interview is now over. Deliver ONE short closing line to end the meeting.
+
+Rules:
+- ${styleGuidance}
+- 1 to 2 sentences, max. This is a close, not a monologue.
+- Stay in the client-stakeholder voice: first-person, addressed to the candidate.
+- Do NOT congratulate, evaluate, praise, or coach. You are a business stakeholder wrapping up a meeting, not a critic. That is not your role — someone else handles the feedback.
+- Do NOT reference "the interview," "the case," "practice," "the exercise," or "your performance" — you are in-character as if this were a real client meeting.
+- No preamble, no restating what they said. Just the closer.
+
+Return ONLY the closing line as plain text. No quotes, no markdown, no attribution.`;
+
+    let closeText: string;
+    try {
+      const anthropic = new Anthropic();
+      const message = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 200,
+        system: systemPrompt,
+        messages: [
+          {
+            role: "user",
+            content: "Deliver the closing line now.",
+          },
+        ],
+      });
+      const textBlock = message.content.find(
+        (b): b is Extract<typeof b, { type: "text" }> => b.type === "text"
+      );
+      closeText = (textBlock?.text ?? "").trim();
+      if (!closeText) {
+        throw new Error(`empty close text, stop_reason=${message.stop_reason}`);
+      }
+      // Strip surrounding quotes the model sometimes wraps around a one-liner.
+      closeText = closeText.replace(/^["'“”]([\s\S]*)["'“”]$/, "$1").trim();
+    } catch (err) {
+      console.error("interview-questions close: model call failed:", err);
+      return Response.json({ error: "generation_failed" }, { status: 502 });
+    }
+
+    // Persist so a page refresh mid-transition or a retry doesn't regenerate.
+    try {
+      const payload: StoredInterviewQuestions = {
+        questions: stored?.questions ?? [],
+        answers: stored?.answers,
+        close: closeText,
+      };
+      const { error: updateError } = await supabase
+        .from("practice_sessions")
+        .update({ interview_questions: payload })
+        .eq("id", sessionId);
+      if (updateError && updateError.code !== "PGRST204") {
+        console.error(
+          "interview-questions close: persist failed:",
+          updateError
+        );
+      }
+    } catch (err) {
+      console.error("interview-questions close: persist threw:", err);
+    }
+
+    return Response.json({ close: closeText, cached: false });
   }
 
   // action === "generate"

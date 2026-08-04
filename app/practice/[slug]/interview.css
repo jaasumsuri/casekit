@@ -119,6 +119,19 @@
   font-variant-numeric: tabular-nums;
   color: rgba(255, 255, 255, 0.7);
 }
+.iv-session-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 .iv-end-btn {
   padding: 7px 16px;
   border-radius: 999px;
@@ -561,5 +574,41 @@
   color: var(--ink);
   font-size: 0.98rem;
   line-height: 1.55;
+}
+
+/* ─── "Generating your critique" bridge shown in the chat panel while
+      /api/practice/end is in flight, between the interviewer's close and
+      the Coach view taking over. ─── */
+.iv-critique-bridge {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--forest);
+  font-family: var(--font-body), "DM Sans", sans-serif;
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+  animation: ivBridgeIn 0.35s ease-out;
+}
+.iv-critique-bridge-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(28, 61, 46, 0.18);
+  border-top-color: var(--forest);
+  border-radius: 50%;
+  animation: ivSpin 0.9s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes ivBridgeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iv-critique-bridge-spinner { animation: none; }
+  .iv-critique-bridge { animation: none; }
 }
 

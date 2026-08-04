@@ -79,6 +79,8 @@ type Phase =
   | "interview-questions"
   | "critique";
 
+const SESSION_CAP = 5;
+
 function formatFramework(fw: string): string {
   return fw
     .split("_")
@@ -133,6 +135,14 @@ export default function InterviewClient({
   const [iqSubmitting, setIqSubmitting] = useState(false);
   const [iqLoading, setIqLoading] = useState(false);
 
+  // Interviewer closing beat + "generating critique" bridge shown after the
+  // partner follow-up submit but before the Coach panel takes over.
+  const [showCritiqueLoader, setShowCritiqueLoader] = useState(false);
+
+  // Session-count badge shown in the header — the same count the picker
+  // uses. Fetched once on mount; static per session.
+  const [sessionBadge, setSessionBadge] = useState<string | null>(null);
+
   // Reveal (report + slides) — generated on-demand after critique.
   const [revealOpen, setRevealOpen] = useState(false);
   const [revealTab, setRevealTab] = useState<"report" | "slides">("report");
@@ -163,6 +173,37 @@ export default function InterviewClient({
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping, scrollToBottom]);
+
+  // Fetch session-count once on mount and format the header badge. If the
+  // request fails (unauth, network) we leave the badge null so the header
+  // renders cleanly rather than showing a broken "Session ? of 5".
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/practice/session-count");
+        if (!res.ok) return;
+        const data = (await res.json()) as {
+          count?: number;
+          cap?: number;
+        };
+        if (cancelled) return;
+        const cap = typeof data.cap === "number" ? data.cap : SESSION_CAP;
+        const count = typeof data.count === "number" ? data.count : null;
+        if (count === null) return;
+        // "This" session is count + 1, clamped to cap for the theoretical
+        // over-cap edge case (picker prevents it, but the badge should never
+        // read "Session 6 of 5").
+        const current = Math.min(cap, count + 1);
+        setSessionBadge(`Session ${current} of ${cap}`);
+      } catch {
+        // swallow — badge stays null and renders nothing
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Timer
   useEffect(() => {
@@ -414,12 +455,13 @@ export default function InterviewClient({
     if (!trimmed || iqSubmitting) return;
     setIqSubmitting(true);
     setIqError(null);
+    const questionsAtSubmit = iqQuestions;
     try {
       // The candidate answers all 2-3 questions in one text block. Split
       // it evenly across the questions so /followup and Coach see one
       // pairing per question — the model does not need perfect alignment,
       // just something to reference for each Q.
-      const answers = iqQuestions.map(() => trimmed);
+      const answers = questionsAtSubmit.map(() => trimmed);
       const res = await fetch("/api/practice/interview-questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -434,7 +476,57 @@ export default function InterviewClient({
         setIqSubmitting(false);
         return;
       }
-      await endSession();
+
+      // Fold the partner-pushback exchange into the main messages list so
+      // the closing line renders as the natural next bubble beneath it.
+      const questionsText = [
+        "Before we wrap — a couple of quick things I want to push you on:",
+        ...questionsAtSubmit.map((q, i) => `${i + 1}. ${q.q}`),
+      ].join("\n");
+      setMessages((prev) => [
+        ...prev,
+        { role: "interviewer", text: questionsText },
+        { role: "candidate", text: trimmed },
+      ]);
+      setIqQuestions(null);
+      setIqAnswer("");
+
+      // In-character interviewer closing line. Fire-and-continue — if the
+      // model call fails or the request errors, skip the closer and go
+      // straight to the critique loader; don't block the user on it.
+      let closerText: string | null = null;
+      try {
+        const closeRes = await fetch("/api/practice/interview-questions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, action: "close" }),
+        });
+        if (closeRes.ok) {
+          const closeJson = (await closeRes.json()) as { close?: string };
+          if (
+            typeof closeJson.close === "string" &&
+            closeJson.close.trim().length > 0
+          ) {
+            closerText = closeJson.close.trim();
+          }
+        }
+      } catch {
+        // non-fatal — closer is nice-to-have, not required
+      }
+      if (closerText) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "interviewer", text: closerText },
+        ]);
+      }
+
+      // Give the user ~1.8s to read the closer before the "generating your
+      // critique" bridge appears. If we didn't get a closer, snap to the
+      // loader almost immediately so there's still an ack.
+      const loaderDelay = closerText ? 1800 : 300;
+      setTimeout(() => setShowCritiqueLoader(true), loaderDelay);
+
+      await endSession({ keepPhaseUntilStream: true });
     } catch {
       setIqError("Network error saving your response. Try again.");
       setIqSubmitting(false);
@@ -445,13 +537,21 @@ export default function InterviewClient({
     await endSession();
   }
 
-  async function endSession() {
+  async function endSession(opts?: { keepPhaseUntilStream?: boolean }) {
     if (!sessionId) return;
     if (timerRef.current) clearInterval(timerRef.current);
 
-    setPhase("critique");
     setCritique("");
     setCritiqueError(null);
+    // Manual "end early" path snaps to critique immediately (the spinner
+    // there is the user feedback). The IQ path keeps the interview panel
+    // + closer + inline loader visible until the first byte of critique
+    // arrives, then transitions.
+    if (!opts?.keepPhaseUntilStream) {
+      setPhase("critique");
+    }
+
+    const goToCritique = () => setPhase("critique");
 
     try {
       const res = await fetch("/api/practice/end", {
@@ -461,12 +561,16 @@ export default function InterviewClient({
       });
 
       if (!res.ok) {
+        goToCritique();
+        setShowCritiqueLoader(false);
         setCritiqueError("Couldn't generate the critique. Try again in a moment.");
         return;
       }
 
       if (!res.body) {
         const data = await res.json();
+        goToCritique();
+        setShowCritiqueLoader(false);
         setCritique(data.critique || "Unable to generate critique.");
         return;
       }
@@ -474,12 +578,26 @@ export default function InterviewClient({
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let transitioned = !opts?.keepPhaseUntilStream;
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
+        if (
+          !transitioned &&
+          buffer.replace(CRITIQUE_ERROR_SENTINEL, "").trim().length > 0
+        ) {
+          transitioned = true;
+          goToCritique();
+          setShowCritiqueLoader(false);
+        }
         setCritique(buffer);
+      }
+
+      if (!transitioned) {
+        goToCritique();
+        setShowCritiqueLoader(false);
       }
 
       // Server signaled a failed generation via sentinel, or the stream
@@ -493,6 +611,8 @@ export default function InterviewClient({
         setCritiqueError("Couldn't generate the critique. Try again in a moment.");
       }
     } catch {
+      goToCritique();
+      setShowCritiqueLoader(false);
       setCritiqueError("Network error while generating the critique. Try again.");
     }
   }
@@ -680,6 +800,9 @@ export default function InterviewClient({
             </div>
           </div>
           <div className="iv-header-right">
+            {sessionBadge && (
+              <span className="iv-session-badge">{sessionBadge}</span>
+            )}
             <span className="iv-timer">
               <ClockIcon />
               {formatTime(elapsed)}
@@ -705,6 +828,12 @@ export default function InterviewClient({
                   <div className="iv-bubble">{msg.text}</div>
                 </div>
               ))}
+              {showCritiqueLoader && (
+                <div className="iv-critique-bridge">
+                  <div className="iv-critique-bridge-spinner" />
+                  <span>Generating your critique…</span>
+                </div>
+              )}
               {iqLoading && (
                 <div className="iv-msg iv-msg-ai">
                   <div className="iv-avatar">CK</div>
@@ -989,6 +1118,9 @@ export default function InterviewClient({
           </div>
         </div>
         <div className="iv-header-right">
+          {sessionBadge && (
+            <span className="iv-session-badge">{sessionBadge}</span>
+          )}
           <span className="iv-timer">
             <ClockIcon />
             {formatTime(elapsed)}
