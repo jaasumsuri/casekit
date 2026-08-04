@@ -62,16 +62,18 @@ export default function Header() {
           style={{ gap: 32, alignItems: "center", justifyContent: "center" }}
         >
           {[
-            { label: "Frameworks", href: "/frameworks", match: "/frameworks" },
-            { label: "Guided Cases", href: "/cases", match: "/cases" },
-            { label: "Practice Mode", href: "/practice", match: "/practice", fancy: true },
-            { label: "Interview", href: "/playbook", match: "/playbook" },
-          ].map(({ label, href, match, fancy }) => {
+            { label: "Start here", href: "/learn/basics", match: "/learn/basics", hint: "What a case interview is" },
+            { label: "Frameworks", href: "/frameworks", match: "/frameworks", hint: "The 7 core structures" },
+            { label: "Guided Cases", href: "/cases", match: "/cases", hint: "Step-by-step walkthroughs with MCQs" },
+            { label: "Practice Mode", href: "/practice", match: "/practice", fancy: true, hint: "Live conversation with an AI interviewer" },
+            { label: "Interview", href: "/playbook", match: "/playbook", hint: "How to perform on the day" },
+          ].map(({ label, href, match, fancy, hint }) => {
             const isActive = match ? pathname.startsWith(match) : false;
             return (
               <Link
                 key={label}
                 href={href}
+                title={hint}
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "0.94rem",
@@ -322,18 +324,20 @@ export default function Header() {
           }}
         >
           {[
-            { label: "Frameworks", href: "/frameworks" },
-            { label: "Guided Cases", href: "/cases" },
-            { label: "Practice Mode", href: "/practice" },
-            { label: "Interview", href: "/playbook" },
-          ].map(({ label, href }) => (
+            { label: "Start here", href: "/learn/basics", hint: "What a case interview is" },
+            { label: "Frameworks", href: "/frameworks", hint: "The 7 core structures" },
+            { label: "Guided Cases", href: "/cases", hint: "Step-by-step walkthroughs with MCQs" },
+            { label: "Practice Mode", href: "/practice", hint: "Live conversation with an AI interviewer" },
+            { label: "Interview", href: "/playbook", hint: "How to perform on the day" },
+          ].map(({ label, href, hint }) => (
             <Link
               key={label}
               href={href}
-              style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--ink)" }}
+              style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--ink)", display: "flex", flexDirection: "column", gap: 2 }}
               onClick={() => setMenuOpen(false)}
             >
-              {label}
+              <span>{label}</span>
+              <span style={{ fontSize: "0.78rem", color: "var(--muted)", fontWeight: 400 }}>{hint}</span>
             </Link>
           ))}
           {status === "unauthenticated" && (

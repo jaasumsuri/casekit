@@ -234,8 +234,8 @@ export default function NovacastPage() {
             <span className="rm-step">
               {showReveal ? <>Case <b>complete</b></> : <>Step <b>{state.current + 1}</b> of {TOTAL_STEPS}</>}
             </span>
-            <span className="score-chip">
-              <CheckSvg /> {sc}/{GRADED}
+            <span className="score-chip" title={`Graded decisions correct on the first try (out of ${GRADED} scored steps)`}>
+              <CheckSvg /> {sc}/{GRADED} <span className="score-chip-lbl">correct on first try</span>
             </span>
           </div>
         </div>
@@ -547,11 +547,14 @@ function WriteStep({
 function RevealSection({ score, onRestart }: { score: number; onRestart: () => void }) {
   const [activeTab, setActiveTab] = useState<"report" | "deck" | "iq">("report");
 
+  const missed = GRADED - score;
   const scoreTxt = score === GRADED
     ? "a clean sweep — every decision called correctly on the first try."
-    : score >= 3
-    ? "decisions called correctly on the first try. Sharp instincts."
-    : "decisions called correctly on the first try. Re-read the feedback to tighten up.";
+    : score === 0
+    ? `decisions called correctly on the first try. Re-read the feedback on all ${GRADED} — the reasoning matters more than the answer.`
+    : missed === 1
+    ? `decisions called correctly on the first try. One miss — scroll back and re-read the feedback on it before moving on.`
+    : `decisions called correctly on the first try. ${missed} to review — the feedback on each miss is where the learning is.`;
 
   return (
     <div className="reveal-wrap show">

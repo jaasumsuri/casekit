@@ -53,7 +53,7 @@ const FEATURES = [
 ];
 
 const FRAMEWORKS = [
-  { n: "01", title: "Profitability Framework",          desc: "Revenue and cost trees, broken down to the smallest moveable lever without losing MECE.",                            meta: "Most common · 40% of cases", slug: "profitability"    },
+  { n: "01", title: "Profitability Framework",          desc: "Revenue and cost trees, broken down to the smallest moveable lever without losing MECE.",                            meta: "The starter framework",      slug: "profitability"    },
   { n: "02", title: "Market Entry",                     desc: "Size the prize, assess fit, pick a mode of entry, and pressure-test the path to scale.",                             meta: "Strategy classic",           slug: "market-entry"     },
   { n: "03", title: "M&A / Investment",                 desc: "Synergy logic, valuation sanity checks, and the integration risks partners actually grill you on.",                 meta: "PE & corp-dev favorite",     slug: "ma-investment"    },
   { n: "04", title: "Pricing Strategy",                 desc: "Cost-plus, competitor-anchored, value-based: when each applies and the math behind it.",                             meta: "Quant-heavy",                slug: "pricing-strategy" },
@@ -212,25 +212,21 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Social proof */}
-            <div style={{ marginTop: 36, display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ display: "flex" }}>
-                {[
-                  { init: "JL", bg: "#2d5a44" },
-                  { init: "MO", bg: "#C4933A" },
-                  { init: "AS", bg: "#6e8b78" },
-                  { init: "RK", bg: "#3d6651" },
-                  { init: "+",  bg: "#1A1A18" },
-                ].map(({ init, bg }, i) => (
-                  <span key={init} style={{ width: 34, height: 34, borderRadius: "50%", border: "2px solid var(--bg)", marginLeft: i === 0 ? 0 : -10, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "0.78rem", fontWeight: 600, color: "#fff", background: bg, fontFamily: "var(--font-body)" }}>
-                    {init}
+            {/* Value bullets */}
+            <ul style={{ marginTop: 36, display: "flex", flexWrap: "wrap", gap: "10px 22px", padding: 0, listStyle: "none" }}>
+              {[
+                "Free while in beta",
+                "5 fully worked cases + report & deck",
+                "AI feedback on every response",
+              ].map((item) => (
+                <li key={item} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.92rem", color: "var(--muted)", fontFamily: "var(--font-body)" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "var(--forest-light)", color: "var(--forest)" }}>
+                    <CheckIcon />
                   </span>
-                ))}
-              </div>
-              <span style={{ fontSize: "0.92rem", color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-                <b style={{ color: "var(--ink)", fontWeight: 600 }}>Built for undergrads.</b> No coach required.
-              </span>
-            </div>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Right: mock case card */}
@@ -381,13 +377,6 @@ export default function HomePage() {
             <div className="howto-trust">
               <span className="ht-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/><path d="M12 14c-4 0-7 2-7 5v1h14v-1c0-3-3-5-7-5Z"/>
-                </svg>
-                Built with guidance from working MBB &amp; Big 4 consultants
-              </span>
-              <span className="ht-sep" aria-hidden="true" />
-              <span className="ht-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 12h12"/><path d="m11 8 4 4-4 4"/><path d="M21 5v14"/>
                 </svg>
                 Takes you from zero experience to interview-ready
@@ -452,7 +441,7 @@ export default function HomePage() {
               <em style={{ fontStyle: "italic", color: "var(--forest)" }}>apply forever.</em>
             </h2>
             <p style={{ color: "var(--muted)", fontSize: "1.05rem", lineHeight: 1.55, maxWidth: 460, fontFamily: "var(--font-body)" }}>
-              The structures that show up in 90% of real interviews, taught with worked examples and drilled inside cases so you actually retain them.
+              The core structures behind almost every case, taught with worked examples and drilled inside cases so you actually retain them.
             </p>
           </div>
 

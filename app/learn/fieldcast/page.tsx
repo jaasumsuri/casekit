@@ -252,8 +252,8 @@ export default function FieldcastPage() {
             <span className="rm-step">
               {showReveal ? <>Case <b>complete</b></> : <>Step <b>{state.current + 1}</b> of {TOTAL_STEPS}</>}
             </span>
-            <span className="score-chip">
-              <CheckSvg /> {sc}/{GRADED}
+            <span className="score-chip" title={`Graded decisions correct on the first try (out of ${GRADED} scored steps)`}>
+              <CheckSvg /> {sc}/{GRADED} <span className="score-chip-lbl">correct on first try</span>
             </span>
           </div>
         </div>
