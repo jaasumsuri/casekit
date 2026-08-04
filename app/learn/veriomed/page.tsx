@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { VERIOMED } from "@/data/cases/veriomed";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
+import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
 import "./veriomed.css";
 
 const D = VERIOMED;
@@ -545,6 +546,7 @@ function WriteStepComponent({
 
       {submitted && (
         <div className="write-result show">
+          <RubricSelfCheck rubric={step.rubric} text={text} />
           <div className="wr-cols">
             <div className="wr-card wr-yours">
               <div className="wr-lbl">Your answer</div>
@@ -648,6 +650,7 @@ function Write2StepComponent({
 
       {submittedA && (
         <div className="write-result show">
+          <RubricSelfCheck rubric={step.partA.rubric} text={textA} />
           <div className="wr-cols">
             <div className="wr-card wr-yours">
               <div className="wr-lbl">Your answer</div>
@@ -717,6 +720,7 @@ function Write2StepComponent({
 
           {submittedB && (
             <div className="write-result show">
+              <RubricSelfCheck rubric={step.partB.rubric} text={textB} />
               <div className="wr-cols">
                 <div className="wr-card wr-yours">
                   <div className="wr-lbl">Your answer</div>

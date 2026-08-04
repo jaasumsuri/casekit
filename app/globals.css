@@ -1419,3 +1419,44 @@ a.section-label:hover {
   .wx-table th, .wx-table td { padding: 11px 12px; }
 }
 
+
+/* ---------- GUIDED CASE · FREEWRITE SELF-CHECK ---------- */
+/* Shared by all five case runners (components/case/RubricSelfCheck.tsx).
+   Shown after submit; the per-criterion chips above the textarea remain the
+   live hint while typing. */
+.rsc {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 12px;
+  background: var(--gold-light);
+  font-family: var(--font-body), sans-serif;
+}
+.rsc[data-complete="true"] {
+  border-left-color: #1F8A5B;
+  background: var(--forest-light);
+}
+.rsc-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.rsc-count { font-size: 0.98rem; color: var(--ink); }
+.rsc-count b { font-weight: 700; }
+.rsc-note { font-size: 0.8rem; color: var(--muted); }
+.rsc-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.rsc-list li {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; font-weight: 600;
+  padding: 5px 11px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--muted);
+}
+.rsc-list li.hit { color: var(--forest); border-color: rgba(28,61,46,0.3); background: var(--forest-light); }
+.rsc-mark { display: inline-flex; width: 12px; height: 12px; flex-shrink: 0; }
+.rsc-mark svg { width: 100%; height: 100%; }
+.rsc-list li.hit .rsc-mark { color: #1F8A5B; }
+.rsc-list li.miss .rsc-mark { color: var(--muted); opacity: 0.55; }
+.rsc-tag { font-size: 0.72rem; font-weight: 500; opacity: 0.7; }
+.rsc-prompt { margin: 12px 0 0; font-size: 0.88rem; line-height: 1.55; color: #6f5326; }
+.rsc-prompt b { font-weight: 700; color: #5c431c; }
+.rsc[data-complete="true"] .rsc-prompt { color: var(--muted); }
+@media (max-width: 560px) {
+  .rsc-head { flex-direction: column; gap: 4px; }
+}

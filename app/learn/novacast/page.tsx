@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { NOVACAST } from "@/data/cases/novacast";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
+import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
 import "./novacast.css";
 
 const D = NOVACAST;
@@ -514,6 +515,7 @@ function WriteStep({
 
       {submitted && (
         <div className="write-result show">
+          <RubricSelfCheck rubric={step.rubric} text={text} />
           <div className="wr-cols">
             <div className="wr-card wr-yours">
               <div className="wr-lbl">Your answer</div>

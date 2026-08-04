@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { BROVA } from "@/data/cases/brova";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
+import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
 import "./brova.css";
 
 const D = BROVA;
@@ -378,6 +379,7 @@ function WriteStepComponent({
 
       {submitted && (
         <div className="write-result show">
+          <RubricSelfCheck rubric={step.rubric} text={text} />
           <div className="wr-cols">
             <div className="wr-card wr-yours">
               <div className="wr-lbl">Your answer</div>
@@ -456,7 +458,7 @@ function Write3StepComponent({
       <WriteBlock text={textA} setText={setTextA} submitted={submittedA} placeholder={step.partA.placeholder}
         rubric={step.partA.rubric} rubricLit={rubricLit} onSubmit={handleSubmitA} />
       {submittedA && (
-        <ResultBlock yours={textA} model={step.partA.model} coaching={step.partA.coaching} />
+        <ResultBlock yours={textA} model={step.partA.model} coaching={step.partA.coaching} rubric={step.partA.rubric} />
       )}
 
       {/* Part B — first curveball */}
@@ -474,7 +476,7 @@ function Write3StepComponent({
           <WriteBlock text={textB} setText={setTextB} submitted={submittedB} placeholder={step.partB.placeholder}
             rubric={step.partB.rubric} rubricLit={rubricLit} onSubmit={handleSubmitB} />
           {submittedB && (
-            <ResultBlock yours={textB} model={step.partB.model} coaching={step.partB.coaching} />
+            <ResultBlock yours={textB} model={step.partB.model} coaching={step.partB.coaching} rubric={step.partB.rubric} />
           )}
         </div>
       )}
@@ -495,7 +497,7 @@ function Write3StepComponent({
             rubric={step.partC.rubric} rubricLit={rubricLit} onSubmit={handleSubmitC} />
           {submittedC && (
             <>
-              <ResultBlock yours={textC} model={step.partC.model} coaching={step.partC.coaching} />
+              <ResultBlock yours={textC} model={step.partC.model} coaching={step.partC.coaching} rubric={step.partC.rubric} />
               <div className="step-foot show" style={{ marginTop: 24 }}>
                 <button className="continue" onClick={onNext}>See the deliverables <ArrowSvg /></button>
               </div>
@@ -537,13 +539,15 @@ function WriteBlock({ text, setText, submitted, placeholder, rubric, rubricLit, 
 }
 
 /* ─── Shared result block (your answer + model + coaching) ─── */
-function ResultBlock({ yours, model, coaching }: {
+function ResultBlock({ yours, model, coaching, rubric }: {
   yours: string;
   model: string;
   coaching: { n: string; h: string; p: string }[];
+  rubric?: readonly { key: string; label: string; re?: string }[];
 }) {
   return (
     <div className="write-result show">
+      {rubric && <RubricSelfCheck rubric={rubric} text={yours} />}
       <div className="wr-cols">
         <div className="wr-card wr-yours">
           <div className="wr-lbl">Your answer</div>
