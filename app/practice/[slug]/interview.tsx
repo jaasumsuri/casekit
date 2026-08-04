@@ -520,13 +520,35 @@ export default function InterviewClient({
         ]);
       }
 
-      // Give the user ~1.8s to read the closer before the "generating your
-      // critique" bridge appears. If we didn't get a closer, snap to the
-      // loader almost immediately so there's still an ack.
-      const loaderDelay = closerText ? 1800 : 300;
-      setTimeout(() => setShowCritiqueLoader(true), loaderDelay);
+      // Orchestrate the closer-read → loader → critique-panel handoff.
+      //
+      //   t=0                     closer message appears
+      //   t=CLOSER_READ_MS        "Generating your critique…" bridge appears
+      //   t=CLOSER_READ_MS + END  /api/practice/end stream completes
+      //   t=CLOSER_READ_MS + max(END, MIN_LOADER_MS)
+      //                           bridge hides, critique panel takes over
+      //
+      // MIN_LOADER_MS is a floor so a fast /end (which is typical) doesn't
+      // flash the loader for one frame. The critique is streamed into
+      // `critique` state while phase is still "interview-questions" — the
+      // bytes just aren't visible until the phase flips.
+      const CLOSER_READ_MS = closerText ? 1800 : 300;
+      const MIN_LOADER_MS = 800;
+      const flowStart = Date.now();
+
+      await new Promise((r) => setTimeout(r, CLOSER_READ_MS));
+      setShowCritiqueLoader(true);
 
       await endSession({ keepPhaseUntilStream: true });
+
+      const elapsed = Date.now() - flowStart;
+      const minTotal = CLOSER_READ_MS + MIN_LOADER_MS;
+      if (elapsed < minTotal) {
+        await new Promise((r) => setTimeout(r, minTotal - elapsed));
+      }
+
+      setShowCritiqueLoader(false);
+      setPhase("critique");
     } catch {
       setIqError("Network error saving your response. Try again.");
       setIqSubmitting(false);
@@ -543,15 +565,15 @@ export default function InterviewClient({
 
     setCritique("");
     setCritiqueError(null);
-    // Manual "end early" path snaps to critique immediately (the spinner
-    // there is the user feedback). The IQ path keeps the interview panel
-    // + closer + inline loader visible until the first byte of critique
-    // arrives, then transitions.
+    // Manual "end early" path snaps to critique immediately (the spinner in
+    // the critique panel is the user feedback). The IQ path keeps phase on
+    // "interview-questions" so the inline "Generating your critique…" bridge
+    // stays visible — the caller (submitInterviewQuestions) flips the phase
+    // once /end has finished streaming AND the loader has been visible for
+    // at least MIN_LOADER_MS.
     if (!opts?.keepPhaseUntilStream) {
       setPhase("critique");
     }
-
-    const goToCritique = () => setPhase("critique");
 
     try {
       const res = await fetch("/api/practice/end", {
@@ -561,16 +583,12 @@ export default function InterviewClient({
       });
 
       if (!res.ok) {
-        goToCritique();
-        setShowCritiqueLoader(false);
         setCritiqueError("Couldn't generate the critique. Try again in a moment.");
         return;
       }
 
       if (!res.body) {
         const data = await res.json();
-        goToCritique();
-        setShowCritiqueLoader(false);
         setCritique(data.critique || "Unable to generate critique.");
         return;
       }
@@ -578,26 +596,12 @@ export default function InterviewClient({
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
-      let transitioned = !opts?.keepPhaseUntilStream;
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
-        if (
-          !transitioned &&
-          buffer.replace(CRITIQUE_ERROR_SENTINEL, "").trim().length > 0
-        ) {
-          transitioned = true;
-          goToCritique();
-          setShowCritiqueLoader(false);
-        }
         setCritique(buffer);
-      }
-
-      if (!transitioned) {
-        goToCritique();
-        setShowCritiqueLoader(false);
       }
 
       // Server signaled a failed generation via sentinel, or the stream
@@ -611,8 +615,6 @@ export default function InterviewClient({
         setCritiqueError("Couldn't generate the critique. Try again in a moment.");
       }
     } catch {
-      goToCritique();
-      setShowCritiqueLoader(false);
       setCritiqueError("Network error while generating the critique. Try again.");
     }
   }
