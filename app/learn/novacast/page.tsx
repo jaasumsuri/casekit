@@ -176,7 +176,7 @@ export default function NovacastPage() {
                 The brief
               </span>
               <p>NovaCast is a mid-sized subscription video platform in the U.S. Founded in 2016, it built its audience on licensed TV content and a small, well-reviewed slate of originals. As of Q2 2024 it has <em>4.2 million paying subscribers</em> and roughly <em>$310M</em> in annual revenue.</p>
-              <p>Over the past three quarters, operating profit has fallen sharply — alarming the board. Subscriber count has stayed roughly flat, so management assumes the problem is cost-related. But the CFO has flagged that revenue per subscriber also dipped slightly. It&apos;s not yet clear whether the squeeze is a revenue problem, a cost problem, or both.</p>
+              <p>Over the past four quarters, operating profit has fallen sharply — alarming the board. Subscriber count has stayed roughly flat, so management assumes the problem is cost-related. But the CFO has flagged that revenue per subscriber also dipped slightly. It&apos;s not yet clear whether the squeeze is a revenue problem, a cost problem, or both.</p>
               <p>The CEO has brought you in to diagnose the root cause and recommend a path to recovery. The company has <em>18 months of runway</em> before it must return to profitability or raise capital.</p>
               <div className="brief-question">
                 <div className="bq-lbl">Your question</div>
@@ -187,7 +187,7 @@ export default function NovacastPage() {
             <div className="facts">
               <div className="fact"><span className="fv">4.2M</span><span className="fl">Paying<br/>subscribers</span></div>
               <div className="fact"><span className="fv">$310M</span><span className="fl">Annual<br/>revenue</span></div>
-              <div className="fact"><span className="fv warn">18% → 9%</span><span className="fl">Operating profit,<br/>3 quarters</span></div>
+              <div className="fact"><span className="fv warn">13% → −4%</span><span className="fl">Operating margin,<br/>4 quarters</span></div>
               <div className="fact"><span className="fv">18 mo</span><span className="fl">Runway before<br/>raise or recover</span></div>
             </div>
           </div>
@@ -469,10 +469,13 @@ function WriteStep({
   const [text, setText] = useState(existingAnswer || "");
   const [submitted, setSubmitted] = useState(existingAnswer !== undefined);
 
-  const rubricChecks = {
-    diagnosis: /licens|cost|43%|\$28|\$40|driv|margin/.test(text.toLowerCase()),
-    action: /renegoti|exit|cut|reduc|audit|restructur|recommend/.test(text.toLowerCase()),
-    outcome: /\$8|20%|38%|12 month|margin|result|restore|recover|%/.test(text.toLowerCase()),
+  // Matchers live in data/cases/novacast.ts alongside each criterion, same as
+  // the other four cases. They were previously hardcoded here, which let them
+  // drift out of sync with the case's own figures.
+  const rubricLit = (key: string) => {
+    const def = step.rubric.find((r) => r.key === key);
+    if (!def || !("re" in def)) return false;
+    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
   };
 
   const handleSubmit = () => {
@@ -492,7 +495,7 @@ function WriteStep({
         <div className="write-foot">
           <div className="wf-rubric">
             {step.rubric.map((r) => (
-              <span key={r.key} className={`rubric-chip${rubricChecks[r.key as keyof typeof rubricChecks] ? " lit" : ""}`}>
+              <span key={r.key} className={`rubric-chip${rubricLit(r.key) ? " lit" : ""}`}>
                 <span className="rc-dot" />{r.label}
               </span>
             ))}
