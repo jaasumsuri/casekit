@@ -357,6 +357,25 @@ a.section-label:hover {
 .sp-ghost h3 { color: #fff; }
 .sp-ghost p { color: rgba(255,255,255,0.62); }
 .sp-ghost:hover { transform: translateY(-3px); background: rgba(255,255,255,0.07); border-color: rgba(196,147,58,0.55); }
+/* Product tag — tells you which of the two tools a card describes */
+.sp-tag {
+  position: relative; z-index: 1;
+  display: inline-block;
+  margin-top: 22px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.sp-tag + h3 { margin-top: 12px; }
+.sp-hero .sp-tag { margin-top: 0; background: rgba(35,26,20,0.16); color: #231a14; }
+.sp-cream .sp-tag { background: rgba(196,147,58,0.20); color: #7d5a1d; }
+.sp-ghost .sp-tag-alt {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.20);
+  color: rgba(255,255,255,0.70);
+}
 /* Scroll reveal */
 .sp-reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.7,.2,1); }
 .spotlight.in .sp-reveal { opacity: 1; transform: none; }
@@ -710,6 +729,22 @@ a.section-label:hover {
 .cases-hero .intro {
   margin: 20px auto 0; max-width: 560px;
   color: var(--muted); font-size: 1.08rem; line-height: 1.58;
+}
+/* Disambiguates Guided Cases from the AI Practice Mode */
+.cases-hero .cases-vs-practice {
+  margin-top: 22px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 12px;
+  background: var(--gold-light);
+  font-size: 0.97rem;
+  color: #6f5326;
+  text-align: left;
+}
+.cases-hero .cases-vs-practice strong { color: #5c431c; font-weight: 700; }
+.cases-hero .cases-vs-practice a {
+  color: #5c431c; text-decoration: underline; text-underline-offset: 3px; font-weight: 600;
 }
 
 /* ---------- STRUCTURE SECTION ---------- */
