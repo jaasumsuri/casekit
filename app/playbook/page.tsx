@@ -33,7 +33,7 @@ const MODULES = [
     desc: "The framework isn't the answer; it's the lens. How to read a prompt, match it to the right structure, and adapt when the first choice doesn't fit.",
     topics: ["Problem-type recognition", "Framework selection", "Custom vs. standard", "Mid-case pivots"],
     time: "9 min",
-    exercise: "6 worked prompts + 3-question quiz",
+    exercise: "6 worked prompts + signal-matching cards",
     href: "/playbook/picking-the-right-framework",
     variant: "v-3",
     visual: "mod3",

@@ -41,7 +41,7 @@ const SECTIONS = [
   { id: "sec-1", num: "01", label: "5 techniques" },
   { id: "sec-2", num: "02", label: "Freeze situations" },
   { id: "sec-3", num: "03", label: "Do / Don't" },
-  { id: "sec-4", num: "04", label: "Practice" },
+  { id: "sec-4", num: "04", label: "Worked problems" },
 ];
 
 const TECHNIQUES = [
@@ -204,7 +204,7 @@ export default function DoingTheMathPage() {
                 <span className="pb-stat-sep" />
                 <span className="pb-stat">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
-                  4 practice exercises
+                  4 worked problems
                 </span>
                 <span className="pb-stat-sep" />
                 <span className="pb-stat">
@@ -344,15 +344,15 @@ export default function DoingTheMathPage() {
         </div>
       </section>
 
-      {/* SECTION 4 — PRACTICE (dark) */}
+      {/* SECTION 4 — WORKED PROBLEMS (dark) */}
       <section className="pb-step pb-step-dark" id="sec-4">
         <div className="container-narrow">
           <div className="pb-step-head">
             <span className="pb-step-num">04</span>
-            <div><h2>Practice <em>exercises</em></h2></div>
+            <div><h2>Worked <em>problems</em></h2></div>
           </div>
           <div className="pb-step-body">
-            <p>Try each one before revealing the solution. Work through the math out loud.</p>
+            <p>These aren&apos;t timed drills &mdash; the full solution is one click away. Attempt each one out loud (or on paper) <em>first</em>, then reveal the walkthrough and compare your approach, your rounding, and your final number to the model.</p>
             <div className="dm-exercises">
               {EXERCISES.map((ex) => (
                 <div key={ex.id} className={`dm-exercise${openEx.has(ex.id) ? " open" : ""}`}>
