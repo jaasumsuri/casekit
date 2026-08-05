@@ -35,7 +35,7 @@ export default function Header() {
         style={{
           maxWidth: 1200,
           margin: "0 auto",
-          padding: "0 28px",
+          padding: "0 28px 0 16px",
           height: 72,
           display: "flex",
           alignItems: "center",
