@@ -111,7 +111,7 @@ const DODONT = [
 const EXERCISES = [
   {
     id: "ex1", num: 1, title: "Round and compute: $183M × 23% margin",
-    body: <><p><strong>Step 1:</strong> Round: $180M &times; 25% = $45M</p><p><strong>Adjustment:</strong> We rounded up on both numbers. $183M &times; 23% is slightly less. Quick adjustment: subtract ~5% &rarr; <strong>~$42M</strong></p><p><strong>Stated answer:</strong> <em>&ldquo;Approximately $42 million in operating profit.&rdquo;</em></p><p>Actual answer: $42.09M. Your rounded estimate was within 0.2%.</p></>,
+    body: <><p><strong>Step 1:</strong> Round: $180M &times; 25% = $45M</p><p><strong>Adjustment:</strong> We rounded revenue down slightly and the margin up. $183M &times; 23% is a little less than $45M. Knock off ~7% &rarr; <strong>~$42M</strong></p><p><strong>Stated answer:</strong> <em>&ldquo;Approximately $42 million in operating profit.&rdquo;</em></p><p>Actual answer: $42.09M. Your rounded estimate was within 0.2%.</p></>,
   },
   {
     id: "ex2", num: 2, title: "Market sizing: How large is the US gym membership market?",

@@ -362,12 +362,12 @@ export default function ProfitabilityPage() {
           <div className="block-label"><span className="section-label">Worked example</span></div>
           <div className="block-body">
             <div className="scenario">
-              <p>RetailCo is a mid-size specialty apparel retailer with 200 stores across the US. Two years ago they earned $80M in net profit on $800M in revenue. This year, profit is $48M on $820M in revenue. The CFO is alarmed: revenue is up slightly but profits dropped $32M. You&rsquo;ve been called in. What&rsquo;s going on?</p>
+              <p>RetailCo is a mid-size specialty apparel retailer with 200 stores across the US. Two years ago they earned $80M in operating profit on $800M in revenue. This year, operating profit is $40M on $820M in revenue. The CFO is alarmed: revenue is up slightly but profit has halved, a drop of $40M. You&rsquo;ve been called in. What&rsquo;s going on?</p>
             </div>
 
             <div className="wx-step">
               <h4><span className="sn">Step 1</span> Revenue or costs?</h4>
-              <p>Revenue went from $800M to $820M, up $20M (2.5%). That&rsquo;s not the problem. So the $32M profit decline is entirely cost-driven. We can set revenue aside for now and focus on the cost structure.</p>
+              <p>Revenue went from $800M to $820M, up $20M (2.5%). That&rsquo;s not the problem. So the $40M profit decline is entirely cost-driven. We can set revenue aside for now and focus on the cost structure.</p>
             </div>
 
             <div className="wx-step">
@@ -421,7 +421,7 @@ export default function ProfitabilityPage() {
                   </tr>
                 </tbody>
               </table>
-              <p style={{ marginTop: 14 }}>Revenue up $20M. Costs up $60M. Net effect: −$40M pre-tax (roughly −$32M after tax). Numbers reconcile.</p>
+              <p style={{ marginTop: 14 }}>Revenue up $20M. Costs up $60M. Net effect: <b>−$40M</b>. Every figure on this page is operating profit, pre-tax — keep one basis and the reconciliation is exact.</p>
               <p style={{ marginTop: 16 }}>Decompose it yourself with the builder below. The sliders start at this year&rsquo;s troubled numbers. Drag the drivers and watch profit, margin, and the diagnosis react. Notice which lever actually moves the needle.</p>
               <div className="estimator">
                 <div className="est-grid">
@@ -464,7 +464,7 @@ export default function ProfitabilityPage() {
                       <div><span>− COGS</span><b>{fmt(cogsAmt)}</b></div>
                       <div><span>− Fixed costs</span><b>{fmt(fixed)}</b></div>
                       <div><span>− Operating costs</span><b>{fmt(opex)}</b></div>
-                      <div><span>Net margin</span><b>{margin.toFixed(1)}%</b></div>
+                      <div><span>Operating margin</span><b>{margin.toFixed(1)}%</b></div>
                     </div>
                     <div className={`est-verdict${healthy ? "" : " warn"}`}>
                       <span className="ev-head">
@@ -487,7 +487,7 @@ export default function ProfitabilityPage() {
 
             <div className="wx-step">
               <h4><span className="sn">Step 3</span> COGS is the smoking gun</h4>
-              <p>COGS jumped from 55% to 60% of revenue, a 500 basis point margin compression. On $820M revenue, that&rsquo;s an extra $41M in cost of goods. This single line item explains most of the problem.</p>
+              <p>COGS jumped from 55% to 60% of revenue, a 500 basis point margin compression. On $820M revenue those 5 points are worth $41M. COGS actually rose $52M in total &mdash; the extra $11M is simply the cost of selling 2.5% more goods, which isn&rsquo;t a problem. It&rsquo;s the $41M rate effect that explains the decline.</p>
               <p>You ask the interviewer: <em>&ldquo;What&rsquo;s driving the COGS increase?&rdquo;</em> They tell you:</p>
               <ul>
                 <li>Raw cotton and polyester prices spiked 18% due to supply chain disruptions after flooding in key manufacturing regions.</li>
@@ -499,10 +499,10 @@ export default function ProfitabilityPage() {
             <div className="wx-step">
               <h4><span className="sn">Step 4</span> Quantify each driver</h4>
               <ul>
-                <li>Input cost spike: ~$28M of the COGS increase</li>
-                <li>Product mix shift toward lower-margin items: ~$13M of the COGS increase</li>
-                <li>Rent increase: $6M (lease renewals at higher market rates, largely unavoidable short-term)</li>
-                <li>Total explained: $47M in cost increases, offset by $20M in revenue growth = ~$27M net. With the $2M marketing reduction and other small items, total impact lands at ~$32M. Checks out.</li>
+                <li>COGS <b>+$52M</b>, which splits three ways: input cost spike ~$28M, product mix shift toward lower-margin items ~$13M, and ~$11M of ordinary volume growth on 2.5% more revenue.</li>
+                <li>Store rent <b>+$6M</b> (lease renewals at higher market rates, largely unavoidable short-term).</li>
+                <li>Corporate overhead <b>+$2M</b>, other <b>+$2M</b>, marketing <b>&minus;$2M</b>.</li>
+                <li>Costs therefore rose <b>$60M</b> against <b>$20M</b> of revenue growth, for a <b>&minus;$40M</b> swing in operating profit. That ties exactly to the table &mdash; and tying exactly is the point. If your drivers don&rsquo;t sum to the gap, you&rsquo;ve either missed one or double-counted.</li>
               </ul>
             </div>
 
@@ -719,9 +719,9 @@ export default function ProfitabilityPage() {
 
         {/* Prev / Next nav */}
         <nav className="detail-nav">
-          <Link className="dn-link prev" href="/frameworks/growth-strategy">
+          <Link className="dn-link prev" href="/frameworks/market-sizing">
             <span className="dn-dir">← Previous framework</span>
-            <span className="dn-title">Growth Strategy (Ansoff)</span>
+            <span className="dn-title">Market Sizing</span>
           </Link>
           <Link className="dn-link next" href="/frameworks/market-entry">
             <span className="dn-dir">Next framework →</span>

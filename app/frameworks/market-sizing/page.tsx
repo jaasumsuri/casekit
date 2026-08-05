@@ -359,7 +359,7 @@ export default function MarketSizingPage() {
               </div>
               <div className="pf-turn pf-c">
                 <div className="pf-turn-who">Candidate</div>
-                <div className="pf-turn-what">&ldquo;I&rsquo;ll build this bottom-up, starting from the US population and working down to daily coffee consumption, since I have a decent intuition for how many cups a typical coffee drinker has per day. US population is roughly 330 million. I&rsquo;d estimate that about 60% of adults drink coffee regularly, so with about 260 million adults, that&rsquo;s around 155 million coffee drinkers.&rdquo;</div>
+                <div className="pf-turn-what">&ldquo;I&rsquo;ll build this top-down, starting from the US population and filtering down to daily coffee consumption, since I have a decent intuition for what share of adults drink coffee and how many cups they have. US population is roughly 330 million. I&rsquo;d estimate that about 60% of adults drink coffee regularly, so with about 260 million adults, that&rsquo;s around 155 million coffee drinkers.&rdquo;</div>
               </div>
               <div className="pf-turn pf-i">
                 <div className="pf-turn-who">Interviewer</div>
