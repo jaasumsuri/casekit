@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -143,9 +143,8 @@ export default function Header() {
             />
           )}
           {status === "unauthenticated" && (
-            <button
-              type="button"
-              onClick={() => { sessionStorage.setItem("justLoggedIn", "true"); signIn("google", { callbackUrl: "/practice" }); }}
+            <Link
+              href="/auth/signin?callbackUrl=/practice"
               className="hidden md:inline-flex"
               style={{
                 alignItems: "center",
@@ -178,7 +177,7 @@ export default function Header() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
               </svg>
-            </button>
+            </Link>
           )}
           {status === "authenticated" && (
             <div className="hidden md:flex" style={{ alignItems: "center", gap: 20, marginLeft: 12 }}>
@@ -341,9 +340,9 @@ export default function Header() {
             </Link>
           ))}
           {status === "unauthenticated" && (
-            <button
-              type="button"
-              onClick={() => { setMenuOpen(false); sessionStorage.setItem("justLoggedIn", "true"); signIn("google", { callbackUrl: "/practice" }); }}
+            <Link
+              href="/auth/signin?callbackUrl=/practice"
+              onClick={() => setMenuOpen(false)}
               style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 background: "var(--forest)", color: "#fff",
@@ -353,7 +352,7 @@ export default function Header() {
               }}
             >
               Sign up
-            </button>
+            </Link>
           )}
           {status === "authenticated" && (
             <>
