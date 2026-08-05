@@ -59,7 +59,7 @@ export default function Header() {
         {/* Desktop nav — column 2, centered */}
         <nav
           className="hidden md:flex"
-          style={{ gap: 40, alignItems: "center", justifyContent: "center" }}
+          style={{ gap: 24, alignItems: "center", justifyContent: "center" }}
         >
           {[
             { label: "Start here", href: "/learn/basics", match: "/learn/basics", hint: "What a case interview is" },
@@ -271,6 +271,7 @@ export default function Header() {
                   fontSize: "0.88rem",
                   fontWeight: 500,
                   fontFamily: "var(--font-body)",
+                  whiteSpace: "nowrap",
                   cursor: "pointer",
                   border: "1px solid var(--border)",
                   transition: "color 0.2s ease, border-color 0.2s ease, background 0.2s ease",
