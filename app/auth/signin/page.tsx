@@ -111,7 +111,7 @@ function SignInInner() {
             border: "1px solid rgba(196,147,58,0.24)",
             borderRadius: 12,
             padding: "12px 14px",
-            margin: "0 auto 26px",
+            margin: "0 auto 18px",
             maxWidth: 360,
           }}
         >
@@ -131,6 +131,47 @@ function SignInInner() {
               guided cases
             </Link>{" "}
             are uncapped and need no account.
+          </p>
+        </div>
+
+        {/* Data disclosure — named provider, what leaves the site, links to legal */}
+        <div
+          style={{
+            textAlign: "left",
+            background: "var(--forest-light)",
+            border: "1px solid var(--border)",
+            borderRadius: 12,
+            padding: "12px 14px",
+            margin: "0 auto 22px",
+            maxWidth: 360,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.82rem",
+              lineHeight: 1.5,
+              color: "var(--ink)",
+              margin: 0,
+            }}
+          >
+            <strong style={{ fontWeight: 600 }}>What Google will share:</strong>{" "}
+            your email and name — nothing else. We use them only to save your
+            sessions.
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.82rem",
+              lineHeight: 1.5,
+              color: "var(--ink)",
+              margin: "8px 0 0",
+            }}
+          >
+            <strong style={{ fontWeight: 600 }}>What happens in Practice Mode:</strong>{" "}
+            your typed answers are sent to <strong>Anthropic</strong> (the company
+            behind Claude) so the AI interviewer can respond. Per Anthropic&apos;s
+            API terms, they don&apos;t use API inputs to train their models.
           </p>
         </div>
 
@@ -195,12 +236,19 @@ function SignInInner() {
             fontFamily: "var(--font-body)",
             fontSize: "0.82rem",
             color: "var(--muted)",
-            marginTop: 18,
+            marginTop: 16,
             marginBottom: 0,
-            lineHeight: 1.5,
+            lineHeight: 1.55,
           }}
         >
-          We only use your email to save your sessions. No spam.
+          By continuing you agree to our{" "}
+          <Link href="/terms" style={{ color: "var(--forest)", textDecoration: "underline", textUnderlineOffset: 2 }}>
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" style={{ color: "var(--forest)", textDecoration: "underline", textUnderlineOffset: 2 }}>
+            Privacy notice
+          </Link>. No marketing emails, ever.
         </p>
 
         <div
