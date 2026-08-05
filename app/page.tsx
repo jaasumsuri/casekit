@@ -8,47 +8,50 @@ import CaseCard from "@/components/CaseCard";
 /* ─────────────────────── data ─────────────────────── */
 
 const TICKER_ITEMS = [
-  "5 guided cases", "AI-powered analysis", "Real consulting outputs",
+  "AI mock interviews", "12 practice cases", "5 guided cases",
   "No experience needed", "McKinsey", "BCG", "Bain prep",
 ];
 
 const STATS = [
-  { bold: "5",      rest: "guided cases" },
-  { bold: "Claude", rest: "AI-powered practice" },
-  { bold: "Real",   rest: "consulting deliverables" },
+  { bold: "12",     rest: "AI practice cases" },
+  { bold: "5/week", rest: "mock interviews, free" },
+  { bold: "5",      rest: "guided cases, uncapped" },
   { bold: "Built",  rest: "for undergrads" },
 ];
 
 const FEATURES = [
   {
     n: "01", variant: "hero" as const,
+    tag: "Practice Mode · AI",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 27, height: 27 }}>
-        <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/>
       </svg>
     ),
-    title: "Guided cases, not blank pages",
-    desc: "Five end-to-end cases broken into clarify → structure → analyze → recommend. Each step walks you through the thinking so you learn by doing.",
+    title: "A live interviewer, not a grading box",
+    desc: "The AI plays the client, not a coach. It won't open with \"great question,\" won't narrate your technique, and won't warn you when you're walking into the case's trap. Give it a vague answer and it pushes back like a real interviewer would.",
   },
   {
     n: "02", variant: "cream" as const,
+    tag: "Practice Mode · AI",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 21, height: 21 }}>
         <path d="M21 12a9 9 0 1 1-6.2-8.55"/><path d="M21 3v6h-6"/>
       </svg>
     ),
-    title: "Feedback in seconds, not weeks",
-    desc: "Practice mode gives you AI-powered feedback on your responses: what you nailed, what you missed, and how to sharpen your thinking.",
+    title: "A critique that names what you missed",
+    desc: "When the case closes, the Coach scores what you actually said against the points a strong candidate would have surfaced — and won't give you credit for a recommendation you never quantified. Then it drafts a report and deck from your own answers.",
   },
   {
     n: "03", variant: "ghost" as const,
+    tag: "Guided Cases · self-paced",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 21, height: 21 }}>
-        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
+        <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
       </svg>
     ),
-    title: "Real consulting deliverables",
-    desc: "Every case includes a full report and presentation deck, the same outputs a real consulting team would deliver. Study them to understand what good looks like.",
+    title: "Five worked cases to learn the moves first",
+    desc: "Separate from Practice Mode, and not AI-driven: five cases with pre-written answer breakdowns, a model answer at every step, and a finished report and deck at the end. Free, unlimited, no sign-in. Do these before you burn a mock interview.",
   },
 ];
 
@@ -75,8 +78,8 @@ const PLAYBOOK = [
 const HOWTO_STEPS = [
   { n: "1", kicker: "Start here", title: "Start with the basics", desc: "Learn what a case interview actually is, what interviewers are looking for, and how CaseKit is structured. No prior knowledge needed.", cta: { label: "What is a case interview?", href: "/learn/basics", type: "btn-highlight" as const }, final: false },
   { n: "2", kicker: "Learn",      title: "Learn the frameworks",  desc: "Seven core consulting frameworks with worked examples and real numbers. Understand when and why to use each one before you touch a case.", cta: { label: "See the frameworks →", href: "/frameworks", type: "link" as const }, final: false },
-  { n: "3", kicker: "Study",      title: "Study solved cases",    desc: "Walk through fully solved cases step by step. Every case ends with a complete report and slide deck, exactly how a Big 4 firm would present it. This is what good looks like.", cta: { label: "Browse the library →", href: "/cases", type: "link" as const }, final: false },
-  { n: "4", kicker: "Practice",   title: "Practice with AI",      desc: "Pick a case from the library, work through it yourself, and get instant AI feedback on your thinking. The AI generates a report and slides from your actual responses.", cta: { label: "How practice works →", href: "/practice", type: "btn" as const }, final: true },
+  { n: "3", kicker: "Study",      title: "Study solved cases (Guided Cases)", desc: "Five self-paced walkthroughs with a written breakdown at every step and a model answer to compare yours against. No AI and no grading here — it's a worked textbook. Free and unlimited, so do these first.", cta: { label: "Browse the library →", href: "/cases", type: "link" as const }, final: false },
+  { n: "4", kicker: "Practice",   title: "Sit a mock interview (Practice Mode)", desc: "This is the AI. A live case conversation with an interviewer that stays in character and pushes back, then a Coach critique, a report, and slides built from what you actually said. 5 sessions per week, free.", cta: { label: "How practice works →", href: "/practice", type: "btn" as const }, final: true },
   { n: "5", kicker: "Perform",    title: "Prep for the interview", desc: "Learn how to communicate your thinking verbally, handle behavioral questions, and walk into the room confident.", cta: { label: "Open the playbook →", href: "/playbook", type: "link" as const }, final: false },
 ];
 
@@ -165,7 +168,7 @@ export default function HomePage() {
             </h1>
 
             <p style={{ marginTop: 22, color: "var(--muted)", fontSize: "1.125rem", lineHeight: 1.55, maxWidth: 520, fontFamily: "var(--font-body)" }}>
-              CaseKit is the free, AI-powered case prep platform built for undergrads. Practice real cases, get instant feedback, and ship structured deliverables. No $400 coach required.
+              CaseKit runs live mock case interviews with an AI that behaves like a real interviewer: it stays in character, pushes back on vague answers, and won&apos;t rescue you when you walk into a trap. Then it tells you exactly where you lost points. No $400 coach required.
             </p>
 
             <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -215,9 +218,9 @@ export default function HomePage() {
             {/* Value bullets */}
             <ul style={{ marginTop: 36, display: "flex", flexWrap: "wrap", gap: "10px 22px", padding: 0, listStyle: "none" }}>
               {[
-                "Free while in beta",
-                "5 fully worked cases + report & deck",
-                "AI feedback on every response",
+                "5 free AI mock interviews per week",
+                "5 guided cases — free, unlimited, no sign-in",
+                "No credit card, ever",
               ].map((item) => (
                 <li key={item} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.92rem", color: "var(--muted)", fontFamily: "var(--font-body)" }}>
                   <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "var(--forest-light)", color: "var(--forest)" }}>
@@ -289,7 +292,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: "0 auto" }} className="differentiator-inner">
           <span className="differentiator-mark" aria-hidden="true">→</span>
           <p className="differentiator-text">
-            The only case prep platform that shows you what consulting outputs actually look like: <em>reports, slides, and all.</em>
+            Most prep tools grade a framework you typed into a box. CaseKit puts you in the room with an interviewer who <em>doesn&apos;t let you coast.</em>
           </p>
         </div>
       </aside>
@@ -331,9 +334,9 @@ export default function HomePage() {
             <span className="spotlight-glow two" aria-hidden="true" />
 
             <div className="spotlight-head sp-reveal">
-              <Link href="/cases" className="section-label">What you get</Link>
-              <h2>Everything you need to walk into a case <em>cold</em> and walk out structured.</h2>
-              <p>We rebuilt the consulting interview prep stack from scratch: guided practice, AI feedback, and real deliverables so you understand what good looks like.</p>
+              <Link href="/practice" className="section-label">What you get</Link>
+              <h2>One AI interviewer. <em>Five worked cases.</em> Two different tools.</h2>
+              <p>Practice Mode is the live mock interview, capped at 5 sessions a week. Guided Cases are self-paced walkthroughs with written answers — no AI, no cap. Use them for different things.</p>
             </div>
 
             <div className="spotlight-grid">
@@ -342,6 +345,7 @@ export default function HomePage() {
                 <span className="sp-num">01</span>
                 <span className="sp-icon">{FEATURES[0].icon}</span>
                 <div className="sp-text">
+                  <span className="sp-tag">{FEATURES[0].tag}</span>
                   <h3>{FEATURES[0].title}</h3>
                   <p>{FEATURES[0].desc}</p>
                 </div>
@@ -352,12 +356,14 @@ export default function HomePage() {
                 <article className="sp-card sp-cream sp-reveal d2">
                   <span className="sp-num">02</span>
                   <span className="sp-icon">{FEATURES[1].icon}</span>
+                  <span className="sp-tag">{FEATURES[1].tag}</span>
                   <h3>{FEATURES[1].title}</h3>
                   <p>{FEATURES[1].desc}</p>
                 </article>
                 <article className="sp-card sp-ghost sp-reveal d3">
                   <span className="sp-num">03</span>
                   <span className="sp-icon">{FEATURES[2].icon}</span>
+                  <span className="sp-tag sp-tag-alt">{FEATURES[2].tag}</span>
                   <h3>{FEATURES[2].title}</h3>
                   <p>{FEATURES[2].desc}</p>
                 </article>
@@ -505,12 +511,19 @@ export default function HomePage() {
       {/* ══════════════ CASE LIBRARY ══════════════ */}
       <section id="cases" style={{ paddingBottom: 110 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 28px" }}>
-          <Link href="/cases" className="section-label" style={{ display: "block", marginBottom: 0 }}>The library</Link>
+          <Link href="/cases" className="section-label" style={{ display: "block", marginBottom: 0 }}>Guided Cases · free &amp; unlimited</Link>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 32, margin: "0 0 40px", flexWrap: "wrap" }}>
-            <h2 style={{ marginTop: 18, maxWidth: 640 }}>
-              5 cases. 5 industries.{" "}
-              <em style={{ fontStyle: "italic", color: "var(--forest)" }}>Zero fluff.</em>
-            </h2>
+            <div style={{ maxWidth: 640 }}>
+              <h2 style={{ marginTop: 18 }}>
+                5 cases. 5 industries.{" "}
+                <em style={{ fontStyle: "italic", color: "var(--forest)" }}>Zero fluff.</em>
+              </h2>
+              <p style={{ marginTop: 14, color: "var(--muted)", fontSize: "1rem", lineHeight: 1.55, fontFamily: "var(--font-body)" }}>
+                Self-paced walkthroughs with written answer breakdowns — no AI, no cap, no account.{" "}
+                <Link href="/practice" style={{ color: "var(--forest)", textDecoration: "underline", textUnderlineOffset: 3 }}>Practice Mode</Link>{" "}
+                is the separate AI mock interview, with its own 12 cases.
+              </p>
+            </div>
             <Link
               href="/cases"
               className="browse-link"
@@ -546,7 +559,7 @@ export default function HomePage() {
               <p style={{ marginTop: 16, color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", maxWidth: 420, lineHeight: 1.55, fontFamily: "var(--font-body)" }}>
                 {status === "authenticated"
                   ? "Jump back in and keep practicing. Your cases are waiting."
-                  : "Sign in to start practicing with AI-powered cases. It only takes a second."}
+                  : "Sign in with Google to open Practice Mode — 5 AI mock interviews per week, free, no card. The Guided Cases stay open without an account."}
               </p>
             </div>
 

@@ -587,7 +587,7 @@ export default function BasicsPage() {
               </div>
             </div>
             <div className="block-body">
-              <p className="lede" style={{ marginBottom: 22 }}>Interviewers score five things. None of them is &ldquo;did you get the right number.&rdquo; Internalize these and you&rsquo;ll always know what to optimize for.</p>
+              <p className="lede" style={{ marginBottom: 22 }}>Interviewers score six things. None of them is &ldquo;did you get the right number.&rdquo; Internalize these and you&rsquo;ll always know what to optimize for.</p>
               <div className="crit-grid">
                 {[
                   { Icon: PersonIcon, title: "Structure", desc: "Can you break a messy problem into clean, non-overlapping pieces and explain your roadmap before diving in?" },

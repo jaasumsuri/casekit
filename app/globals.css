@@ -357,6 +357,25 @@ a.section-label:hover {
 .sp-ghost h3 { color: #fff; }
 .sp-ghost p { color: rgba(255,255,255,0.62); }
 .sp-ghost:hover { transform: translateY(-3px); background: rgba(255,255,255,0.07); border-color: rgba(196,147,58,0.55); }
+/* Product tag — tells you which of the two tools a card describes */
+.sp-tag {
+  position: relative; z-index: 1;
+  display: inline-block;
+  margin-top: 22px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.sp-tag + h3 { margin-top: 12px; }
+.sp-hero .sp-tag { margin-top: 0; background: rgba(35,26,20,0.16); color: #231a14; }
+.sp-cream .sp-tag { background: rgba(196,147,58,0.20); color: #7d5a1d; }
+.sp-ghost .sp-tag-alt {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.20);
+  color: rgba(255,255,255,0.70);
+}
 /* Scroll reveal */
 .sp-reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.7,.2,1); }
 .spotlight.in .sp-reveal { opacity: 1; transform: none; }
@@ -710,6 +729,22 @@ a.section-label:hover {
 .cases-hero .intro {
   margin: 20px auto 0; max-width: 560px;
   color: var(--muted); font-size: 1.08rem; line-height: 1.58;
+}
+/* Disambiguates Guided Cases from the AI Practice Mode */
+.cases-hero .cases-vs-practice {
+  margin-top: 22px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 12px;
+  background: var(--gold-light);
+  font-size: 0.97rem;
+  color: #6f5326;
+  text-align: left;
+}
+.cases-hero .cases-vs-practice strong { color: #5c431c; font-weight: 700; }
+.cases-hero .cases-vs-practice a {
+  color: #5c431c; text-decoration: underline; text-underline-offset: 3px; font-weight: 600;
 }
 
 /* ---------- STRUCTURE SECTION ---------- */
@@ -1384,3 +1419,102 @@ a.section-label:hover {
   .wx-table th, .wx-table td { padding: 11px 12px; }
 }
 
+
+/* ---------- GUIDED CASE · FREEWRITE SELF-CHECK ---------- */
+/* Shared by all five case runners (components/case/RubricSelfCheck.tsx).
+   Shown after submit; the per-criterion chips above the textarea remain the
+   live hint while typing. */
+.rsc {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 12px;
+  background: var(--gold-light);
+  font-family: var(--font-body), sans-serif;
+}
+.rsc[data-complete="true"] {
+  border-left-color: #1F8A5B;
+  background: var(--forest-light);
+}
+.rsc-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.rsc-count { font-size: 0.98rem; color: var(--ink); }
+.rsc-count b { font-weight: 700; }
+.rsc-note { font-size: 0.8rem; color: var(--muted); }
+.rsc-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.rsc-list li {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; font-weight: 600;
+  padding: 5px 11px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--muted);
+}
+.rsc-list li.hit { color: var(--forest); border-color: rgba(28,61,46,0.3); background: var(--forest-light); }
+.rsc-mark { display: inline-flex; width: 12px; height: 12px; flex-shrink: 0; }
+.rsc-mark svg { width: 100%; height: 100%; }
+.rsc-list li.hit .rsc-mark { color: #1F8A5B; }
+.rsc-list li.miss .rsc-mark { color: var(--muted); opacity: 0.55; }
+.rsc-tag { font-size: 0.72rem; font-weight: 500; opacity: 0.7; }
+.rsc-prompt { margin: 12px 0 0; font-size: 0.88rem; line-height: 1.55; color: #6f5326; }
+.rsc-prompt b { font-weight: 700; color: #5c431c; }
+.rsc[data-complete="true"] .rsc-prompt { color: var(--muted); }
+@media (max-width: 560px) {
+  .rsc-head { flex-direction: column; gap: 4px; }
+}
+
+/* ---------- DECK · BAR CHART EXHIBIT ---------- */
+/* components/case/RevealPanels.tsx ChartExhibit. CSS-height bars so a deck
+   slide can carry a real visual exhibit with no chart library. */
+.sl-chart { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.slc-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.slc-key {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.8rem; font-weight: 600; color: var(--muted);
+  font-family: var(--font-body), sans-serif;
+}
+.slc-key i { width: 11px; height: 11px; border-radius: 3px; background: var(--forest); }
+.slc-key.s1 i { background: var(--gold); }
+.slc-key.cost i, .slc-key.concern i { background: var(--gold); }
+.slc-key.rev i, .slc-key.pass i { background: var(--forest); }
+
+.slc-plot {
+  display: flex; align-items: flex-end; justify-content: space-around;
+  gap: 10px; height: 190px;
+  padding: 22px 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.slc-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; min-width: 0; }
+.slc-bars { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 5px; }
+.slc-bar {
+  position: relative; flex: 1; max-width: 34px; min-height: 3px;
+  border-radius: 4px 4px 0 0;
+  background: var(--forest);
+  transition: height var(--t);
+}
+.slc-bar.s1 { background: var(--gold); }
+.slc-bar.cost, .slc-bar.concern { background: var(--gold); }
+.slc-bar.rev, .slc-bar.pass { background: var(--forest); }
+.slc-bar.neg { background: #B4453A; }
+.slc-val {
+  position: absolute; top: -19px; left: 50%; transform: translateX(-50%);
+  font-size: 0.72rem; font-weight: 700; color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.slc-cat {
+  font-size: 0.74rem; color: var(--muted); text-align: center;
+  font-family: var(--font-body), sans-serif; white-space: nowrap;
+}
+.slc-unit {
+  font-size: 0.76rem; color: var(--muted); letter-spacing: 0.04em;
+  text-transform: uppercase; font-weight: 600;
+  font-family: var(--font-body), sans-serif;
+}
+@media (max-width: 560px) {
+  .slc-plot { height: 150px; gap: 6px; }
+  .slc-bar { max-width: 20px; }
+  .slc-val { font-size: 0.64rem; top: -16px; }
+  .slc-cat { font-size: 0.66rem; }
+}
+
+/* Deck counter wrapped to three lines on narrow viewports. */
+.deck-counter { white-space: nowrap; }

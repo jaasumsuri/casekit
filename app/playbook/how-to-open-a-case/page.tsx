@@ -488,7 +488,7 @@ export default function HowToOpenACasePage() {
       <section className="pb-timing">
         <div className="container-narrow">
           <span className="section-label" style={{ color: "var(--gold)" }}>The 90-Second Rule</span>
-          <h2 className="pb-timing-h">From prompt to framework: <em>90 seconds maximum.</em></h2>
+          <h2 className="pb-timing-h">The silent structuring pause: <em>90 seconds maximum.</em></h2>
           <p className="pb-timing-sub">Your full opening including questions and framework presentation should be 3–4 minutes. Any longer and you&apos;re stalling.</p>
 
           <div className="pb-timeline">

@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:numbers": "node scripts/check-numbers.mjs",
+    "test": "node scripts/check-numbers.mjs",
+    "prebuild": "node scripts/check-numbers.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",

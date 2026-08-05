@@ -422,7 +422,7 @@ export default function OperationsPage() {
           <div className="block-label"><span className="section-label">Worked example</span></div>
           <div className="block-body">
             <div className="scenario">
-              <p>Your client is <strong>CareNetwork</strong>, a regional hospital system operating 6 hospitals across the Mid-Atlantic United States. Total operating costs are $1.4B. Over the past three years, operating costs have grown 21% while patient volume grew only 7%. The CFO has been tasked by the board to find <strong>$120M in annual cost savings</strong> without reducing clinical staff levels or patient care quality. You&rsquo;ve been brought in to help. How do you approach it?</p>
+              <p>Your client is <strong>CareNetwork</strong>, a regional hospital system operating 6 hospitals across the Mid-Atlantic United States. Total operating costs are $1.4B. Over the past three years, operating costs have grown 17% while patient volume grew only 7%. The CFO has been tasked by the board to find <strong>$120M in annual cost savings</strong> without reducing clinical staff levels or patient care quality. You&rsquo;ve been brought in to help. How do you approach it?</p>
             </div>
 
             {/* Step 1 */}

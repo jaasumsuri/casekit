@@ -140,10 +140,10 @@ export const FIELDCAST = {
           { key: "conditions", label: "States conditions", re: "would change|condition|if .*margin|pilot|unless|provided" },
         ],
         model:
-          "My recommendation is a <strong>conditional no-go</strong> on the CEO's current proposal, with a path to yes under a different entry model.<br><br>The SMB market is genuinely attractive (<em>$4.2B</em> TAM, 18% growth, low penetration) and incumbents look weak. But entering by repricing the existing platform isn't executable at acceptable economics, for two reasons. <strong>First, the unit economics don't work under the current model.</strong> At $4,800 ACV, $1,200 CAC, and 28% churn, Fieldcast needs gross margins above <em>65%</em> per SMB customer just to hit a 3:1 LTV/CAC ratio — implausible with its high-touch delivery. <strong>Second, the product architecture is incompatible:</strong> 6–8 week onboarding, 50-seat minimums, zero self-serve are dealbreakers for SMB buyers. Building SMB-compatible functionality is a parallel product build, not a six-month project.<br><br>I recommend not entering through the proposed approach. If the board wants SMB, the right path is to build a product-led growth motion from scratch (self-serve, low-touch, SMB-native integrations, monthly billing, separate P&L) and treat it as a new business unit, not an extension of the enterprise product.<br><br>This changes if SMB gross margin can be demonstrated above <em>65%</em> in a pilot, or if a low-touch delivery model already exists inside the product that can be repurposed quickly.",
+          "My recommendation is a <strong>conditional no-go</strong> on the CEO's current proposal, with a path to yes under a different entry model.<br><br>The SMB market is genuinely attractive (<em>$4.2B</em> TAM, 18% growth, low penetration) and incumbents look weak. But entering by repricing the existing platform isn't executable at acceptable economics, for two reasons. <strong>First, the unit economics don't work under the current model.</strong> At $4,800 ACV, $1,200 CAC, and 28% churn, LTV/CAC looks deceptively healthy — ~$17,000 of lifetime revenue against $1,200 of CAC clears 3:1 at any gross margin above ~21%. Acquisition isn’t the binding constraint; <em>cost to serve</em> is. Holding 65% gross margin on a $4,800 contract means delivering onboarding and support for under <em>$1,700 per customer per year</em>, and Fieldcast’s high-touch enterprise motion costs several times that. <strong>Second, the product architecture is incompatible:</strong> 6–8 week onboarding, 50-seat minimums, zero self-serve are dealbreakers for SMB buyers. Building SMB-compatible functionality is a parallel product build, not a six-month project.<br><br>I recommend not entering through the proposed approach. If the board wants SMB, the right path is to build a product-led growth motion from scratch (self-serve, low-touch, SMB-native integrations, monthly billing, separate P&L) and treat it as a new business unit, not an extension of the enterprise product.<br><br>This changes if SMB gross margin can be demonstrated above <em>65%</em> in a pilot, or if a low-touch delivery model already exists inside the product that can be repurposed quickly.",
         coaching: [
           { n: "01", h: "Position, then conditions", p: "Real cases rarely have a clean answer. The structure is: state your position → support it with evidence → define the conditions under which you'd change your mind. \"No go\" and stop is half an answer." },
-          { n: "02", h: "Quantify the argument", p: "\"The product isn't built for SMBs\" is an opinion. \"At $4,800 ACV and 28% churn, LTV is ~$17,000 before costs, so 65%+ gross margin is implausible today\" is a finding. Interviewers push back on opinions, not on math that checks out." },
+          { n: "02", h: "Quantify the argument", p: "\"The product isn't built for SMBs\" is an opinion. \"At $4,800 ACV, cost to serve has to stay under ~$1,700/year to hold 65% gross margin, and our enterprise delivery costs multiples of that\" is a finding. Interviewers push back on opinions, not on math that checks out." },
           { n: "03", h: "Offer the alternative", p: "A no-go with no alternative is a veto, not a recommendation. Every no-go should end with what the client should do instead: here, a separate SMB business unit." },
         ],
       },
@@ -187,7 +187,7 @@ export const FIELDCAST = {
         label: "Key findings",
         type: "ul" as const,
         items: [
-          "SMB unit economics are structurally challenging under the current model: <b>$4,800 ACV, $1,200 CAC, and 28% annual churn</b> imply an LTV of ~$17,000, which only clears a 3:1 LTV/CAC threshold if gross margins exceed 65% — a bar Fieldcast's high-touch delivery cannot meet today.",
+          "SMB unit economics are structurally challenging under the current model: <b>$4,800 ACV, $1,200 CAC, and 28% annual churn</b> imply an LTV of ~$17,000. LTV/CAC is not the constraint — it clears 3:1 above ~21% gross margin. The binding constraint is cost to serve: 65% gross margin on a $4,800 contract allows under $1,700/year of delivery cost, a bar Fieldcast's high-touch model cannot meet today.",
           "Fieldcast's product architecture is incompatible with SMB buying behavior on every dimension: <b>6–8 week onboarding</b> vs. under-one-week expectation, 50-seat minimum vs. 1–5 seat norm, and zero self-serve capability vs. SMB preference for no-touch deployment.",
           "An internal lightweight product with self-serve onboarding and Google Workspace integration is reportedly <b>90 days from production-ready</b> — partially addressing the architecture gap but not resolving the sales motion or unit economics questions.",
         ],
@@ -264,7 +264,7 @@ export const FIELDCAST = {
         ["Annual churn rate", "28%", "~8% (est.)", "3.5x higher"],
         ["Implied customer lifetime", "~3.6 yrs", "~12 yrs", "70% shorter"],
         ["Implied LTV (pre-margin)", "~$17,000", "~$1,044,000", "61x lower"],
-        ["Gross margin for 3:1 LTV/CAC", ">65%", "Not binding", "Unvalidated"],
+        ["Max cost to serve at 65% GM", "~$1,700/yr", "~$30,000/yr", "Enterprise motion too costly"],
       ],
       so_what: "At SMB price points and churn rates, Fieldcast must deliver the product at a fraction of its current cost per customer — something its existing infrastructure is not designed to do.",
     },
@@ -274,7 +274,7 @@ export const FIELDCAST = {
       layout: "recommendation" as const,
       rows: [
         { tag: "Action", text: "Do not proceed under the current enterprise model. Redirect the internal lightweight product into a structured <b>30-customer paid SMB pilot</b>, with gross margin and 90-day churn as the primary success metrics." },
-        { tag: "Target", text: "Validate that the lightweight product can be delivered at gross margins <b>above 65%</b> — the minimum for viable SMB unit economics at $4,800 ACV and 28% churn — within 60 days of pilot launch." },
+        { tag: "Target", text: "Validate that the lightweight product can be delivered at gross margins <b>above 65%</b> — which caps delivery cost at roughly $1,700 per customer per year — within 60 days of pilot launch." },
         { tag: "Outcome", text: "If the pilot validates the margin threshold, bring a full SMB <b>business unit</b> proposal to the board within 90 days — dedicated P&L, PLG-native leadership, 12-month roadmap — treating SMB as a new business, not a product extension." },
       ],
       so_what: "The right answer is not 'no' — it is 'not yet, and not this way.' A structured pilot de-risks the decision and gives the board real data before committing organizational resources.",
@@ -290,7 +290,7 @@ export const FIELDCAST = {
     {
       q: "SMB ACV is $4,800, CAC is $1,200, and industry churn is 28%/year. What is the implied LTV of an SMB customer, and what gross margin would Fieldcast need to achieve a 3:1 LTV/CAC ratio?",
       skill: "Quantitative reasoning",
-      hint: "LTV = (ACV × gross margin) / churn rate. Solve for the gross margin that makes LTV = 3 × CAC. The answer is the minimum margin threshold Fieldcast must hit for SMB to be viable.",
+      hint: "LTV = (ACV × gross margin) / churn rate. Solve for the gross margin that makes LTV = 3 × CAC. You should get a surprisingly low number — around 21%. That's the point of the question: LTV/CAC clears easily here, so it is the wrong test. Say so, then name the test that actually binds (cost to serve against a $4,800 contract).",
     },
     {
       q: "The two dominant SMB competitors hold 61% share but are described as underpowered. Before concluding Fieldcast can displace them, what are the three most important hypotheses you'd test about why they hold that share?",

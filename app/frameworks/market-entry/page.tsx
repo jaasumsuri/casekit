@@ -418,7 +418,7 @@ export default function MarketEntryPage() {
           <div className="block-label"><span className="section-label">Worked example</span></div>
           <div className="block-body">
             <div className="scenario">
-              <p>Your client is BrightBrew, a premium US-based coffee chain with 600 locations and $2.4B in annual revenue. Known for high-quality single-origin beans, a clean aesthetic, and a loyal millennial customer base. BrightBrew is currently US-only. The CEO is seriously considering Japan as their first international market. Should they enter, and if so, how?</p>
+              <p>Your client is BrightBrew, a premium US-based coffee chain with 600 locations and $1.1B in annual revenue. Known for high-quality single-origin beans, a clean aesthetic, and a loyal millennial customer base. BrightBrew is currently US-only. The CEO is seriously considering Japan as their first international market. Should they enter, and if so, how?</p>
             </div>
 
             <div className="wx-step">

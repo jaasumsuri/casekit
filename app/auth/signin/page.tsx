@@ -96,9 +96,43 @@ function SignInInner() {
             marginRight: "auto",
           }}
         >
-          Structured cases, an AI interviewer that pushes back, and critiques
-          that read like the real thing. Sign in to get started.
+          A live mock case interview with an AI that stays in character, pushes
+          back on vague answers, and won&apos;t rescue you from the case&apos;s trap.
         </p>
+
+        {/* Cap disclosure — stated before the user hands over an account */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 10,
+            textAlign: "left",
+            background: "var(--gold-light)",
+            border: "1px solid rgba(196,147,58,0.24)",
+            borderRadius: 12,
+            padding: "12px 14px",
+            margin: "0 auto 26px",
+            maxWidth: 360,
+          }}
+        >
+          <span aria-hidden="true" style={{ color: "var(--gold)", fontSize: "1rem", lineHeight: 1.4 }}>●</span>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.85rem",
+              lineHeight: 1.5,
+              color: "#7d5a1d",
+              margin: 0,
+            }}
+          >
+            <strong style={{ fontWeight: 700 }}>Free, capped at 5 sessions per week.</strong>{" "}
+            The limit rolls off 7 days after each session. No card required. The{" "}
+            <Link href="/cases" style={{ color: "#7d5a1d", textDecoration: "underline", textUnderlineOffset: 2 }}>
+              guided cases
+            </Link>{" "}
+            are uncapped and need no account.
+          </p>
+        </div>
 
         <button
           type="button"

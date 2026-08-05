@@ -566,7 +566,7 @@ export default function GrowthStrategyPage() {
                 <li><b>Months 12&ndash;18:</b> international rollout. The largest investment and longest payoff, but necessary for long-term scale.</li>
               </ul>
               <div className="callout-warn" style={{ borderStyle: "solid", borderColor: "rgba(31,138,91,0.4)", background: "#E4F2EA", color: "#155f3f" }}>
-                <b>Verdict:</b> combined, these four levers realistically deliver ~$123M in additional ARR by the end of Year 2, exceeding the 22% growth target. Notice the sequence deliberately starts in the Penetration quadrant (lowest risk) before layering in Product Development and Market Development. Diversification never enters the conversation, because nothing here suggests FitApp&rsquo;s core market is actually saturated.
+                <b>Verdict:</b> combined, these four levers realistically deliver ~$123M in additional ARR in Year 1, rising to ~$158M by the end of Year 2 as international reaches its $65M run-rate, exceeding the 22% growth target. Notice the sequence deliberately starts in the Penetration quadrant (lowest risk) before layering in Product Development and Market Development. Diversification never enters the conversation, because nothing here suggests FitApp&rsquo;s core market is actually saturated.
               </div>
             </div>
           </div>

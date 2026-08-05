@@ -541,7 +541,7 @@ export default function PricingStrategyPage() {
 
             <div className="wx-step">
               <h4><span className="sn">Recommendation</span> Land the price</h4>
-              <p>Price the device at <strong>$38,000&ndash;$42,000 per unit</strong>. This captures roughly 22&ndash;24% of the $180,000 in annual value, leaving hospitals with $138,000&ndash;$142,000 in net savings, a compelling ROI story for procurement teams, while landing at a 3&times; premium over legacy alternatives, justified entirely by clinical outcome data.</p>
+              <p>Price the device at <strong>$38,000&ndash;$42,000 per unit</strong>. Be precise about the time basis here, because it is where most candidates slip: the $180,000 is an <em>annual</em> benefit, while the price is a <em>one-off capital</em> purchase. In year one the hospital pays ~$40,000 to save $180,000 &mdash; a payback of under three months &mdash; and over a five-year device life it captures roughly $900,000 of value for that same $40,000, so MedTech is capturing about <strong>4% of lifetime value</strong>, not 22%. That is a compelling ROI story for procurement, and it also tells you the price is conservative: there is room to move up, or to convert to a per-year subscription that captures value on the same basis it is created.</p>
               <div className="rec-group">
                 <p className="sub-h">Tactic</p>
                 <ul>

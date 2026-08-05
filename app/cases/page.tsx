@@ -86,10 +86,14 @@ export default function CasesPage() {
       {/* ── HERO ── */}
       <header className="cases-hero">
         <div className="container">
-          <span className="section-label">The case library</span>
+          <span className="section-label">Guided Cases</span>
           <h1>Five cases. <em>One clear path.</em></h1>
           <p className="intro">
             Work through them in order. Each case builds on the last: harder problems, longer answers, less hand-holding. By the end you&apos;ll be structuring and writing like the real thing.
+          </p>
+          <p className="intro cases-vs-practice">
+            <strong>These are self-paced walkthroughs, not the AI.</strong> Every step comes with a written breakdown and a model answer to compare yours against — nothing you write here is graded. Free, unlimited, no account needed. For a live interview that reacts to what you say, that&apos;s{" "}
+            <Link href="/practice">Practice Mode</Link> — a separate library of 12 cases, capped at 5 sessions a week.
           </p>
         </div>
       </header>
