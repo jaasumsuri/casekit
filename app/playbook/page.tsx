@@ -9,7 +9,7 @@ const MODULES = [
     desc: "The first 90 seconds set the tone for everything. A learnable, repeatable 4-step sequence that signals control from the first sentence.",
     topics: ["Restatement", "Clarifying questions", "Silent structuring", "Framework presentation"],
     time: "8 min",
-    exercise: "Timer + self-check",
+    exercise: "90-second timer + self-check",
     href: "/playbook/how-to-open-a-case",
     variant: "v-1",
     visual: "mod1",
@@ -21,7 +21,7 @@ const MODULES = [
     desc: "The interviewer doesn't just want your answer. They want to watch you get there. Three narration modes that make your thinking followable in real time.",
     topics: ["Signposting", "Hypothesis narration", "Navigating uncertainty", "The 60/40 ratio"],
     time: "10 min",
-    exercise: "3 practice moments",
+    exercise: "3 narration modes + self-check",
     href: "/playbook/thinking-out-loud",
     variant: "v-2",
     visual: "mod2",
@@ -33,7 +33,7 @@ const MODULES = [
     desc: "The framework isn't the answer; it's the lens. How to read a prompt, match it to the right structure, and adapt when the first choice doesn't fit.",
     topics: ["Problem-type recognition", "Framework selection", "Custom vs. standard", "Mid-case pivots"],
     time: "9 min",
-    exercise: "Framework matcher",
+    exercise: "6 worked prompts + 3-question quiz",
     href: "/playbook/picking-the-right-framework",
     variant: "v-3",
     visual: "mod3",
@@ -45,7 +45,7 @@ const MODULES = [
     desc: "New data that contradicts your hypothesis. A question you didn't expect. The interviewer pushing back. How to absorb the hit and keep moving forward.",
     topics: ["Data contradictions", "Pushback handling", "Hypothesis pivots", "Composure techniques"],
     time: "8 min",
-    exercise: "Scenario drills",
+    exercise: "3 worked scenarios + self-check",
     href: "/playbook/handling-curveballs",
     variant: "v-4",
     visual: "mod4",
@@ -57,7 +57,7 @@ const MODULES = [
     desc: "The difference between thorough and stuck. How to read the interviewer's signals, know when a branch is exhausted, and transition cleanly to the next area.",
     topics: ["Interviewer signals", "Diminishing returns", "Clean transitions", "Time management"],
     time: "7 min",
-    exercise: "Signal-reading exercise",
+    exercise: "Timing table + self-check",
     href: "/playbook/knowing-when-to-move-on",
     variant: "v-5",
     visual: "mod5",
@@ -69,7 +69,7 @@ const MODULES = [
     desc: "The last two minutes matter more than you think. How to pull scattered analysis into a recommendation that sounds decisive, structured, and consultant-grade.",
     topics: ["Recommendation structure", "Risk framing", "Next steps", "Confidence calibration"],
     time: "9 min",
-    exercise: "Synthesis builder",
+    exercise: "2 worked syntheses + self-check",
     href: "/playbook/delivering-the-synthesis",
     variant: "v-6",
     visual: "mod6",
@@ -81,7 +81,7 @@ const MODULES = [
     desc: "Mental math in an interview isn't about being a calculator. It's about rounding smart, narrating your logic, and catching mistakes before the interviewer does.",
     topics: ["Rounding strategy", "Narrating calculations", "Sanity checks", "Common traps"],
     time: "9 min",
-    exercise: "Speed drills",
+    exercise: "4 worked problems + self-check",
     href: "/playbook/doing-the-math",
     variant: "v-7",
     visual: "mod7",
@@ -289,7 +289,7 @@ export default function PlaybookPage() {
                 <span className="iv-hs-sep" />
                 <span className="iv-hs">
                   <PenIcon />
-                  Interactive exercises
+                  Worked examples
                 </span>
               </div>
             </div>
@@ -388,7 +388,7 @@ export default function PlaybookPage() {
           <div className="iv-modules-head">
             <span className="section-label" style={{ justifyContent: "center" }}>The modules</span>
             <h2>Read in order. <em>Practice out loud.</em></h2>
-            <p>Each module is a standalone coaching session. Read the technique, study the examples, then practice with the interactive exercises.</p>
+            <p>Each module is a standalone coaching session: read the technique, study the worked examples, then run the self-check against your last real case. Module 01 also has a 90-second timer to practise the opening pause against.</p>
           </div>
 
           {MODULES.map((mod) => {
