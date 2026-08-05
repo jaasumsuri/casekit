@@ -37,9 +37,10 @@ export default function Header() {
           margin: "0 auto",
           padding: "0 28px 0 16px",
           height: 72,
-          display: "flex",
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: 24,
         }}
       >
         {/* Logo */}
