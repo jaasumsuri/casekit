@@ -168,7 +168,7 @@ export default function HomePage() {
             </h1>
 
             <p style={{ marginTop: 22, color: "var(--muted)", fontSize: "1.125rem", lineHeight: 1.55, maxWidth: 520, fontFamily: "var(--font-body)" }}>
-              CaseKit runs live mock case interviews with an AI that behaves like a real interviewer: it stays in character, pushes back on vague answers, and won&apos;t rescue you when you walk into a trap. Then it tells you exactly where you lost points. No $400 coach required.
+              A live mock interview with an AI that stays in character, calls out weak answers, and shows you exactly where you lost points.
             </p>
 
             <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -219,8 +219,8 @@ export default function HomePage() {
             <ul style={{ marginTop: 36, display: "flex", flexWrap: "wrap", gap: "10px 22px", padding: 0, listStyle: "none" }}>
               {[
                 "5 free AI mock interviews per week",
-                "5 guided cases — free, unlimited, no sign-in",
-                "No credit card, ever",
+                "5 guided cases with detailed breakdowns — no sign-in",
+                "Every session saved so you can review your reps",
               ].map((item) => (
                 <li key={item} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.92rem", color: "var(--muted)", fontFamily: "var(--font-body)" }}>
                   <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "var(--forest-light)", color: "var(--forest)" }}>
