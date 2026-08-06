@@ -74,7 +74,7 @@ export default function MarketSizingPage() {
   const indShare = marketB / INDUSTRY * 100;
 
   const verdictLines = [
-    { ok: popShare >= 1 && popShare <= 6, text: `Implies <b>${popShare.toFixed(1)}%</b> of all US adults pay for a premium membership` },
+    { ok: popShare >= 1 && popShare <= 6, text: `Implies <b>${popShare.toFixed(1)}%</b> of the US population pays for a premium membership` },
     { ok: spend >= 100 && spend <= 200, text: `<b>$${spend}/mo</b> ${spend >= 100 && spend <= 200 ? "sits in the typical $100–$200 premium range" : "is outside the typical $100–$200 premium range"}` },
     { ok: indShare >= 20 && indShare <= 60, text: `<b>${Math.round(indShare)}%</b> of the ~$35B US fitness industry` },
   ];

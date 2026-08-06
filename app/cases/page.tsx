@@ -19,7 +19,7 @@ const CASES = [
   {
     num: "02", slug: "fieldcast", cls: "entry",
     industry: "B2B SaaS",
-    difficulty: "Easy–Med", dots: 2,
+    difficulty: "Medium", dots: 2,
     title: "Fieldcast: the new market bet",
     desc: "A profitable enterprise SaaS company eyes a tempting SMB segment. The market looks great, but should they go? Make the call, then handle the pushback.",
     fw: "Market entry", time: "~20 min", format: "Half & half",

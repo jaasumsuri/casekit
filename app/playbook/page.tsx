@@ -80,7 +80,7 @@ const MODULES = [
     title: <>Doing the math <em>without freezing</em></>,
     desc: "Mental math in an interview isn't about being a calculator. It's about rounding smart, narrating your logic, and catching mistakes before the interviewer does.",
     topics: ["Rounding strategy", "Narrating calculations", "Sanity checks", "Common traps"],
-    time: "9 min",
+    time: "10 min",
     exercise: "4 worked problems + self-check",
     href: "/playbook/doing-the-math",
     variant: "v-7",
