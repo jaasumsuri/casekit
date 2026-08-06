@@ -376,6 +376,13 @@ function buildReportPrompt(
 - Do NOT contradict the structured critique below. If it says a point was MISSED, do not claim in the report that the candidate "eventually addressed" it.
 - All figures in the report must come from the canonical case facts. Do not compute or estimate figures the case does not provide.
 
+### Units discipline (strict — this is where reports get taken apart in real interviews)
+
+- Every dollar figure must state its time basis inline: "per quarter", "per year", "annualized", "cumulative", "one-time". Never write "$8.5M in cost savings" — write "$8.5M per quarter (~$34M annualized)" if both are relevant, or pick one and label it.
+- Never quote a quarterly figure and an annualized figure in the same sentence without labeling both. Mixing them silently is the single most common way a headline recommendation gets shredded.
+- Every percentage-margin figure must state which margin (gross, operating, EBITDA) and over what period. "Restore margin from X% to Y%" is not acceptable — write "restore quarterly operating margin from −4% to about +7%".
+- If the canonical case_facts state a metric on one time basis (e.g. quarterly) and you need to reference it, keep it on that basis. Do not silently convert to annualized figures the case never states.
+
 ### Report shape
 
 Produce a report with these sections in this order (you may add or omit optional ones as fits the case, but keep to 3-7 total):

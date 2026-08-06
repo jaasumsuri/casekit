@@ -654,13 +654,24 @@ function buildSlidesPrompt(
 - The recommendation slide must reflect what THIS candidate actually recommended in the transcript, not a model-answer recommendation. If their recommendation was partial or weak per the must-surface verdict, the deck's recommendation slide should still reflect what they said — and the gap can be noted in the "so_what" line or a preceding slide, not by silently improving it.
 - Do NOT contradict the structured critique. If a must-surface point is MISSED, do not present it on the deck as the candidate's insight.
 
-### Target deck structure (5 slides — aim for this shape unless a slide has no real content)
+### Target deck structure (5-6 slides — aim for this shape unless a slide has no real content)
 
 1. Situation / problem statement — layout: title_bullets. Recap the business problem from the brief in the candidate's own framing where possible. 2-3 bullets, each grounded in canonical case facts.
-2. Diagnosis with real numbers — layout: data_table OR two_column. Show the numeric breakdown from case_facts that supports the diagnosis. If driver relative weights are given, respect them; do NOT invent new weights.
+2. Diagnosis with real numbers — PREFER layout: bar_chart when case_facts include 3-5 periods of trend data (revenue, cost, volume, share, margin over quarters/years), especially when the shape of the movement or a gap opening between two quantities is the point. Fall back to data_table when the precise figures matter more than the shape, or when there are more than two measures to compare. Fall back to two_column when the diagnosis is a parallel-lists contrast (revenue side vs. cost side). If driver relative weights are given, respect them; do NOT invent new weights.
 3. Root cause — layout: single_insight OR title_bullets. The core "why" — grounded in what the candidate actually concluded plus the case_facts they cited. If they missed part of the root cause, present what they did diagnose; the "so_what" line can note that a piece was pressed on later.
 4. Recommendation delivered — layout: recommendation. Tag rows like Action / Target / Outcome. Reflect the candidate's actual recommendation. If a piece was missing (no quantified target, no risk named, vague next step), the slide should reflect that reality — don't silently fill it in with the model answer.
 5. Next steps / risks — layout: title_bullets. If the partner follow-up Q&A surfaced something the candidate conceded or committed to, that's fair game to include here. Otherwise, the natural next actions a consulting team would take, anchored in case_facts stakeholders.
+
+If the case supports a bar_chart AND a data_table meaningfully, use both — a strong 5-6 slide consulting deck usually contains at least one bar_chart. A deck with zero visual exhibits is a wall of text and reads that way.
+
+### Slide-title discipline — action titles, not topic labels
+
+Every slide title must state a takeaway or an action in one sentence — the kind of sentence a partner could nod at. NEVER a topic label.
+
+- GOOD: "NovaCast has a cost problem, not a demand problem." · "One cost line explains 95% of the margin decline." · "Cut licensing 15% to return NovaCast to profit in 12 months."
+- BAD: "NovaCast operating performance: Q3 2023 – Q2 2024." · "Diagnosis." · "Recommendation." · "Situation overview."
+
+Do not prefix titles with "Recommendation:" or the client name followed by a colon — put the action in the sentence itself. Every title must be consistent with this rule, including slide 1.
 
 ### Every slide requires a "so_what" line — do not skip this.
 

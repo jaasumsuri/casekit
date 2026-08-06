@@ -224,7 +224,7 @@ export const HARKEN = {
   slides: [
     {
       n: 1,
-      title: "Harken Industrial: margin compression has two causes, neither is Dunmore",
+      title: "Harken's margin compression has two causes, and neither is Dunmore",
       layout: "title_bullets" as const,
       bullets: [
         "Gross margin declined from 31% to 24% over 18 months; 7 points of that decline cannot be explained by the Dunmore volume reduction that management has focused on.",
@@ -267,6 +267,20 @@ export const HARKEN = {
     },
     {
       n: 4,
+      title: "Birmingham's cost curve diverged from Charlotte's the quarter scheduling changed",
+      layout: "bar_chart" as const,
+      chart: {
+        unit: "Cost per unit ($) — production of commercial HVAC components",
+        categories: ["2022", "2024"],
+        series: [
+          { name: "Charlotte", values: [272, 281], cls: "pass" as const },
+          { name: "Birmingham", values: [268, 304], cls: "concern" as const },
+        ],
+      },
+      so_what: "Both plants started 2022 within $4 of each other. Two years later Birmingham is $23 higher per unit. Charlotte's curve is normal input inflation; Birmingham's is the fingerprint of fixed cost deleverage from the July 2023 decision.",
+    },
+    {
+      n: 5,
       title: "Birmingham vs. Charlotte: two plants, two very different cost trajectories",
       layout: "data_table" as const,
       headers: ["Metric", "Charlotte", "Birmingham", "Implication"],
@@ -281,8 +295,8 @@ export const HARKEN = {
       so_what: "The problem is localized to Birmingham and has a clear causal explanation. Charlotte is performing normally. This is a surgical fix, not a company-wide restructuring.",
     },
     {
-      n: 5,
-      title: "Recommendation: reverse the scheduling decision, rebuild utilization, suspend pricing concessions",
+      n: 6,
+      title: "Reverse the Birmingham scheduling decision to recover 4 margin points in 12–18 months",
       layout: "recommendation" as const,
       rows: [
         { tag: "Action", text: "Immediately reverse the July 2023 Birmingham scheduling directive — return the plant to commercial HVAC focus, reroute B2C and custom fabrication to Charlotte spare capacity or third-party logistics, and <b>stop the Dunmore pricing concession program</b>, which is solving the wrong problem." },

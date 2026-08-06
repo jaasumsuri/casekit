@@ -203,7 +203,7 @@ export const VERIOMED = {
   slides: [
     {
       n: 1,
-      title: "Veriomed / LabBridge acquisition: strategic opportunity at the wrong price",
+      title: "Buy LabBridge — but at ~$150M, not the proposed $210M",
       layout: "title_bullets" as const,
       bullets: [
         "LabBridge processes 35% of its volume from Veriomed referrals — creating a genuine vertical integration opportunity to capture that margin internally.",
@@ -246,6 +246,20 @@ export const VERIOMED = {
     },
     {
       n: 4,
+      title: "Correcting the revenue-vs.-margin error halves the biggest synergy line",
+      layout: "bar_chart" as const,
+      chart: {
+        unit: "Annual synergy value, $M — CFO estimate vs. corrected",
+        categories: ["Referral capture", "Admin consolidation", "Procurement"],
+        series: [
+          { name: "CFO estimate", values: [18, 6, 4], cls: "concern" as const },
+          { name: "Corrected", values: [9, 5, 1.75], cls: "pass" as const },
+        ],
+      },
+      so_what: "The referral-capture bar collapses in half — that $9M correction alone is the difference between a deal that pays for itself and one that pays for a number the CFO computed wrong.",
+    },
+    {
+      n: 5,
       title: "Synergy rebuild: CFO estimate vs. corrected analysis",
       layout: "data_table" as const,
       headers: ["Synergy source", "CFO estimate", "Corrected", "Variance"],
@@ -259,8 +273,8 @@ export const VERIOMED = {
       so_what: "The corrected synergy estimate supports an acquisition price approximately $56–61M below the current offer — a material gap that must be closed before the deal proceeds.",
     },
     {
-      n: 5,
-      title: "Recommendation: table $210M offer; return at ~$150M with revenue protection",
+      n: 6,
+      title: "Table the $210M offer; return at ~$150M with an earnout tied to external revenue retention",
       layout: "recommendation" as const,
       rows: [
         { tag: "Action", text: "Table the current $210M offer immediately. Commission an independent valuation using corrected synergy assumptions and attrition-adjusted EBITDA. Have legal review referral agreements for change-of-ownership clauses within 2 weeks." },

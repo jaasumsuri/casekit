@@ -212,7 +212,7 @@ export const FIELDCAST = {
   slides: [
     {
       n: 1,
-      title: "Fieldcast SMB entry: market opportunity vs. execution reality",
+      title: "SMB is an attractive market Fieldcast is not built to capture — not without a separate operating model",
       layout: "title_bullets" as const,
       bullets: [
         "The SMB workflow automation market is large ($4.2B TAM), fast-growing (18% annually), and underpenetrated (14%) — surface metrics support entry.",
@@ -270,7 +270,21 @@ export const FIELDCAST = {
     },
     {
       n: 5,
-      title: "Recommendation: conditional no-go on current proposal; structured path to yes",
+      title: "At SMB prices, the enterprise motion costs 6× the SMB customer's entire annual contract",
+      layout: "bar_chart" as const,
+      chart: {
+        unit: "$K per customer per year",
+        categories: ["Fieldcast SMB (proposed)", "Fieldcast Enterprise (today)"],
+        series: [
+          { name: "Annual contract value", values: [4.8, 87], cls: "rev" as const },
+          { name: "Max sustainable cost-to-serve at 65% GM", values: [1.7, 30], cls: "cost" as const },
+        ],
+      },
+      so_what: "The whole SMB operating envelope — top-line ACV to cost cap — is roughly 18× narrower than what Fieldcast's current motion is built for. Repricing the existing product doesn't close that gap; a new delivery model does.",
+    },
+    {
+      n: 6,
+      title: "Conditional no-go on the current proposal; run a 30-customer pilot to unlock a structured yes",
       layout: "recommendation" as const,
       rows: [
         { tag: "Action", text: "Do not proceed under the current enterprise model. Redirect the internal lightweight product into a structured <b>30-customer paid SMB pilot</b>, with gross margin and 90-day churn as the primary success metrics." },

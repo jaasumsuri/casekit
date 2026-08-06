@@ -228,7 +228,7 @@ export const BROVA = {
   slides: [
     {
       n: 1,
-      title: "Brova growth assessment: the right question is not which category — it’s which capital allocation",
+      title: "Brova has a distribution problem, not a category problem — invest in shelf space before energy drinks",
       layout: "title_bullets" as const,
       bullets: [
         "Brova’s growth deceleration from 14% to 6% reflects a distribution gap — the company is present in only 18% of its relevant channel — not a category ceiling or a product portfolio problem.",
@@ -277,6 +277,20 @@ export const BROVA = {
     },
     {
       n: 4,
+      title: "$1 into distribution returns ~$7 of year-2 revenue; $1 into energy drinks returns ~$0.30",
+      layout: "bar_chart" as const,
+      chart: {
+        unit: "$M — capital in vs. run-rate year-2 revenue (midpoints)",
+        categories: ["Distribution", "Functional bev.", "Energy drinks"],
+        series: [
+          { name: "Capital required", values: [20, 15, 45], cls: "cost" as const },
+          { name: "Year-2 revenue (midpoint)", values: [142, 20, 12], cls: "rev" as const },
+        ],
+      },
+      so_what: "The energy drink bar inverts the shape of the other two: highest capital, lowest revenue. Distribution expansion is not marginally better — it is an order of magnitude better on capital efficiency.",
+    },
+    {
+      n: 5,
       title: "Capital allocation comparison: three growth options ranked by return",
       layout: "data_table" as const,
       headers: ["Metric", "Energy drinks", "Distribution", "Functional bev."],
@@ -291,8 +305,8 @@ export const BROVA = {
       so_what: "Distribution expansion is not just better on individual metrics — it also creates the distribution infrastructure that makes any future category launch more viable.",
     },
     {
-      n: 5,
-      title: "Recommendation: authorize $45M phased growth plan; defer energy drinks to year 3",
+      n: 6,
+      title: "Authorize a $45M phased growth plan led by distribution; defer energy drinks to year 3",
       layout: "recommendation" as const,
       rows: [
         { tag: "Action", text: "Do not authorize the energy drink investment as the primary growth vehicle. Authorize a phased $45M plan: <b>$20M</b> for distribution expansion into 4,000 additional premium grocery locations (months 0–18), <b>$15M</b> for functional beverage launch (months 6–24), <b>$10M</b> for brand and DTC investment (months 0–24)." },
