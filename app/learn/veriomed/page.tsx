@@ -5,6 +5,7 @@ import Link from "next/link";
 import { VERIOMED } from "@/data/cases/veriomed";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
 import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
+import { matches as rubricMatches } from "@/components/case/rubric";
 import "./veriomed.css";
 
 const D = VERIOMED;
@@ -195,7 +196,7 @@ export default function VeriomedPage() {
                 The brief
               </span>
               <p>Veriomed is a regional hospital network operating across 14 facilities in the Mid-Atlantic United States. With <em>$2.1B</em> in annual revenue and approximately 8,200 employees, it is the second-largest healthcare provider in its region. Over the past three years, Veriomed has faced margin pressure from rising labor costs and flat reimbursement rates.</p>
-              <p>Veriomed&apos;s CFO has identified LabBridge Diagnostics &mdash; an independent diagnostics and pathology lab operating three facilities in the same region &mdash; as a potential acquisition target. LabBridge generates <em>$94M</em> in annual revenue, runs at a <em>19% EBITDA margin</em>, and currently processes approximately <em>35%</em> of its volume from Veriomed referrals. The CFO believes the acquisition would generate $28M in annual synergies, implying an acquisition price of <em>$210M</em> at a 7.5x EBITDA multiple.</p>
+              <p>Veriomed&apos;s CFO has identified LabBridge Diagnostics &mdash; an independent diagnostics and pathology lab operating three facilities in the same region &mdash; as a potential acquisition target. LabBridge generates <em>$94M</em> in annual revenue, runs at a <em>19% EBITDA margin</em>, and currently processes approximately <em>35%</em> of its volume from Veriomed referrals. The CFO believes the acquisition would generate $37M in annual synergies and cites a 7.5x forward-EBITDA multiple to justify a <em>$210M</em> acquisition price.</p>
               <p>The CEO has asked you to evaluate the acquisition. The board needs a recommendation within two weeks.</p>
               <div className="brief-question">
                 <div className="bq-lbl">Your question</div>
@@ -503,7 +504,7 @@ function WriteStepComponent({
   const rubricLit = (key: string) => {
     const def = step.rubric.find((r) => r.key === key);
     if (!def || !("re" in def)) return false;
-    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
+    return rubricMatches(def as { key: string; label: string; re?: string }, text);
   };
 
   const handleSubmit = () => {
@@ -600,7 +601,7 @@ function Write2StepComponent({
   const rubricLit = (rubric: typeof step.partA.rubric, key: string, text: string) => {
     const def = rubric.find((r) => r.key === key);
     if (!def || !("re" in def)) return false;
-    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
+    return rubricMatches(def as { key: string; label: string; re?: string }, text);
   };
 
   const handleSubmitA = () => {

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import cases from "@/data/practice-cases.json";
+import { requirePracticeUser } from "@/lib/practice-auth";
 
 // Phase 2 · Section 1.
 //
@@ -85,6 +86,10 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "invalid_action" }, { status: 400 });
   }
 
+  const auth = await requirePracticeUser();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth;
+
   const supabase = getSupabase();
 
   let sessionRaw: {
@@ -98,6 +103,7 @@ export async function POST(request: NextRequest) {
       .from("practice_sessions")
       .select("*")
       .eq("id", sessionId)
+      .eq("user_id", userId)
       .single();
     if (error || !data) {
       return Response.json({ error: "session_not_found" }, { status: 404 });
@@ -135,7 +141,8 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await supabase
       .from("practice_sessions")
       .update({ interview_questions: payload })
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .eq("user_id", userId);
     if (updateError) {
       if (updateError.code === "PGRST204") {
         console.warn(
@@ -230,7 +237,8 @@ Return ONLY the closing line as plain text. No quotes, no markdown, no attributi
       const { error: updateError } = await supabase
         .from("practice_sessions")
         .update({ interview_questions: payload })
-        .eq("id", sessionId);
+        .eq("id", sessionId)
+        .eq("user_id", userId);
       if (updateError && updateError.code !== "PGRST204") {
         console.error(
           "interview-questions close: persist failed:",
@@ -388,7 +396,8 @@ Now generate the 2-3 follow-up questions via the submit_partner_followups tool. 
     const { error: updateError } = await supabase
       .from("practice_sessions")
       .update({ interview_questions: payload })
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .eq("user_id", userId);
     if (updateError) {
       if (updateError.code === "PGRST204") {
         console.warn(

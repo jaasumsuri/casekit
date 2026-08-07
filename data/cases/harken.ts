@@ -8,7 +8,7 @@ export const HARKEN = {
       sub: "Management believes the problem is the Dunmore volume loss. The CFO has flagged that something else is also happening. Write out: (1) What two hypotheses would you hold simultaneously going into this case? (2) What is the single most important clarifying question you would ask the CEO before starting your analysis? (3) What would it take to eliminate one of your hypotheses early?",
       placeholder: "Hypothesis A (revenue-side): the margin compression beyond Dunmore could be…  Hypothesis B (cost-side): it could also be…  The clarifying question I'd ask is…  To eliminate one early, I'd…",
       rubric: [
-        { key: "dual", label: "Holds two hypotheses", re: "hypothes|two|revenue.{1,30}cost|cost.{1,30}revenue|both|either|A.{1,30}B|simultaneously" },
+        { key: "dual", label: "Holds two hypotheses", re: "hypothes|\\btwo\\b|revenue.{1,30}cost|cost.{1,30}revenue|\\bboth\\b|\\beither\\b|simultaneously" },
         { key: "question", label: "Asks a targeted question", re: "facilit|plant|mix|production|capacity|allocat|utiliz|clarif|ask" },
         { key: "eliminate", label: "Plans to eliminate", re: "eliminat|rule out|test|pull|check|if.{1,30}stable|data.{1,20}show" },
       ],
@@ -125,7 +125,7 @@ export const HARKEN = {
       placeholder: "Option 1 — Reverse the scheduling decision…  Pros:…  Cons:…  Option 2 — Reduce Birmingham's fixed cost base…  Option 3 — Fill capacity with new volume…  I'd recommend a sequenced combination…",
       rubric: [
         { key: "options", label: "Names 3 distinct options", re: "option 1|option 2|option 3|first.{1,40}second.{1,40}third|three.{1,20}option|revers|right.?siz|reduc|new.{1,10}volume|fill" },
-        { key: "tradeoffs", label: "Assesses trade-offs", re: "pro|con|trade.?off|risk|downside|upside|irreversib|however|but.{1,20}if" },
+        { key: "tradeoffs", label: "Assesses trade-offs", re: "\\bpros?\\b|\\bcons?\\b|trade.?off|\\brisks?\\b|downside|upside|irreversib|however|but.{1,20}if" },
         { key: "sequence", label: "Sequences the recommendation", re: "sequenc|immediate|parallel|0.?[–-].?6|6.?[–-].?12|12.?month|first.{1,20}then|phase|timeline|reserve" },
       ],
       model:

@@ -121,7 +121,7 @@ export default function ProfitabilityPage() {
 
   const verdictLines = [
     { ok: cogs <= 56, text: `COGS at <b>${cogs}%</b> of revenue${cogs <= 56 ? ", near the healthy ~55%" : ", compressing the margin"}` },
-    { ok: margin >= 9, text: `Net margin of <b>${margin.toFixed(1)}%</b> (vs. ~10% two years ago)` },
+    { ok: margin >= 9, text: `Operating margin of <b>${margin.toFixed(1)}%</b> (vs. ~10% two years ago)` },
     { ok: profit >= 72, text: `Operating profit of <b>${fmt(profit)}</b> (vs. $80M baseline)` },
   ];
   const healthy = verdictLines.every(l => l.ok);

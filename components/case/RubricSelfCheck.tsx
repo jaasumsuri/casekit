@@ -1,6 +1,6 @@
 "use client";
 
-import { scoreRubric } from "./rubric";
+import { hasEnoughToCheck, scoreRubric } from "./rubric";
 import type { RubricCriterion } from "./types";
 
 /**
@@ -21,8 +21,26 @@ export function RubricSelfCheck({
 }) {
   if (!rubric?.length || !text.trim()) return null;
 
+  const enough = hasEnoughToCheck(text);
   const { hit, total, missed } = scoreRubric(rubric, text);
   const missedKeys = new Set(missed.map((m) => m.key));
+
+  if (!enough) {
+    return (
+      <div className="rsc" data-complete="false">
+        <div className="rsc-head">
+          <span className="rsc-count">
+            <b>Too short to self-check.</b>
+          </span>
+          <span className="rsc-note">
+            Write out your actual reasoning — at least a few sentences — then
+            re-submit. A one-line answer gives the checker nothing to look at,
+            and gives you nothing to learn from.
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rsc" data-complete={hit === total ? "true" : "false"}>
@@ -32,7 +50,8 @@ export function RubricSelfCheck({
         </span>
         <span className="rsc-note">
           Keyword self-check, not a grade — a strong answer in different words can
-          still miss one.
+          still miss one, and a short throwaway can occasionally sneak a match.
+          Treat this as a checklist, not a score.
         </span>
       </div>
       <ul className="rsc-list">

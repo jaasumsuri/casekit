@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import { createTextStreamResponse } from "ai";
 import cases from "@/data/practice-cases.json";
+import { requirePracticeUser } from "@/lib/practice-auth";
 import type { RedirectEntry } from "@/lib/practice-turn-engine";
 
 // Phase 2 · Section 5.
@@ -71,6 +72,10 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "missing_fields" }, { status: 400 });
   }
 
+  const auth = await requirePracticeUser();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth;
+
   const supabase = getSupabase();
 
   let sessionRow: {
@@ -86,6 +91,7 @@ export async function POST(request: NextRequest) {
       .from("practice_sessions")
       .select("*")
       .eq("id", sessionId)
+      .eq("user_id", userId)
       .single();
     if (error || !data) {
       return Response.json({ error: "session_not_found" }, { status: 404 });

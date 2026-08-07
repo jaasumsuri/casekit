@@ -451,7 +451,7 @@ export default function MarketSizingPage() {
             <div className="wx-step">
               <h4><span className="sn">Step 5</span> Sanity check &amp; conclusion</h4>
               <ul>
-                <li>The real US fitness industry is ~$35B total. Premium boutique studios are a subset of that, so $15B for the premium tier feels right at roughly 40% of total. &#10003;</li>
+                <li>The real US fitness industry is ~$35B total. Premium boutique studios are a subset of that, so $15B for the premium tier feels right at ~44% of total. &#10003;</li>
                 <li>$1,680/year = $140/month. That&rsquo;s consistent with what an Equinox or Orangetheory membership actually costs. &#10003;</li>
                 <li>9 million premium members in a country of 330M is 2.7% of the population. For a $140/month discretionary purchase, that&rsquo;s plausible. &#10003;</li>
               </ul>

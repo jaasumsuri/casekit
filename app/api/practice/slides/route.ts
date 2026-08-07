@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import cases from "@/data/practice-cases.json";
+import { requirePracticeUser } from "@/lib/practice-auth";
 import type { RedirectEntry } from "@/lib/practice-turn-engine";
 
 // Phase 2 · Section 4.
@@ -301,6 +302,10 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "missing_fields" }, { status: 400 });
   }
 
+  const auth = await requirePracticeUser();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth;
+
   const supabase = getSupabase();
 
   let sessionRow: {
@@ -316,6 +321,7 @@ export async function POST(request: NextRequest) {
       .from("practice_sessions")
       .select("*")
       .eq("id", sessionId)
+      .eq("user_id", userId)
       .single();
     if (error || !data) {
       return Response.json({ error: "session_not_found" }, { status: 404 });
@@ -402,7 +408,8 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await supabase
       .from("practice_sessions")
       .update({ slides })
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .eq("user_id", userId);
     if (updateError) {
       if (updateError.code === "PGRST204") {
         console.warn(

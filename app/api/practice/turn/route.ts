@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import cases from "@/data/practice-cases.json";
+import { requirePracticeUser } from "@/lib/practice-auth";
 import {
   AITurnResult,
   CumulativeRecommendationChecklist,
@@ -46,6 +47,10 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "invalid_response_type" }, { status: 400 });
   }
 
+  const auth = await requirePracticeUser();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth;
+
   const supabase = getSupabase();
 
   let session: {
@@ -61,6 +66,7 @@ export async function POST(request: NextRequest) {
       .from("practice_sessions")
       .select("*")
       .eq("id", sessionId)
+      .eq("user_id", userId)
       .single();
 
     if (error || !data) {
@@ -206,6 +212,7 @@ export async function POST(request: NextRequest) {
         .from("practice_sessions")
         .select("status")
         .eq("id", sessionId)
+        .eq("user_id", userId)
         .single();
       const sessionComplete =
         (currentSessionRow as { status?: string } | null)?.status ===
@@ -404,7 +411,8 @@ export async function POST(request: NextRequest) {
     let { error: stateError } = await supabase
       .from("practice_sessions")
       .update(updatePayload)
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .eq("user_id", userId);
     // Pre-migration fallback: if recommendation_checklist_cumulative is
     // missing, peel it off and retry so the phase-1 columns still land.
     if (stateError?.code === "PGRST204") {
@@ -416,7 +424,8 @@ export async function POST(request: NextRequest) {
       const retry = await supabase
         .from("practice_sessions")
         .update(updatePayload)
-        .eq("id", sessionId);
+        .eq("id", sessionId)
+        .eq("user_id", userId);
       stateError = retry.error;
     }
     if (stateError && stateError.code !== "PGRST204") {
@@ -475,7 +484,8 @@ export async function POST(request: NextRequest) {
           completion_status: completionStatus,
           ended_at: new Date().toISOString(),
         })
-        .eq("id", sessionId);
+        .eq("id", sessionId)
+        .eq("user_id", userId);
 
       if (updateError) {
         console.error("turn route: session completion update failed:", updateError);

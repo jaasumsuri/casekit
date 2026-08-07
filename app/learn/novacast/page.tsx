@@ -5,6 +5,7 @@ import Link from "next/link";
 import { NOVACAST } from "@/data/cases/novacast";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
 import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
+import { matches as rubricMatches } from "@/components/case/rubric";
 import "./novacast.css";
 
 const D = NOVACAST;
@@ -477,7 +478,7 @@ function WriteStep({
   const rubricLit = (key: string) => {
     const def = step.rubric.find((r) => r.key === key);
     if (!def || !("re" in def)) return false;
-    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
+    return rubricMatches(def as { key: string; label: string; re?: string }, text);
   };
 
   const handleSubmit = () => {

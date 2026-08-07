@@ -5,6 +5,7 @@ import Link from "next/link";
 import { HARKEN } from "@/data/cases/harken";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
 import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
+import { matches as rubricMatches } from "@/components/case/rubric";
 import "./harken.css";
 
 const D = HARKEN;
@@ -357,7 +358,7 @@ function WriteStepComponent({
   const rubricLit = (key: string) => {
     const def = step.rubric.find((r) => r.key === key);
     if (!def || !("re" in def)) return false;
-    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
+    return rubricMatches(def as { key: string; label: string; re?: string }, text);
   };
 
   const handleSubmit = () => {
@@ -454,7 +455,7 @@ function Write2StepComponent({
   const rubricLit = (rubric: typeof step.partA.rubric, key: string, text: string) => {
     const def = rubric.find((r) => r.key === key);
     if (!def || !("re" in def)) return false;
-    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
+    return rubricMatches(def as { key: string; label: string; re?: string }, text);
   };
 
   const handleSubmitA = () => {

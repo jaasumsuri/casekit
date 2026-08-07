@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BROVA } from "@/data/cases/brova";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
 import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
+import { matches as rubricMatches } from "@/components/case/rubric";
 import "./brova.css";
 
 const D = BROVA;
@@ -341,7 +342,7 @@ function WriteStepComponent({
   const rubricLit = (key: string) => {
     const def = step.rubric.find((r) => r.key === key);
     if (!def || !("re" in def)) return false;
-    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
+    return rubricMatches(def as { key: string; label: string; re?: string }, text);
   };
 
   const handleSubmit = () => {
@@ -432,7 +433,7 @@ function Write3StepComponent({
   const rubricLit = (rubric: { key: string; label: string; re?: string }[], key: string, text: string) => {
     const def = rubric.find((r) => r.key === key);
     if (!def || !("re" in def)) return false;
-    try { return new RegExp((def as { re: string }).re, "i").test(text); } catch { return false; }
+    return rubricMatches(def as { key: string; label: string; re?: string }, text);
   };
 
   const handleSubmitA = () => {

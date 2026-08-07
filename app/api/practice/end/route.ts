@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import { createTextStreamResponse } from "ai";
 import cases from "@/data/practice-cases.json";
+import { requirePracticeUser } from "@/lib/practice-auth";
 import {
   MustSurfaceState,
   RedirectEntry,
@@ -45,6 +46,10 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "missing_fields" }, { status: 400 });
   }
 
+  const auth = await requirePracticeUser();
+  if (!auth.ok) return auth.response;
+  const { userId } = auth;
+
   const supabase = getSupabase();
 
   let session: {
@@ -63,6 +68,7 @@ export async function POST(request: NextRequest) {
       .from("practice_sessions")
       .select("*")
       .eq("id", sessionId)
+      .eq("user_id", userId)
       .single();
 
     if (error || !data) {
@@ -158,7 +164,8 @@ export async function POST(request: NextRequest) {
           completion_status: "abandoned",
           ended_at: new Date().toISOString(),
         })
-        .eq("id", sessionId);
+        .eq("id", sessionId)
+        .eq("user_id", userId);
     } catch {
       // non-fatal
     }
@@ -326,7 +333,8 @@ export async function POST(request: NextRequest) {
         let { error: updateError } = await supabase
           .from("practice_sessions")
           .update(updatePayload)
-          .eq("id", sessionId);
+          .eq("id", sessionId)
+          .eq("user_id", userId);
 
         // Pre-migration fallback: if the critique jsonb column doesn't
         // exist yet, retry without it so the free-text critique still
@@ -339,7 +347,8 @@ export async function POST(request: NextRequest) {
           const retry = await supabase
             .from("practice_sessions")
             .update(updatePayload)
-            .eq("id", sessionId);
+            .eq("id", sessionId)
+            .eq("user_id", userId);
           updateError = retry.error;
         }
 

@@ -44,8 +44,8 @@ export const VERIOMED = {
       id: 3,
       kind: "write" as const,
       phase: "Synergy stress-test",
-      prompt: "Stress-test the CFO's $28M synergy estimate.",
-      sub: "The CFO believes the acquisition will generate $28M in annual synergies. That number drives the entire valuation. Your team has pulled together the following data. Reconstruct the synergy estimate from first principles &mdash; build up the number yourself, line by line, and state whether you believe the CFO&rsquo;s $28M figure is supported, overstated, or understated.",
+      prompt: "Stress-test the CFO's $37M synergy estimate.",
+      sub: "The CFO believes the acquisition will generate $37M in annual synergies. That number drives the entire valuation. Your team has pulled together the following data. Reconstruct the synergy estimate from first principles &mdash; build up the number yourself, line by line, and state whether you believe the CFO&rsquo;s $37M figure is supported, overstated, or understated.",
       exhibits: [
         {
           caption: "Exhibit A · Veriomed referral economics",
@@ -63,10 +63,10 @@ export const VERIOMED = {
           align: "right" as const,
           headers: ["Synergy source", "CFO estimate"],
           rows: [
-            { label: "Captured referral margin (stop paying external markup)", cells: ["$18M"], flag: true },
+            { label: "Captured referral margin (stop paying external markup)", cells: ["$27M"], flag: true },
             { label: "Administrative cost consolidation", cells: ["$6M"], flag: false },
             { label: "Procurement savings (shared supply contracts)", cells: ["$4M"], flag: false },
-            { label: "Total", cells: ["$28M"], flag: false },
+            { label: "Total", cells: ["$37M"], flag: false },
           ],
         },
         {
@@ -81,17 +81,17 @@ export const VERIOMED = {
           ],
         },
       ],
-      placeholder: "The CFO's $28M synergy estimate is…  Synergy 1 (captured referral margin): the correct figure is…  The revenue-at-risk from Exhibit C means…",
+      placeholder: "The CFO's $37M synergy estimate is…  Synergy 1 (captured referral margin): the correct figure is…  The revenue-at-risk from Exhibit C means…",
       rubric: [
         { key: "math", label: "Catches the revenue vs. margin error", re: "\\$29|\\$9M|revenue.{1,30}margin|margin.{1,30}revenue|overstat" },
         { key: "rebuild", label: "Rebuilds the number", re: "310,?000|\\$8\\.?9|\\$9M|\\$16M|\\$15|first.?principle|reconstruct|build" },
         { key: "attrition", label: "Flags revenue attrition risk", re: "38%|compet|attrition|redirect|external|client.{1,20}leave|depart" },
       ],
       model:
-        "The CFO&rsquo;s $28M synergy estimate is <strong>materially overstated</strong>. Here&rsquo;s the reconstruction:<br><br><strong>Synergy 1 &mdash; Captured referral margin: $18M (partially supported)</strong><br>Veriomed sends ~310,000 tests/year to LabBridge at $87/test. LabBridge&rsquo;s cost to process is $58/test, meaning the margin per test is $29. Across 310,000 tests, that&rsquo;s $8.99M &mdash; call it <em>$9M</em> &mdash; not $18M. The CFO appears to have used revenue rather than margin in this calculation. This synergy is overstated by approximately $9M.<br><br><strong>Synergy 2 &mdash; Administrative cost consolidation: $6M (plausible but aggressive)</strong><br>LabBridge&rsquo;s total operating costs at $94M revenue and 19% EBITDA margin imply ~$76M total costs. A $6M administrative consolidation represents ~8% of the cost base. Plausible for shared back-office, billing, and HR &mdash; but assumes no duplication costs during integration. Treat as achievable with execution risk; realistic estimate ~$5M.<br><br><strong>Synergy 3 &mdash; Procurement savings: $4M (likely overstated)</strong><br>LabBridge&rsquo;s lab supply costs are probably $20&ndash;25M. A $4M procurement saving implies 16&ndash;20% cost reduction. Aggressive for a regional network. Realistic estimate: $1.5&ndash;2M.<br><br><strong>Revised total: $9M + $5M + $1.75M &asymp; $16M</strong> &mdash; approximately 43% below the CFO&rsquo;s figure.<br><br>Critically, Exhibit C shows 38% of LabBridge&rsquo;s revenue comes from competing hospital systems who will almost certainly redirect referrals post-close &mdash; shrinking the base business the synergies are built on.",
+        "The CFO&rsquo;s $37M synergy estimate is <strong>materially overstated</strong>. Here&rsquo;s the reconstruction:<br><br><strong>Synergy 1 &mdash; Captured referral margin: $27M (materially overstated)</strong><br>Veriomed sends ~310,000 tests/year to LabBridge at $87/test. LabBridge&rsquo;s cost to process is $58/test, meaning the margin per test is $29. The synergy Veriomed captures by internalizing processing is the <em>margin</em> LabBridge earns on that volume &mdash; not the revenue. 310,000 &times; $29 = $8.99M &mdash; call it <em>$9M</em>. The CFO appears to have multiplied volume by revenue per test ($87 &times; 310,000 &asymp; $27M) rather than margin per test, ignoring that Veriomed still has to bear the $58 processing cost internally after the acquisition. This synergy is overstated by approximately $18M.<br><br><strong>Synergy 2 &mdash; Administrative cost consolidation: $6M (plausible but aggressive)</strong><br>LabBridge&rsquo;s total operating costs at $94M revenue and 19% EBITDA margin imply ~$76M total costs. A $6M administrative consolidation represents ~8% of the cost base. Plausible for shared back-office, billing, and HR &mdash; but assumes no duplication costs during integration. Treat as achievable with execution risk; realistic estimate ~$5M.<br><br><strong>Synergy 3 &mdash; Procurement savings: $4M (likely overstated)</strong><br>LabBridge&rsquo;s lab supply costs are probably $20&ndash;25M. A $4M procurement saving implies 16&ndash;20% cost reduction. Aggressive for a regional network. Realistic estimate: $1.5&ndash;2M.<br><br><strong>Revised total: $9M + $5M + $1.75M &asymp; $16M</strong> &mdash; approximately 57% below the CFO&rsquo;s figure.<br><br>Critically, Exhibit C shows 38% of LabBridge&rsquo;s revenue comes from competing hospital systems who will almost certainly redirect referrals post-close &mdash; shrinking the base business the synergies are built on.",
       coaching: [
         { n: "01", h: "Don't accept the CFO's number — build your own", p: "The CFO is not a neutral party — they are advocating for a deal they originated. The exhibit gives enough data to reconstruct the synergy estimate from first principles. A candidate who reads the CFO's table and writes 'the synergies appear reasonable' has missed the entire point." },
-        { n: "02", h: "Catch the revenue vs. margin error", p: "The CFO counted revenue ($87/test) instead of margin ($29/test) when calculating captured referral value. This is a classic synergy overstatement error that appears in real M&A deals. Strong candidates catch it immediately because they build the number themselves." },
+        { n: "02", h: "Catch the revenue vs. margin error", p: "The CFO multiplied volume by revenue per test ($87) instead of margin per test ($29) when calculating captured referral value — producing $27M instead of $9M. This is a classic synergy overstatement error that appears in real M&A deals. Strong candidates catch it immediately because they build the number themselves." },
         { n: "03", h: "Account for revenue at risk from Exhibit C", p: "The synergy calculation assumes LabBridge's full revenue base is intact post-acquisition. If 38% of revenue from competing hospitals departs, LabBridge's standalone EBITDA drops from $17.9M to approximately $10.7M — the deal may still work, but only if synergies materialize faster than revenue attrition." },
       ],
     },
@@ -108,9 +108,9 @@ export const VERIOMED = {
         { key: "risks", label: "Names deal-specific risks", re: "attrition|compet.{1,30}revenue|accredit|CLIA|CAP|patholog|talent|certif" },
       ],
       model:
-        "<strong>Valuation:</strong><br>At $210M, Veriomed is paying <em>11.7x</em> LabBridge&rsquo;s standalone EBITDA of $17.9M &mdash; well above the 7.5x the CFO cited. The CFO achieved 7.5x by embedding synergies in the denominator (EBITDA + synergies = $17.9M + $28M = $45.9M; $210M / $45.9M &asymp; 4.6x). Including synergies at full value in a purchase price means paying for outcomes that haven&rsquo;t happened yet.<br><br>Using revised $16M synergies and risk-adjusting for competing hospital revenue loss (assume 38% of external revenue departs within 12 months, reducing EBITDA by ~$7M): adjusted EBITDA post-attrition &asymp; $10.9M. At $210M, Veriomed is paying 19.3x risk-adjusted EBITDA. That is not defensible.<br><br>A fair price: standalone EBITDA of $17.9M at 7.5x = $134M, plus a risk-adjusted synergy premium of $15&ndash;20M = <em>$149&ndash;154M</em>. The proposed price is approximately $55&ndash;60M above what the deal is worth under realistic assumptions.<br><br><strong>Integration Risk 1 &mdash; Competing hospital revenue attrition:</strong><br>If 38% of LabBridge&rsquo;s revenue from competing hospital systems departs post-acquisition, revenue shrinks from $94M to ~$58M and EBITDA drops to ~$11M. This is not a tail risk &mdash; it is a near-certainty. No competing hospital system will continue sending diagnostic tests to a facility owned by their primary competitor.<br><br><strong>Integration Risk 2 &mdash; Key talent and accreditation dependencies:</strong><br>Diagnostics labs are accreditation-sensitive businesses. LabBridge&rsquo;s value depends on its CLIA and CAP certifications, its relationships with pathologists and lab directors, and its reputation for turnaround time. Post-acquisition cost consolidation risks disrupting any of these. If LabBridge loses key pathologists or has a quality incident triggering an accreditation review, the entire value proposition collapses.",
+        "<strong>Valuation:</strong><br>At $210M, Veriomed is paying <em>11.7x</em> LabBridge&rsquo;s standalone EBITDA of $17.9M &mdash; well above the 7.5x the CFO cited. The CFO reached 7.5x by inflating the earnings base with unvalidated synergies: he took LabBridge&rsquo;s $17.9M standalone EBITDA, added ~$10M of assumed year-1 synergy capture to arrive at an &ldquo;adjusted forward EBITDA&rdquo; of ~$28M, then applied 7.5x ($28M &times; 7.5 = $210M). The multiple looks like a market comp; the base it&rsquo;s applied to is not. You cannot pay a market multiple on earnings that haven&rsquo;t been earned yet &mdash; especially when the underlying $37M synergy figure is itself overstated by more than half.<br><br>Using revised $16M synergies and risk-adjusting for competing hospital revenue loss (assume 38% of external revenue departs within 12 months, reducing EBITDA by ~$7M): adjusted EBITDA post-attrition &asymp; $10.9M. At $210M, Veriomed is paying 19.3x risk-adjusted EBITDA. That is not defensible.<br><br>A fair price: standalone EBITDA of $17.9M at 7.5x = $134M, plus a risk-adjusted synergy premium of $15&ndash;20M = <em>$149&ndash;154M</em>. The proposed price is approximately $55&ndash;60M above what the deal is worth under realistic assumptions.<br><br><strong>Integration Risk 1 &mdash; Competing hospital revenue attrition:</strong><br>If 38% of LabBridge&rsquo;s revenue from competing hospital systems departs post-acquisition, revenue shrinks from $94M to ~$58M and EBITDA drops to ~$11M. This is not a tail risk &mdash; it is a near-certainty. No competing hospital system will continue sending diagnostic tests to a facility owned by their primary competitor.<br><br><strong>Integration Risk 2 &mdash; Key talent and accreditation dependencies:</strong><br>Diagnostics labs are accreditation-sensitive businesses. LabBridge&rsquo;s value depends on its CLIA and CAP certifications, its relationships with pathologists and lab directors, and its reputation for turnaround time. Post-acquisition cost consolidation risks disrupting any of these. If LabBridge loses key pathologists or has a quality incident triggering an accreditation review, the entire value proposition collapses.",
       coaching: [
-        { n: "01", h: "Unpack the multiple sleight-of-hand", p: "The CFO cited 7.5x EBITDA but embedded synergies in the denominator. Candidates who take the 7.5x at face value haven't checked the math. Unpacking what multiple Veriomed is actually paying on standalone EBITDA (11.7x) is the most important number in the valuation section." },
+        { n: "01", h: "Unpack the multiple sleight-of-hand", p: "The CFO cited 7.5x EBITDA but got there by adding ~$10M of assumed year-1 synergy capture to standalone EBITDA before applying the multiple. Candidates who take the 7.5x at face value haven't checked the base it's applied to. Unpacking what multiple Veriomed is actually paying on standalone EBITDA (11.7x) is the most important number in the valuation section." },
         { n: "02", h: "Name deal-specific integration risks", p: "Weak candidates list 'culture clash' and 'systems integration' as risks because those are boilerplate M&A answers. Strong candidates identify risks specific to this deal: the revenue attrition from competing hospital clients and the accreditation/talent dependency unique to diagnostics." },
         { n: "03", h: "Connect valuation to the strategic rationale", p: "The recommendation should close the loop: the strategic rationale is real (referral capture is a genuine value driver), but the price is wrong given the actual synergies and the revenue at risk. The right answer is not 'don't do the deal' — it's 'do the deal at a lower price with specific protective conditions.'" },
       ],
@@ -126,12 +126,12 @@ export const VERIOMED = {
         intro: "Should Veriomed acquire LabBridge at $210M? State your position, support it with the three most critical findings from your analysis, and specify exactly what conditions would need to be true for you to recommend the deal at the current price.",
         placeholder: "My recommendation is: do not acquire LabBridge at $210M…  Three findings support this…  This recommendation changes if…",
         rubric: [
-          { key: "position", label: "Clear position", re: "do not|don'?t|should not|shouldn'?t|table|renegotiat|walk away|not at \\$210|not.{1,20}\\$210" },
-          { key: "quant", label: "Quantified", re: "\\$150|\\$149|\\$154|11\\.?7|\\$16M|\\$28M|overstat|\\$9M|\\$12M" },
+          { key: "position", label: "Clear position", re: "do not (acquire|buy|proceed|approve|do this|do the deal|pay)|don'?t (acquire|buy|proceed|approve|do this|do the deal|pay)|should not (acquire|proceed|pay|approve)|shouldn'?t (acquire|proceed|pay|approve)|\\btable\\b|renegotiat|walk away|not at \\$210|not.{1,20}\\$210|\\breject\\b" },
+          { key: "quant", label: "Quantified", re: "\\$150|\\$149|\\$154|11\\.?7|\\$16M|\\$37M|\\$28M|overstat|\\$9M|\\$21M|\\$18M" },
           { key: "conditions", label: "States conditions", re: "condition|change|contract|lock|multi.?year|escrow|earnout|evidence|would.{1,20}change" },
         ],
         model:
-          "My recommendation is: <strong>do not acquire LabBridge at $210M.</strong> The strategic rationale is sound, but the proposed valuation is not supported by the data. We should either renegotiate to approximately $150M or walk away.<br><br><strong>Three findings support this:</strong><br><br><em>First,</em> the CFO&rsquo;s $28M synergy estimate overstates realistic synergies by approximately $12M. The captured referral margin synergy was calculated on revenue rather than margin, producing an $18M figure that should be approximately $9M. Realistic total synergies are ~$16M, not $28M.<br><br><em>Second,</em> $210M implies Veriomed is paying 11.7x LabBridge&rsquo;s standalone EBITDA &mdash; nearly 60% above the stated 7.5x multiple. The CFO achieved the 7.5x by embedding unvalidated synergies in the denominator.<br><br><em>Third,</em> 38% of LabBridge&rsquo;s revenue comes from competing hospital systems that will almost certainly redirect referrals post-acquisition. That revenue departure is not a risk to model &mdash; it is a near-certainty to price in.<br><br>I recommend Veriomed table the $210M offer, commission an independent valuation using corrected synergy assumptions, and return to LabBridge with a revised offer in the <em>$150M range</em>.<br><br>This recommendation changes if LabBridge can provide contractual evidence that its competing hospital clients are locked into multi-year referral agreements that survive a change of ownership &mdash; which would substantially reduce the revenue attrition risk and justify a higher price.",
+          "My recommendation is: <strong>do not acquire LabBridge at $210M.</strong> The strategic rationale is sound, but the proposed valuation is not supported by the data. We should either renegotiate to approximately $150M or walk away.<br><br><strong>Three findings support this:</strong><br><br><em>First,</em> the CFO&rsquo;s $37M synergy estimate overstates realistic synergies by approximately $21M. The captured referral margin synergy was calculated on revenue rather than margin, producing a $27M figure that should be approximately $9M. Realistic total synergies are ~$16M, not $37M.<br><br><em>Second,</em> $210M implies Veriomed is paying 11.7x LabBridge&rsquo;s standalone EBITDA &mdash; nearly 60% above the 7.5x multiple the CFO cited. The CFO reached 7.5x only by adding ~$10M of assumed year-1 synergy capture to standalone EBITDA before applying the multiple.<br><br><em>Third,</em> 38% of LabBridge&rsquo;s revenue comes from competing hospital systems that will almost certainly redirect referrals post-acquisition. That revenue departure is not a risk to model &mdash; it is a near-certainty to price in.<br><br>I recommend Veriomed table the $210M offer, commission an independent valuation using corrected synergy assumptions, and return to LabBridge with a revised offer in the <em>$150M range</em>.<br><br>This recommendation changes if LabBridge can provide contractual evidence that its competing hospital clients are locked into multi-year referral agreements that survive a change of ownership &mdash; which would substantially reduce the revenue attrition risk and justify a higher price.",
         coaching: [
           { n: "01", h: "Don't just say 'no' — offer a revised price", p: "A blanket rejection isn't a consulting recommendation — it's a dead end. The client has already identified this target and believes in the strategic thesis. The right answer is: here's what we'd pay and why, and here's what needs to change for the current price to become acceptable." },
           { n: "02", h: "Name the specific number", p: "Weak candidates say 'the valuation is too high' and leave it there. Strong candidates compute the fair value range and say 'we should be paying approximately $150M.' The number is derivable from the data. Using it is what makes the recommendation actionable." },
@@ -167,19 +167,19 @@ export const VERIOMED = {
       {
         label: "Executive summary",
         type: "exec" as const,
-        body: "Veriomed should not acquire LabBridge Diagnostics at the proposed $210M price. The CFO’s $28M synergy estimate overstates realistic synergies by approximately $12M due to a revenue-vs.-margin calculation error, and the valuation embeds those synergies in the denominator, making the deal appear cheaper than it is. A fair acquisition price is approximately $149–154M. We recommend tabling the current offer and returning with a revised bid at that level, with a revenue protection clause to address the risk of competing hospital client attrition.",
+        body: "Veriomed should not acquire LabBridge Diagnostics at the proposed $210M price. The CFO’s $37M synergy estimate overstates realistic synergies by approximately $21M due to a revenue-vs.-margin calculation error, and the CFO’s cited 7.5x multiple is only reached by inflating the EBITDA base with unvalidated year-1 synergy capture — the true multiple on standalone EBITDA is 11.7x. A fair acquisition price is approximately $149–154M. We recommend tabling the current offer and returning with a revised bid at that level, with a revenue protection clause to address the risk of competing hospital client attrition.",
       },
       {
         label: "Situation",
         type: "p" as const,
-        body: "Veriomed is a $2.1B regional hospital network facing margin pressure from rising labor costs and flat reimbursement rates. Its CFO has identified LabBridge Diagnostics — a $94M regional diagnostics lab that currently processes 35% of its volume from Veriomed referrals — as an acquisition target. The proposed deal values LabBridge at $210M based on a claimed 7.5x EBITDA multiple and $28M in projected synergies.",
+        body: "Veriomed is a $2.1B regional hospital network facing margin pressure from rising labor costs and flat reimbursement rates. Its CFO has identified LabBridge Diagnostics — a $94M regional diagnostics lab that currently processes 35% of its volume from Veriomed referrals — as an acquisition target. The proposed deal values LabBridge at $210M based on a claimed 7.5x EBITDA multiple and $37M in projected synergies.",
       },
       {
         label: "Key findings",
         type: "ul" as const,
         items: [
-          "The CFO’s synergy estimate of $28M is overstated by ~$12M: the largest synergy line item ($18M captured referral margin) was calculated on test revenue rather than test margin, reducing the correct figure to approximately $9M; realistic total synergies are <b>~$16M</b>.",
-          "Veriomed is effectively paying <b>11.7x standalone EBITDA</b> — not the stated 7.5x — because synergies were embedded in the multiple calculation’s denominator before they were validated.",
+          "The CFO’s synergy estimate of $37M is overstated by ~$21M: the largest synergy line item ($27M captured referral margin) was calculated on test revenue ($87 × 310,000) rather than test margin ($29 × 310,000), reducing the correct figure to approximately $9M; realistic total synergies are <b>~$16M</b>.",
+          "Veriomed is effectively paying <b>11.7x standalone EBITDA</b> — not the stated 7.5x — because the CFO reached 7.5x only by adding ~$10M of assumed year-1 synergy capture to standalone EBITDA before applying the multiple.",
           "38% of LabBridge’s revenue comes from competing hospital systems; post-acquisition attrition of this volume is a <b>near-certainty</b> and would reduce LabBridge’s risk-adjusted EBITDA to approximately $11M, making $210M indefensible.",
         ],
       },
@@ -207,7 +207,7 @@ export const VERIOMED = {
       layout: "title_bullets" as const,
       bullets: [
         "LabBridge processes 35% of its volume from Veriomed referrals — creating a genuine vertical integration opportunity to capture that margin internally.",
-        "The CFO has proposed a $210M acquisition price based on $28M in synergies and a stated 7.5x EBITDA multiple — but both figures require correction before the price can be evaluated.",
+        "The CFO has proposed a $210M acquisition price based on $37M in synergies and a stated 7.5x EBITDA multiple — but both figures require correction before the price can be evaluated.",
         "After correcting for a synergy calculation error and pricing in near-certain revenue attrition from competing hospital clients, a fair acquisition price is approximately $149–154M.",
       ],
       so_what: "This deal makes strategic sense. The current price does not.",
@@ -229,7 +229,7 @@ export const VERIOMED = {
         head: "What breaks",
         cls: "concern",
         items: [
-          "Synergy overstatement: $28M estimate contains a ~$12M revenue-vs.-margin error",
+          "Synergy overstatement: $37M estimate contains a ~$21M revenue-vs.-margin error",
           "Multiple misrepresentation: deal is 11.7x standalone EBITDA, not stated 7.5x",
           "Revenue attrition: 38% of LabBridge revenue from competitors is at near-certain risk post-close",
         ],
@@ -240,23 +240,23 @@ export const VERIOMED = {
       n: 3,
       title: "The synergy error: revenue counted where margin should have been",
       layout: "single_insight" as const,
-      headline: "The CFO valued the referral synergy at $18M by counting revenue. The correct figure, using margin, is $9M.",
-      detail: "Veriomed sends ~310,000 tests/year to LabBridge at $87/test. LabBridge’s cost to process each test is $58, yielding a $29 margin per test. The captured synergy value is 310,000 × $29 = $8.99M — approximately $9M. The CFO appears to have used the $87 revenue figure rather than the $29 margin figure, producing an $18M estimate that is approximately double the correct value. This single error accounts for the majority of the $12M overstatement in total synergies.",
-      so_what: "A $9M error in the largest synergy line is not a rounding issue — it is the difference between a deal that creates value and one that destroys it.",
+      headline: "The CFO valued the referral synergy at $27M by counting revenue. The correct figure, using margin, is $9M.",
+      detail: "Veriomed sends ~310,000 tests/year to LabBridge at $87/test. LabBridge’s cost to process each test is $58, yielding a $29 margin per test. The captured synergy value is 310,000 × $29 = $8.99M — approximately $9M. The CFO appears to have used the $87 revenue figure rather than the $29 margin figure (310,000 × $87 ≈ $27M), producing an estimate roughly triple the correct value. This single error accounts for $18M of the $21M overstatement in total synergies.",
+      so_what: "An $18M error in the largest synergy line is not a rounding issue — it is the difference between a deal that creates value and one that destroys it.",
     },
     {
       n: 4,
-      title: "Correcting the revenue-vs.-margin error halves the biggest synergy line",
+      title: "Correcting the revenue-vs.-margin error cuts the biggest synergy line to a third",
       layout: "bar_chart" as const,
       chart: {
         unit: "Annual synergy value, $M — CFO estimate vs. corrected",
         categories: ["Referral capture", "Admin consolidation", "Procurement"],
         series: [
-          { name: "CFO estimate", values: [18, 6, 4], cls: "concern" as const },
+          { name: "CFO estimate", values: [27, 6, 4], cls: "concern" as const },
           { name: "Corrected", values: [9, 5, 1.75], cls: "pass" as const },
         ],
       },
-      so_what: "The referral-capture bar collapses in half — that $9M correction alone is the difference between a deal that pays for itself and one that pays for a number the CFO computed wrong.",
+      so_what: "The referral-capture bar collapses to a third — that $18M correction alone is the difference between a deal that pays for itself and one that pays for a number the CFO computed wrong.",
     },
     {
       n: 5,
@@ -264,10 +264,10 @@ export const VERIOMED = {
       layout: "data_table" as const,
       headers: ["Synergy source", "CFO estimate", "Corrected", "Variance"],
       rows: [
-        ["Captured referral margin", "$18M", "$9M", "–$9M (rev. vs. margin error)"],
+        ["Captured referral margin", "$27M", "$9M", "–$18M (rev. vs. margin error)"],
         ["Admin. consolidation", "$6M", "$5M", "–$1M (execution risk adj.)"],
         ["Procurement savings", "$4M", "$1.75M", "–$2.25M (volume insufficient)"],
-        ["Total synergies", "$28M", "~$16M", "–$12M"],
+        ["Total synergies", "$37M", "~$16M", "–$21M"],
         ["Implied fair value", "$210M", "$149–154M", "–$56–61M"],
       ],
       so_what: "The corrected synergy estimate supports an acquisition price approximately $56–61M below the current offer — a material gap that must be closed before the deal proceeds.",
@@ -292,7 +292,7 @@ export const VERIOMED = {
       hint: "An M&A structure has four non-overlapping layers: strategic rationale, synergy validation, valuation, and integration risk. Think about the dependency chain — if the strategic rationale doesn’t hold, does it matter what the synergies are?",
     },
     {
-      q: "Veriomed sends 310,000 tests per year to LabBridge at $87/test. LabBridge’s processing cost is $58/test. What is the annual captured margin synergy if Veriomed acquires LabBridge and processes these tests internally? How does this compare to the CFO’s $18M estimate?",
+      q: "Veriomed sends 310,000 tests per year to LabBridge at $87/test. LabBridge’s processing cost is $58/test. What is the annual captured margin synergy if Veriomed acquires LabBridge and processes these tests internally? How does this compare to the CFO’s $27M estimate?",
       skill: "Quantitative reasoning",
       hint: "The synergy is the value Veriomed captures by not paying the external markup — which is the margin LabBridge earns on Veriomed’s tests, not the revenue. Compute 310,000 × (revenue per test − cost per test) and compare to the CFO’s figure.",
     },
