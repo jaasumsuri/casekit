@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FIELDCAST } from "@/data/cases/fieldcast";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
 import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
+import { ResumePrompt } from "@/components/case/ResumePrompt";
 import { matches as rubricMatches } from "@/components/case/rubric";
 import "./fieldcast.css";
 
@@ -89,14 +90,16 @@ type TwoPartWriteStep = Extract<(typeof D.steps)[number], { kind: "write2" }>;
 export default function FieldcastPage() {
   const [state, setState] = useState<State>({ current: 0, reached: 0, answers: {}, firstTry: {} });
   const [mounted, setMounted] = useState(false);
+  const [pendingResume, setPendingResume] = useState(false);
   const runnerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Always start fresh — no persisted progress between visits.
-    // This ensures first-time visitors never see answered steps or the reveal.
-    const fresh: State = { current: 0, reached: 0, answers: {}, firstTry: {} };
-    saveState(fresh);
-    setState(fresh);
+    // Load persisted progress if any, but never drop a returning visitor
+    // straight into an old step or the reveal — prompt them to resume or
+    // start over.
+    const loaded = loadState();
+    setState(loaded);
+    if (loaded.current > 0 || loaded.reached > 0) setPendingResume(true);
     setMounted(true);
   }, []);
 
@@ -134,6 +137,12 @@ export default function FieldcastPage() {
     const fresh: State = { current: 0, reached: 0, answers: {}, firstTry: {} };
     saveState(fresh);
     setState(fresh);
+    setPendingResume(false);
+    scrollToRunner();
+  }, [scrollToRunner]);
+
+  const resume = useCallback(() => {
+    setPendingResume(false);
     scrollToRunner();
   }, [scrollToRunner]);
 
@@ -261,23 +270,33 @@ export default function FieldcastPage() {
           </div>
         </div>
 
-        {/* Step content */}
-        {!showReveal && state.current < D.steps.length && (
-          <StepCard
-            key={state.current}
-            step={D.steps[state.current]}
-            state={state}
-            onAnswer={onAnswer}
-            onWriteSubmit={onWriteSubmit}
-            onWrite2Submit={onWrite2Submit}
-            onNext={next}
-            isLast={state.current === D.steps.length - 1}
+        {pendingResume ? (
+          <ResumePrompt
+            currentStep={state.current}
+            totalSteps={TOTAL_STEPS}
+            isCompleted={showReveal}
+            onResume={resume}
+            onRestart={restart}
           />
-        )}
+        ) : (
+          <>
+            {/* Step content */}
+            {!showReveal && state.current < D.steps.length && (
+              <StepCard
+                key={state.current}
+                step={D.steps[state.current]}
+                state={state}
+                onAnswer={onAnswer}
+                onWriteSubmit={onWriteSubmit}
+                onWrite2Submit={onWrite2Submit}
+                onNext={next}
+                isLast={state.current === D.steps.length - 1}
+              />
+            )}
 
-        {/* Reveal */}
-        {showReveal && (
-          <RevealSection score={sc} onRestart={restart} />
+            {/* Reveal */}
+            {showReveal && <RevealSection score={sc} onRestart={restart} />}
+          </>
         )}
       </section>
 

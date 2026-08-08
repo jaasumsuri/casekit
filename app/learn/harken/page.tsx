@@ -5,6 +5,7 @@ import Link from "next/link";
 import { HARKEN } from "@/data/cases/harken";
 import { ReportPanel, DeckPanel, IqPanel } from "@/components/case/RevealPanels";
 import { RubricSelfCheck } from "@/components/case/RubricSelfCheck";
+import { ResumePrompt } from "@/components/case/ResumePrompt";
 import { matches as rubricMatches } from "@/components/case/rubric";
 import "./harken.css";
 
@@ -19,6 +20,22 @@ type State = {
   answers: Record<number, string | { a?: string; b?: string }>;
   firstTry: Record<number, boolean>;
 };
+
+function loadState(): State {
+  if (typeof window === "undefined") return { current: 0, reached: 0, answers: {}, firstTry: {} };
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && typeof s.current === "number") {
+        if (typeof s.reached !== "number") s.reached = s.current || 0;
+        if (s.reached < s.current) s.reached = s.current;
+        return s;
+      }
+    }
+  } catch {}
+  return { current: 0, reached: 0, answers: {}, firstTry: {} };
+}
 
 function saveState(s: State) {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch {}
@@ -52,12 +69,13 @@ type TwoPartWriteStep = Extract<(typeof D.steps)[number], { kind: "write2" }>;
 export default function HarkenPage() {
   const [state, setState] = useState<State>({ current: 0, reached: 0, answers: {}, firstTry: {} });
   const [mounted, setMounted] = useState(false);
+  const [pendingResume, setPendingResume] = useState(false);
   const runnerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fresh: State = { current: 0, reached: 0, answers: {}, firstTry: {} };
-    saveState(fresh);
-    setState(fresh);
+    const loaded = loadState();
+    setState(loaded);
+    if (loaded.current > 0 || loaded.reached > 0) setPendingResume(true);
     setMounted(true);
   }, []);
 
@@ -95,6 +113,12 @@ export default function HarkenPage() {
     const fresh: State = { current: 0, reached: 0, answers: {}, firstTry: {} };
     saveState(fresh);
     setState(fresh);
+    setPendingResume(false);
+    scrollToRunner();
+  }, [scrollToRunner]);
+
+  const resume = useCallback(() => {
+    setPendingResume(false);
     scrollToRunner();
   }, [scrollToRunner]);
 
@@ -202,22 +226,32 @@ export default function HarkenPage() {
           </div>
         </div>
 
-        {/* Step content */}
-        {!showReveal && state.current < D.steps.length && (
-          <StepCard
-            key={state.current}
-            step={D.steps[state.current]}
-            state={state}
-            onWriteSubmit={onWriteSubmit}
-            onWrite2Submit={onWrite2Submit}
-            onNext={next}
-            isLast={state.current === D.steps.length - 1}
+        {pendingResume ? (
+          <ResumePrompt
+            currentStep={state.current}
+            totalSteps={TOTAL_STEPS}
+            isCompleted={showReveal}
+            onResume={resume}
+            onRestart={restart}
           />
-        )}
+        ) : (
+          <>
+            {/* Step content */}
+            {!showReveal && state.current < D.steps.length && (
+              <StepCard
+                key={state.current}
+                step={D.steps[state.current]}
+                state={state}
+                onWriteSubmit={onWriteSubmit}
+                onWrite2Submit={onWrite2Submit}
+                onNext={next}
+                isLast={state.current === D.steps.length - 1}
+              />
+            )}
 
-        {/* Reveal */}
-        {showReveal && (
-          <RevealSection onRestart={restart} />
+            {/* Reveal */}
+            {showReveal && <RevealSection onRestart={restart} />}
+          </>
         )}
       </section>
 
