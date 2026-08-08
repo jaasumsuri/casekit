@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import CaseCard from "@/components/CaseCard";
+import SampleDeliverable from "@/components/SampleDeliverable";
 
 /* ─────────────────────── data ─────────────────────── */
 
@@ -542,6 +543,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════ SAMPLE DELIVERABLE ══════════════ */}
+      <SampleDeliverable />
 
       {/* ══════════════ CTA ══════════════ */}
       <section id="get-access" style={{ paddingBottom: 110 }}>
