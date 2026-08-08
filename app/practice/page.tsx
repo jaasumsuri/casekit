@@ -1,12 +1,8 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import PracticeClient from "./PracticeClient";
 
-export default async function PracticeModePage() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect("/api/auth/signin?callbackUrl=/practice");
-  }
+/* Catalog is public — visitors need to see the 12 cases, industry mix, and
+   difficulty range before deciding to sign in. The auth gate lives on
+   /practice/[slug] (starting a session), not on browsing this list. */
+export default function PracticeModePage() {
   return <PracticeClient />;
 }

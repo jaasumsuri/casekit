@@ -329,6 +329,24 @@
   vertical-align: middle;
 }
 
+/* ─── SIGN-IN CARD (logged-out visitors) ─────────────── */
+.pm-signin-card .pm-signin-copy {
+  font-size: 0.9rem; color: var(--muted); line-height: 1.55;
+  margin: 4px 0 16px;
+}
+.pm-signin-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 11px 18px; border-radius: 999px; border: none;
+  background: var(--forest); color: #fff;
+  font-family: inherit; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; width: 100%; justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+.pm-signin-btn:hover:not(:disabled) {
+  background: #244c39; transform: translateY(-1px);
+}
+.pm-signin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* ─── CAP REACHED BANNER ──────────────────────────────── */
 .pm-cap-section {
   max-width: 720px; margin: 48px auto 96px;

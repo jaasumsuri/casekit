@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
 import "./practice.css";
 
 type SessionCount = {
@@ -144,6 +145,10 @@ const SearchSvg = () => (
 );
 
 export default function PracticeClient() {
+  const { status: authStatus } = useSession();
+  const isAuthed = authStatus === "authenticated";
+  const isAuthKnown = authStatus !== "loading";
+
   const [activeInd, setActiveInd] = useState("all");
   const [activeDiff, setActiveDiff] = useState("all");
   const [countData, setCountData] = useState<SessionCount | null>(null);
@@ -155,6 +160,14 @@ export default function PracticeClient() {
   const [waitlistError, setWaitlistError] = useState("");
 
   useEffect(() => {
+    // Only authenticated users have a session count — a 401 for a logged-out
+    // visitor is expected, not a signal to bounce them to signin. The auth
+    // gate lives on /practice/[slug] (starting a session).
+    if (!isAuthed) {
+      setCountLoading(false);
+      setCountData(null);
+      return;
+    }
     let cancelled = false;
     (async () => {
       const fallback: SessionCount = {
@@ -166,10 +179,6 @@ export default function PracticeClient() {
       };
       try {
         const res = await fetch("/api/practice/session-count");
-        if (res.status === 401) {
-          window.location.href = "/api/auth/signin?callbackUrl=/practice";
-          return;
-        }
         if (!res.ok) {
           if (!cancelled) {
             setCountData(fallback);
@@ -192,7 +201,7 @@ export default function PracticeClient() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isAuthed]);
 
   async function submitWaitlist(e: React.FormEvent) {
     e.preventDefault();
@@ -384,40 +393,69 @@ export default function PracticeClient() {
                 </p>
               </div>
             </div>
-            <div className="pm-sessions">
-              <div className="pm-sessions-top">
-                <span className="pm-sessions-label">Practice sessions</span>
-                <span className="pm-sessions-count">
-                  {countLoading || !countData ? (
-                    <span className="pm-count-skeleton" aria-label="Loading session count" />
-                  ) : (
-                    <>
-                      <strong>{countData.remaining}</strong> of {countData.cap} remaining
-                    </>
-                  )}
-                </span>
+            {isAuthed ? (
+              <div className="pm-sessions">
+                <div className="pm-sessions-top">
+                  <span className="pm-sessions-label">Practice sessions</span>
+                  <span className="pm-sessions-count">
+                    {countLoading || !countData ? (
+                      <span className="pm-count-skeleton" aria-label="Loading session count" />
+                    ) : (
+                      <>
+                        <strong>{countData.remaining}</strong> of {countData.cap} remaining
+                      </>
+                    )}
+                  </span>
+                </div>
+                <div className="pm-session-dots">
+                  {countLoading || !countData
+                    ? Array.from({ length: 5 }).map((_, i) => (
+                        <span key={i} className="dot dot-skeleton" />
+                      ))
+                    : Array.from({ length: countData.cap }).map((_, i) => (
+                        <span
+                          key={i}
+                          className={`dot ${i < countData.count ? "dot-filled" : "dot-empty"}`}
+                        />
+                      ))}
+                </div>
+                <p className="pm-sessions-note">
+                  5 free sessions per week. More cases coming soon.
+                </p>
               </div>
-              <div className="pm-session-dots">
-                {countLoading || !countData
-                  ? Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} className="dot dot-skeleton" />
-                    ))
-                  : Array.from({ length: countData.cap }).map((_, i) => (
-                      <span
-                        key={i}
-                        className={`dot ${i < countData.count ? "dot-filled" : "dot-empty"}`}
-                      />
-                    ))}
+            ) : (
+              <div className="pm-sessions pm-signin-card">
+                <div className="pm-sessions-top">
+                  <span className="pm-sessions-label">Start a session</span>
+                  <span className="pm-sessions-count">
+                    <strong>5</strong> free / week
+                  </span>
+                </div>
+                <p className="pm-signin-copy">
+                  Browsing is open — no account needed. Sign in with Google when
+                  you&apos;re ready to sit a case. No card, no credits.
+                </p>
+                <button
+                  type="button"
+                  className="pm-signin-btn"
+                  onClick={() => signIn("google", { callbackUrl: "/practice" })}
+                  disabled={!isAuthKnown}
+                >
+                  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                  </svg>
+                  Sign in with Google
+                </button>
               </div>
-              <p className="pm-sessions-note">
-                5 free sessions per week. More cases coming soon.
-              </p>
-            </div>
+            )}
           </div>
         </div>
       </section>
 
-      {countData && countData.remaining === 0 ? (
+      {isAuthed && countData && countData.remaining === 0 ? (
         <section className="pm-cap-section">
           <div className="pm-cap-card">
             <div className="pm-cap-eyebrow">Session cap reached</div>
@@ -515,7 +553,13 @@ export default function PracticeClient() {
             filtered.map((c) => (
               <Link
                 key={c.id}
-                href={`/practice/${c.slug}`}
+                href={
+                  isAuthed
+                    ? `/practice/${c.slug}`
+                    : `/api/auth/signin?callbackUrl=${encodeURIComponent(
+                        `/practice/${c.slug}`
+                      )}`
+                }
                 className="pm-card"
               >
                 <div className="pm-card-body">
