@@ -59,7 +59,7 @@ export default function Header() {
 
         {/* Desktop nav — column 2, centered */}
         <nav
-          className="hidden md:flex"
+          className="hidden lg:flex"
           style={{ gap: 24, alignItems: "center", justifyContent: "center" }}
         >
           {[
@@ -137,7 +137,7 @@ export default function Header() {
         <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
           {status === "loading" && (
             <span
-              className="hidden md:inline-block"
+              className="hidden lg:inline-block"
               style={{
                 width: 110, height: 40, borderRadius: "var(--r-pill)",
                 background: "var(--forest-light)", opacity: 0.5,
@@ -147,7 +147,7 @@ export default function Header() {
           {status === "unauthenticated" && (
             <Link
               href="/auth/signin?callbackUrl=/practice"
-              className="hidden md:inline-flex"
+              className="hidden lg:inline-flex"
               style={{
                 alignItems: "center",
                 gap: 8,
@@ -182,7 +182,7 @@ export default function Header() {
             </Link>
           )}
           {status === "authenticated" && (
-            <div className="hidden md:flex" style={{ alignItems: "center", gap: 20, marginLeft: 12 }}>
+            <div className="hidden lg:flex" style={{ alignItems: "center", gap: 20, marginLeft: 12 }}>
               <Link
                 href="/dashboard"
                 style={{
@@ -299,7 +299,7 @@ export default function Header() {
           )}
 
           <button
-            className="md:hidden flex flex-col gap-[5px] p-2"
+            className="lg:hidden flex flex-col gap-[5px] p-2"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
           >

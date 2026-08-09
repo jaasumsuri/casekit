@@ -390,3 +390,6 @@
   .fw-cards-grid { grid-template-columns: 1fr; }
   .fw-cta { padding: 40px 28px; }
 }
+@media (max-width: 480px) {
+  .fw-deep-num { display: none; }
+}

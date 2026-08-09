@@ -393,6 +393,15 @@ a.section-label:hover {
   .sp-hero { gap: 28px; }
   .spotlight-head h2 { font-size: clamp(2.2rem, 9vw, 3.2rem); }
 }
+@media (max-width: 560px) {
+  .spotlight-section { padding: 64px 0; }
+  .spotlight { padding: 20px; border-radius: 18px; }
+  .sp-card { padding: 22px 20px 20px; }
+  .sp-hero { padding: 24px 22px; gap: 22px; }
+  .sp-hero h3 { font-size: 1.55rem; }
+  .sp-hero .sp-num { font-size: 68px; top: 14px; right: 16px; }
+  .sp-num { font-size: 36px; top: 14px; right: 16px; }
+}
 
 /* ── How to Use section ── */
 .howto { padding: 0 0 110px; }
@@ -773,6 +782,7 @@ a.section-label:hover {
 
 /* ---------- Container ---------- */
 .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+@media (max-width: 560px) { .container { padding: 0 18px; } }
 
 /* ---------- HERO ---------- */
 .cases-hero { padding: 72px 0 0; text-align: center; }
@@ -1072,6 +1082,12 @@ a.section-label:hover {
   .pc-big-num { font-size: 3.6rem; }
   .prog-connector { margin-left: 30px; }
   .pc-body { padding: 20px 22px 20px; }
+}
+
+@media (max-width: 480px) {
+  .pc-row { grid-template-columns: 1fr; }
+  .pc-num-area { display: none; }
+  .prog-connector { margin-left: 0; }
 }
 
 /* ================================================================

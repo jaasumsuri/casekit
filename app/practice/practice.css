@@ -691,7 +691,7 @@
 }
 @media (max-width: 960px) {
   .pm-hero-grid { grid-template-columns: 1fr; gap: 36px; }
-  .pm-mockup-wrap { max-width: 480px; }
+  .pm-mockup-wrap { max-width: 620px; margin-left: auto; margin-right: auto; width: 100%; }
   .pm-explain-grid { grid-template-columns: 1fr; gap: 36px; }
 }
 @media (max-width: 600px) {
