@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import cases from "@/data/practice-cases.json";
 import { requirePracticeUser } from "@/lib/practice-auth";
+import { parseStoredJson } from "@/lib/practice-deliverables";
 import type {
   MustSurfaceState,
   RedirectEntry,
@@ -15,6 +16,10 @@ import type {
 // it as-is (no second model call). Shape mirrors the guided-case
 // ReportPanel (title, meta, sections[]) so the frontend can reuse the
 // exact same CSS classes and rendering logic.
+
+// Measured at 39.2s on a normal session against Vercel's 60s default —
+// a long transcript would 504. 300s is the Fluid-compute ceiling on Pro.
+export const maxDuration = 300;
 
 function getSupabase() {
   return createClient(
@@ -163,8 +168,13 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "Failed to load session" }, { status: 500 });
   }
 
-  if (sessionRow.report) {
-    return Response.json({ report: sessionRow.report, cached: true });
+  // The stored value is a JSON string, not an object — the column is text
+  // on production. Returning it raw handed the client something whose
+  // .sections was undefined, so every cached (i.e. every revisited) report
+  // rendered blank. Parse before returning.
+  const cachedReport = parseStoredJson<Report>(sessionRow.report);
+  if (cachedReport) {
+    return Response.json({ report: cachedReport, cached: true });
   }
 
   if (sessionRow.status !== "completed") {

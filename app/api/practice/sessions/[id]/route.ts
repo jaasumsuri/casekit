@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { createClient } from "@supabase/supabase-js";
+import { parseStoredJson } from "@/lib/practice-deliverables";
 
 function getSupabase() {
   return createClient(
@@ -28,16 +29,68 @@ export async function GET(
 
   const supabase = getSupabase();
 
-  const { data, error } = await supabase
+  // report/slides are the generated deliverables. They were being written
+  // by /api/practice/report and /api/practice/slides and then never read
+  // back — the session detail view only ever showed final_critique.
+  const SESSION_COLUMNS =
+    "id, case_slug, status, completion_status, final_critique, report, slides, created_at, ended_at";
+  const LEGACY_SESSION_COLUMNS =
+    "id, case_slug, status, completion_status, final_critique, created_at, ended_at";
+
+  interface SessionRow {
+    id: string;
+    case_slug: string;
+    status: string;
+    completion_status: string | null;
+    final_critique: string | null;
+    report: unknown;
+    slides: unknown;
+    created_at: string;
+    ended_at: string | null;
+  }
+
+  const primary = await supabase
     .from("practice_sessions")
-    .select("id, case_slug, status, completion_status, final_critique, created_at, ended_at")
+    .select(SESSION_COLUMNS)
     .eq("id", id)
     .eq("user_id", userId)
     .single();
 
+  let data = primary.data as SessionRow | null;
+  let error = primary.error;
+
+  // Pre-migration fallback, matching the pattern the write routes use:
+  // if the report/slides jsonb columns don't exist yet, serve the session
+  // without them rather than 404-ing the whole page.
+  if (error && (error.code === "42703" || error.code === "PGRST204")) {
+    const retry = await supabase
+      .from("practice_sessions")
+      .select(LEGACY_SESSION_COLUMNS)
+      .eq("id", id)
+      .eq("user_id", userId)
+      .single();
+    data = retry.data
+      ? {
+          ...(retry.data as Omit<SessionRow, "report" | "slides">),
+          report: null,
+          slides: null,
+        }
+      : null;
+    error = retry.error;
+  }
+
   if (error || !data) {
     return Response.json({ error: "not_found" }, { status: 404 });
   }
+
+  // report comes back as a JSON string (the column is text on production,
+  // not the jsonb the migration declares); slides comes back as an array.
+  // Normalize both so the client always receives objects.
+  const sessionPayload = {
+    ...data,
+    report: parseStoredJson<Record<string, unknown>>(data.report),
+    slides: parseStoredJson<unknown[]>(data.slides),
+  };
 
   // Turns for the chat-transcript view. .select("*") + explicit projection
   // keeps this working pre- and post- the interviewer_message migration,
@@ -66,5 +119,5 @@ export async function GET(
     };
   });
 
-  return Response.json({ session: data, turns });
+  return Response.json({ session: sessionPayload, turns });
 }

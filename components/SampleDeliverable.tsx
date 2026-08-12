@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ReportPanel, DeckPanel } from "@/components/case/RevealPanels";
 import type { CaseReport, Slide } from "@/components/case/types";
-import "@/app/practice/[slug]/reveal.css";
+import "@/components/case/reveal.css";
 
 /* A real Brightline Outfitters session, taken end-to-end through the Practice-Mode
    pipeline: candidate transcript → structured critique → /api/practice/report and

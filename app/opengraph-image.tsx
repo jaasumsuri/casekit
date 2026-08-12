@@ -100,7 +100,7 @@ export default async function Image() {
               letterSpacing: "0.02em",
             }}
           >
-            casekit.app
+            thecasekit.com
           </div>
         </div>
 

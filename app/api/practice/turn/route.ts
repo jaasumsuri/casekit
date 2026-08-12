@@ -19,6 +19,10 @@ import {
   resolveTurnState,
 } from "@/lib/practice-turn-engine";
 
+// One Anthropic round-trip per turn, and a 20-turn session compounds any
+// slow call into a user-visible failure. Vercel's 60s default is not enough
+// headroom; 300s is the Fluid-compute ceiling on Pro.
+export const maxDuration = 300;
 
 function getSupabase() {
   return createClient(
@@ -243,7 +247,11 @@ export async function POST(request: NextRequest) {
     priorCurveballCount,
     maxCurveballs,
     session.must_surface_state ?? {},
-    session.redirects_given ?? []
+    session.redirects_given ?? [],
+    // Checklist state as of the START of this turn, so the interviewer can
+    // see it is one piece away and write a proper closing turn instead of
+    // a question the terminating server response never lets them answer.
+    session.recommendation_checklist_cumulative ?? EMPTY_CUMULATIVE_CHECKLIST
   );
 
   const validPointIds = new Set(

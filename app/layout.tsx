@@ -18,13 +18,16 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
+// casekit.app is NOT ours — it resolves to an unrelated Shopify extension.
+// Every fallback here must point at the real production domain, or link
+// previews declare someone else's site as our canonical URL.
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_ENV === "production"
-    ? "https://casekit.app"
+    ? "https://thecasekit.com"
     : process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : "https://casekit.app");
+      : "https://thecasekit.com");
 
 const SITE_TITLE = "CaseKit | Consulting case prep, built for undergrads";
 const SITE_DESCRIPTION =

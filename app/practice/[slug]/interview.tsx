@@ -5,7 +5,9 @@ import { ChartExhibit } from "@/components/case/RevealPanels";
 import Link from "next/link";
 import { renderInline } from "@/lib/critique";
 import "./interview.css";
-import "./reveal.css";
+// Shared with the dashboard session-detail view, which renders the same
+// generated report + deck through the same RevealPanels components.
+import "@/components/case/reveal.css";
 
 interface CaseMeta {
   slug: string;
@@ -401,6 +403,21 @@ export default function InterviewClient({
       });
 
       const data = await res.json();
+
+      // A non-ok /turn (auth, 409 on a closed session, 500 on a failed
+      // insert) still parses as JSON, so without this the error body was
+      // rendered as an empty interviewer bubble and the turn was silently
+      // lost.
+      if (!res.ok || !data.interviewerMessage) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "interviewer",
+            text: "Something went wrong — try submitting again.",
+          },
+        ]);
+        return;
+      }
 
       setMessages((prev) => [
         ...prev,

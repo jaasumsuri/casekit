@@ -16,6 +16,14 @@ import cases from "../data/practice-cases.json";
 
 export const SESSION_TURN_CAP = 20;
 
+// The interviewer must have thrown its first curveball by this turn.
+// Without an explicit trigger the model treated max_curveballs purely as a
+// ceiling and threw zero across full sessions, so a product that markets
+// curveball practice never actually delivered one. The second curveball is
+// pinned to the synthesis zone (last two steps) rather than a turn number,
+// so short and long sessions both get one before the checklist closes.
+export const FIRST_CURVEBALL_BY_TURN = 5;
+
 export const RESPONSE_TYPES = [
   "core",
   "follow_up",
@@ -127,7 +135,7 @@ export const INTERVIEWER_TOOL = {
       critique: {
         type: "string",
         description:
-          "Internal-only grading note for the rubric log. The candidate never sees this. Be specific about what they got right or wrong relative to the step trigger.",
+          "Internal-only grading note for the rubric log. The candidate never sees this directly, but the end-of-session Coach DOES read it verbatim and writes prose around it, so anything unsupported here becomes a fabricated citation in the candidate's critique. Be specific about what they got right or wrong relative to the step trigger. GROUNDING (strict): quote the candidate's wording verbatim, in quotation marks, for every claim you make about what they said. NEVER restate, recompute, tidy up, or paraphrase the candidate's arithmetic — cite their numbers exactly as they said them, inside a quote. If their math is wrong, quote the figure they actually gave and note that it does not match the canonical case facts; do NOT write out the corrected calculation as though the candidate had produced it. If you cannot support a claim with a verbatim quote from this turn's candidate response, leave it out.",
       },
       passed: {
         type: "boolean",
@@ -256,6 +264,95 @@ export function countPriorCurveballs(priorTurns: PriorTurnLite[]): number {
   }).length;
 }
 
+// The four synthesis pieces, in prompt order, paired with the in-character
+// probe that pushes on each. Used to render the cumulative checklist state
+// and to name what's still open in the closing-turn directive.
+const CHECKLIST_PIECES = [
+  { flag: "hasDirectAnswer", quote: "directAnswerQuote", label: "a direct answer" },
+  {
+    flag: "hasQuantifiedEvidence",
+    quote: "quantifiedEvidenceQuote",
+    label: "quantified evidence",
+  },
+  {
+    flag: "hasRiskOrCondition",
+    quote: "riskOrConditionQuote",
+    label: "a specific risk or condition",
+  },
+  {
+    flag: "hasConcreteNextStep",
+    quote: "concreteNextStepQuote",
+    label: "a concrete next step",
+  },
+] as const;
+
+function missingChecklistPieces(
+  c: CumulativeRecommendationChecklist | null | undefined
+): string[] {
+  if (!c) return CHECKLIST_PIECES.map((p) => p.label);
+  return CHECKLIST_PIECES.filter((p) => !c[p.flag]).map((p) => p.label);
+}
+
+function cumulativeChecklistLines(
+  c: CumulativeRecommendationChecklist | null | undefined
+): string[] {
+  if (!c) {
+    return [
+      "(no cumulative state supplied for this call — treat all four pieces as still open.)",
+    ];
+  }
+  return CHECKLIST_PIECES.map((p) =>
+    c[p.flag]
+      ? `- ${p.flag} — ALREADY SATISFIED on an earlier turn ("${c[p.quote]}"). Do not press on this again.`
+      : `- ${p.flag} — STILL MISSING (${p.label}).`
+  );
+}
+
+// The dangling-question fix. Terminations are computed server-side AFTER
+// this reply is generated, so the model has to recognize the last turn
+// while writing it — otherwise every completed session ends on a question
+// the candidate is never allowed to answer.
+function closingTurnDirective(
+  c: CumulativeRecommendationChecklist | null | undefined
+): string {
+  const missing = missingChecklistPieces(c);
+  const closingShape =
+    'A closing turn is: react to their recommendation in character, one or two sentences, and STOP. No question. No "?" anywhere in interviewerMessage. A stakeholder wrapping a meeting says what they make of it and thanks them — they do not open a new thread.';
+
+  if (missing.length === 0) {
+    return `All four pieces are already satisfied. Treat this as a wrap-up turn. ${closingShape}`;
+  }
+  if (missing.length === 1) {
+    return `Exactly ONE piece is still open: ${missing[0]}. If the response you are grading supplies it, the checklist closes and this is your FINAL turn — write a closing turn. ${closingShape} If the response does NOT supply it, stay open and press on that one piece, in character, and you may ask a question.`;
+  }
+  return `${missing.length} pieces are still open: ${missing.join(", ")}. The session will not end this turn unless the candidate delivers all of them at once. If they do, write a closing turn. ${closingShape} Otherwise, press on the missing pieces one at a time.`;
+}
+
+// Turns the curveball budget into a single directive line for the prompt.
+// Split out because the branching is what actually makes the model throw
+// one: a bare "you have N remaining" reads as permission, so the overdue
+// cases have to state the requirement in the imperative for THIS turn.
+function curveballBoundLine(
+  priorCurveballCount: number,
+  maxCurveballs: number,
+  turnNumber: number,
+  inSynthesisZone: boolean
+): string {
+  if (priorCurveballCount >= maxCurveballs) {
+    return "STATUS: you are AT the curveball cap. Do NOT introduce any new curveballs or complications this turn — set introducedNewComplication=false. Push the candidate toward synthesis and their final recommendation. If you would have thrown a curveball, ask a synthesis question instead.";
+  }
+  if (priorCurveballCount === 0 && turnNumber >= FIRST_CURVEBALL_BY_TURN) {
+    return `STATUS: OVERDUE. You are on turn ${turnNumber} and have thrown zero curveballs. Introduce one THIS TURN, worked into your in-character reply, and set introducedNewComplication=true. Do not defer it again.`;
+  }
+  if (priorCurveballCount === 1 && maxCurveballs >= 2 && inSynthesisZone) {
+    return `STATUS: OVERDUE. The candidate is in the synthesis zone with only one curveball behind them. Introduce your second one THIS TURN — press their emerging recommendation with a complication it doesn't yet account for — and set introducedNewComplication=true. Once the checklist closes it is too late.`;
+  }
+  if (priorCurveballCount === 0) {
+    return `STATUS: none thrown yet. You are on turn ${turnNumber}; your first curveball must land by turn ${FIRST_CURVEBALL_BY_TURN}. Throw it earlier if the candidate is cruising.`;
+  }
+  return `STATUS: ${maxCurveballs - priorCurveballCount} curveball(s) remaining of ${maxCurveballs}. Space them out; do not stack two in consecutive turns.`;
+}
+
 export function buildSystemPrompt(
   practiceCase: PracticeCase,
   step: { trigger: string; reveal: string },
@@ -266,10 +363,18 @@ export function buildSystemPrompt(
   priorCurveballCount: number,
   maxCurveballs: number,
   mustSurfaceState: MustSurfaceState,
-  redirectsGiven: RedirectEntry[]
+  redirectsGiven: RedirectEntry[],
+  // Cumulative (merged across last-step turns) synthesis checklist as of
+  // the START of this turn. Optional so the repro scripts can call in
+  // without threading session state; when omitted the closing-turn rules
+  // below simply never fire.
+  cumulativeChecklist?: CumulativeRecommendationChecklist | null
 ): string {
   const totalSteps = allSteps.length;
   const isLastStep = stepIndex === totalSteps - 1;
+  // priorTurns holds every turn already persisted for this session, so the
+  // turn about to be graded is the next one.
+  const turnNumber = priorTurns.length + 1;
 
   const companyStyle = practiceCase.company_style;
   let styleDirective: string;
@@ -358,8 +463,18 @@ export function buildSystemPrompt(
     `Case: ${practiceCase.title} (${practiceCase.industry}, ${practiceCase.difficulty})`,
     `Brief: ${practiceCase.brief}`,
     `You are step ${stepIndex + 1} of ${totalSteps} in this case.`,
+    `You are about to reply to turn ${turnNumber}. The session ends automatically at turn ${SESSION_TURN_CAP}.`,
     "",
   ];
+
+  if (turnNumber >= SESSION_TURN_CAP) {
+    base.push(
+      "### This is the final turn",
+      "",
+      `Turn ${SESSION_TURN_CAP} is the hard session cap: your reply here is the LAST thing the candidate will ever hear from you. Write a closing turn — react briefly to what they just said, in character, and stop. Do NOT ask a question, and do NOT end on a "?". A question the candidate is never given a chance to answer is a broken ending.`,
+      ""
+    );
+  }
 
   if (caseFacts && Object.keys(caseFacts).length > 0) {
     base.push(
@@ -429,12 +544,25 @@ export function buildSystemPrompt(
     "",
     unaddressedSteerableBlock,
     "",
-    "### Curveballs — hard cap",
+    "### Curveballs — required, then capped",
     "",
     `You have introduced ${priorCurveballCount} of ${maxCurveballs} allowed curveballs so far in this session. A "curveball" means introducedNewComplication=true — you actively introduced a new twist, complication, or piece of new information that isn't required by the current step's trigger. Normal in-step data reveals, clarifying questions, and follow-ups on the candidate's prior answer are NOT curveballs — do not over-flag.`,
-    priorCurveballCount >= maxCurveballs
-      ? "You are AT the curveball cap. Do NOT introduce any new curveballs or complications this turn — set introducedNewComplication=false. Push the candidate toward synthesis and their final recommendation. If you would have thrown a curveball, ask a synthesis question instead."
-      : `You have ${maxCurveballs - priorCurveballCount} curveball(s) remaining. Use them sparingly.`,
+    "",
+    `max_curveballs is a REQUIREMENT AND a ceiling, not just a ceiling. This case is meant to throw the candidate at least one real complication before it ends; a session that runs start to finish with zero curveballs is a failed interview on your side, not a clean one. Hard triggers, in priority order:`,
+    "",
+    `- You must have introduced at least ONE curveball by turn ${FIRST_CURVEBALL_BY_TURN}.`,
+    maxCurveballs >= 2
+      ? "- You must have introduced a SECOND curveball before the recommendation checklist closes — that is, while you are still on the last two steps and before the candidate has completed all four synthesis pieces."
+      : "- This case allows only one curveball; do not exceed it.",
+    "",
+    "A curveball must stay inside the case's documented world: build it from the canonical case facts, the trap, or the step reveals above (a stakeholder objection, a constraint you hadn't mentioned, a competing priority, a number that cuts against their thesis). Do NOT invent a figure that contradicts case_facts to manufacture one.",
+    "",
+    curveballBoundLine(
+      priorCurveballCount,
+      maxCurveballs,
+      turnNumber,
+      stepIndex >= totalSteps - 2
+    ),
     "",
     "### Nudging (redirect once, not twice)",
     "",
@@ -460,6 +588,18 @@ export function buildSystemPrompt(
       "4. hasConcreteNextStep / concreteNextStepQuote — the candidate must have named an action AND either a timeframe OR an owner. These do NOT count as concrete next steps: 'consider X', 'evaluate Y', 'look into Z', 'review Z', 'assess Z', 'explore Z', 'revisit Z', 'examine Z', 'investigate Z', 'see if we can X', 'see if there's any way to X', 'somehow X', 'maybe X', 'a bit X'. If the candidate's action language is any of these hedge forms with no owner or timeframe attached, this MUST be false — the server will downgrade it anyway.",
       "",
       "The system decides whether to end the interview based on TWO conditions: (a) all four post-validation checklist booleans are true, AND (b) the final data-release step has been passed. If any checklist piece is missing, push in-character on it: 'What sort of number are we talking about?' for missing quantification, 'What could go wrong with that?' for missing risk, 'What would you actually have me do on Monday morning?' for a vague next step. If the checklist is complete but earlier case elements haven't been surfaced, keep the conversation going — probe on what they've walked past, don't wrap up early.",
+      "",
+      "### Cumulative checklist state (carried across turns — ground truth)",
+      "",
+      "These four pieces accumulate across every turn on the final step: once a piece is validated true it stays true, so you are only ever looking for the ones still missing.",
+      "",
+      ...cumulativeChecklistLines(cumulativeChecklist),
+      "",
+      "### Closing the session cleanly",
+      "",
+      "When the last missing piece lands, the interview ENDS immediately after your reply — the candidate does not get another turn. So before you write your reply, ask yourself: could the response I am grading right now complete the checklist?",
+      "",
+      closingTurnDirective(cumulativeChecklist),
       ""
     );
   }
@@ -470,6 +610,15 @@ export function buildSystemPrompt(
     "If the consultant's response triggers the data release for this step (they asked the right question or made the right connection), share the data naturally, as a stakeholder would pull up a number or recall a fact from your team. Mark passed: true.",
     "",
     "If the consultant's response does NOT trigger the data release (wrong question, too vague, or off track), respond as a skeptical stakeholder: offer a business-fact counterpoint, mention something contradictory your team found, or ask a pointed follow-up rooted in the case, never a process critique. Mark passed: false.",
+    "",
+    "### Grounding your internal grading note (strict)",
+    "",
+    "The `critique` field is read verbatim by the end-of-session Coach, which writes the candidate's final critique around it. Anything you assert there that the candidate did not actually say becomes a fabricated quote in their feedback. So:",
+    "",
+    "- Quote the candidate's wording verbatim, in quotation marks, for every claim you make about what they said. Paraphrase is not evidence.",
+    "- NEVER restate the candidate's arithmetic — cite it as they said it. Do not recompute their numbers, do not clean up a sloppy figure into the one they 'meant', and do not write out the correct calculation as though it came from them.",
+    "- If their math is wrong, quote the figure they actually gave and note that it does not match the canonical case facts above. Naming the discrepancy is grounded; producing the corrected number on their behalf is fabrication.",
+    "- If you cannot support a claim with a verbatim quote from THIS turn's candidate response, leave it out of the note entirely.",
     "",
     "### Self-classification of your reply (required)",
     "",

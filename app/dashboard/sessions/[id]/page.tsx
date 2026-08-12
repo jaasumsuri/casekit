@@ -6,6 +6,9 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import cases from "@/data/practice-cases.json";
 import { renderInline } from "@/lib/critique";
+import { ReportPanel, DeckPanel } from "@/components/case/RevealPanels";
+import type { CaseReport, Slide } from "@/components/case/types";
+import "@/components/case/reveal.css";
 
 interface SessionData {
   id: string;
@@ -13,6 +16,10 @@ interface SessionData {
   status: string;
   completion_status: string | null;
   final_critique: string | null;
+  // Generated deliverables. Null on sessions that ended before the
+  // report/slides routes ran, or on a pre-migration schema.
+  report: CaseReport | null;
+  slides: Slide[] | null;
   created_at: string;
   ended_at: string | null;
 }
@@ -61,6 +68,9 @@ export default function SessionDetailPage() {
   const [turns, setTurns] = useState<TurnRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [deliverableTab, setDeliverableTab] = useState<"report" | "slides">(
+    "report"
+  );
 
   useEffect(() => {
     if (authStatus === "unauthenticated") {
@@ -110,6 +120,22 @@ export default function SessionDetailPage() {
 
   const caseInfo = caseMap.get(sessionData.case_slug);
   const isCompleted = sessionData.completion_status === "completed";
+
+  const report = sessionData.report;
+  const slides =
+    sessionData.slides && sessionData.slides.length > 0
+      ? sessionData.slides
+      : null;
+  const deliverableTabs = [
+    ...(report ? ([["report", "The report"]] as const) : []),
+    ...(slides ? ([["slides", "The slides"]] as const) : []),
+  ];
+  // Fall back to whichever deliverable actually exists, so a session that
+  // generated slides but not a report doesn't render an empty panel.
+  const activeTab =
+    deliverableTabs.some(([key]) => key === deliverableTab)
+      ? deliverableTab
+      : deliverableTabs[0]?.[0];
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 28px 80px" }}>
@@ -174,6 +200,47 @@ export default function SessionDetailPage() {
           </p>
         )}
       </div>
+
+      {deliverableTabs.length > 0 && (
+        <div
+          style={{
+            background: "var(--card)", borderRadius: "var(--r-card)",
+            padding: "32px", border: "1px solid var(--border)",
+            marginTop: 24,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--forest)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" />
+            </svg>
+            <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--forest)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Consultant output
+            </span>
+          </div>
+          <p style={{ fontSize: "0.9rem", color: "var(--muted)", lineHeight: 1.6, marginBottom: 16, maxWidth: "60ch" }}>
+            Generated from this session&apos;s transcript and verified grading
+            state — gaps in your work show up as gaps here.
+          </p>
+
+          {deliverableTabs.length > 1 && (
+            <div className="deliver-tabs">
+              {deliverableTabs.map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={`dtab${activeTab === key ? " active" : ""}`}
+                  onClick={() => setDeliverableTab(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {activeTab === "report" && report && <ReportPanel report={report} />}
+          {activeTab === "slides" && slides && <DeckPanel slides={slides} />}
+        </div>
+      )}
 
       {turns.length > 0 && (
         <div

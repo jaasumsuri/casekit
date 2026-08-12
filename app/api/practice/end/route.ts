@@ -11,6 +11,10 @@ import {
   getMustSurfacePoints,
 } from "@/lib/practice-turn-engine";
 
+// Streams a full coach critique over the whole transcript. Measured well
+// past Vercel's 60s default on long sessions; 300s is the Fluid-compute
+// ceiling on Pro.
+export const maxDuration = 300;
 
 function getSupabase() {
   return createClient(
@@ -454,6 +458,15 @@ You may cite ONLY facts, mechanisms, and causes that are documented in this prom
 - Prohibited: inventing a plausible-sounding cause for a delta the case doesn't document ("the enrollment probably ramped over the period," "customers likely shifted toward the higher-margin category," "the new hire was probably still onboarding"). If the case_facts do not say why something happened, do NOT tell the candidate why — state the delta and label the mechanism as not established.
 - Prohibited: inferring what the candidate "was thinking" or "meant to say" beyond what their actual words in the transcript support.
 - Allowed: naming the delta or gap as-is, quoting or paraphrasing the candidate's actual wording, citing case_facts, and calling out that a claim was made without evidence.
+
+### NO INVENTED CANDIDATE MATH (strict)
+
+Quote candidate wording verbatim. Never restate the candidate's arithmetic — cite it as they said it.
+
+- Every claim you make about what the candidate said must be backed by their exact words from the "Candidate:" lines of the transcript, in quotation marks. If you cannot find the wording, the claim does not go in the critique.
+- Never reproduce a candidate's calculation in your own numbers. Do not recompute their figures, do not round or tidy them, and do not write out the calculation they "were doing" — quote the numbers they actually typed.
+- If their math is wrong, quote the figure they gave and set it against the canonical case facts ("you said 'about 12%'; the case facts put it at 8.4%"). Naming the discrepancy is grounded; producing the corrected arithmetic as though it were theirs is fabrication.
+- The "Interviewer internal note:" lines are the interviewer's own unverified shorthand, NOT a transcript of the candidate. Treat them as a pointer to where to look, never as a quotable source. If a note characterizes the candidate's numbers and you cannot find those numbers in the candidate's own words on that turn, do not repeat the characterization.
 
 When you notice a gap between two documented facts (e.g., revenue flat but discounting rose to X%), describe the gap using ONLY the numbers in case_facts. Do not fill in a mechanism ("this suggests customers ramped enrollment gradually") unless the mechanism is written in case_facts or the rubric. If the candidate offered a mechanism and the case does not confirm it, note that they proposed it and that it was not confirmed by the case data — do not endorse it or extend it.
 

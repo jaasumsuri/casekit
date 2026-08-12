@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import cases from "@/data/practice-cases.json";
 import { requirePracticeUser } from "@/lib/practice-auth";
+import { parseStoredJson } from "@/lib/practice-deliverables";
 import type { RedirectEntry } from "@/lib/practice-turn-engine";
 
 // Phase 2 · Section 4.
@@ -10,6 +11,10 @@ import type { RedirectEntry } from "@/lib/practice-turn-engine";
 // Five-slide exhibit deck. Idempotent, forced tool_use. Layouts and
 // shape mirror the guided-case DeckPanel so the frontend can reuse
 // .deck-wrap / .slide-* / .sl-* CSS unchanged.
+
+// Measured at 43.4s on a normal session against Vercel's 60s default —
+// a long transcript would 504. 300s is the Fluid-compute ceiling on Pro.
+export const maxDuration = 300;
 
 function getSupabase() {
   return createClient(
@@ -331,8 +336,12 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "Failed to load session" }, { status: 500 });
   }
 
-  if (sessionRow.slides && sessionRow.slides.length > 0) {
-    return Response.json({ slides: sessionRow.slides, cached: true });
+  // slides is genuinely jsonb and round-trips as an array, unlike report —
+  // but normalize anyway so a string-typed column here would degrade to a
+  // regenerate rather than shipping a string to the deck renderer.
+  const cachedSlides = parseStoredJson<Slide[]>(sessionRow.slides);
+  if (Array.isArray(cachedSlides) && cachedSlides.length > 0) {
+    return Response.json({ slides: cachedSlides, cached: true });
   }
 
   if (sessionRow.status !== "completed") {
